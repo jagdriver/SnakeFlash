@@ -49,6 +49,25 @@ prerequisites: Mac, Windows or Linux, Visual Studio Code with some extensions (f
 | USB to DC cable 25cm    | 1             | 25                  |
 | Amount DKr              |               | 2,600 - 3,400       |
 
+### Toolchain<a name="tools"></a>
+The nescessary tools for building/Installing the SnakeSwarm project and developing Sketches for ESP8266/ESP32  
+Visual Studio Code for Mac, latest version with some extensions: 
+Python3 
+Arduino for Visual Studio Code
+C/C++
+ms-vscode.cpptools
+lukasz-wronski.ftp-sync
+ms-azuretools.vscode-docker
+sprdp.remote-browser
+jchannon.csharpextensions
+ronaldosena.arduino-snippets
+vsciot-vscode.vscode-arduino
+
+You can paste theese extension id's into VSCode extension search box and from there
+install the extension.
+
+
+
 ### RPI software <a name="software"></a>
 The software running on the RPI's are all Docker Containers, which are installed onto the RPI from Portainer console. 
 Traefik and Portainer are installed at boot time, and will be available after swarm initialization.
