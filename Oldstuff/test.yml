@@ -1,0 +1,80 @@
+#cloud-config
+# vim: syntax=yaml
+
+api:
+  dashboard: true
+
+log:
+  filePath: "log/traefik.log"
+  level: DEBUG
+
+accessLog:
+  filePath: "log/access.log"
+
+entryPoints:
+  ssh2:
+    address: ":2202"
+  ssh3:
+    address: ":2203"
+  ssh4:
+    address: ":2204"          
+  web:
+    address: ":80"
+  secure:
+    address: ":443"
+  mosquitto:
+    address: ":8210"
+  mariadb:
+    address: ":8211"
+  mqtinternal:
+    address: ":8213"
+  redis:
+    address: ":8214"
+
+providers:
+  docker:
+    endpoint: "unix:///var/run/docker.sock"
+    exposedByDefault: false
+
+tcp:
+  services:
+    ssh-ws02:
+      loadbalancer:
+        servers:
+          - address: "WS02-IP-ADDRESS:22"
+    ssh-ws03:
+      loadbalancer:
+        servers:
+          - address: "WS03-IP-ADDRESS:22"
+    ssh-ws04:
+      loadbalancer:
+        servers:
+          - address: "WS04-IP-ADDRESS:22"
+
+  routers:
+    ssh-route-ws02:
+      entryPoints:
+        - "ssh2"
+      rule: "HostSNI(`*`)"
+      service: ssh-ws02
+    
+    ssh-route-ws03:
+      entryPoints:
+        - "ssh3"
+      rule: "HostSNI(`*`)"
+      service: ssh-ws03
+    
+    ssh-route-ws04:
+      entryPoints:
+        - "ssh4"
+      rule: "HostSNI(`*`)"
+      service: ssh-ws04    
+
+certificatesResolvers:
+  http:
+    acme:
+      email: jagdriver@hotmail.com
+      storage: acme.json
+      #caServer: "https://acme-staging-v02.api.letsencrypt.org/directory"
+      httpChallenge:
+        entryPoint: web

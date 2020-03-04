@@ -1,0 +1,226 @@
+#cloud-config
+# vim: syntax=yaml
+#
+
+# The current version of cloud-init in the Hypriot rpi-64 is 0.7.6
+# When dealing with cloud-init, it is SUPER important to know the version
+# I have wasted many hours creating servers to find out the module I was trying to use wasn't in the cloud-init version I had
+# Documentation: http://cloudinit.readthedocs.io/en/0.7.9/index.html
+
+# Set your hostname here, the manage_etc_hosts will update the hosts file entries as well
+hostname: ws06
+manage_etc_hosts: false
+
+# You could modify this for your own user information
+users:
+  - name: manager
+    gecos: "Wavesnake Manager"
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+    groups: users,docker,video,input
+    plain_text_passwd: wavesnake
+    lock_passwd: false
+    ssh_pwauth: true
+    chpasswd: { expire: false }
+
+# # Set the locale of the system
+locale: "en_US.UTF-8"
+
+# # Set the timezone
+# # Value of 'timezone' must exist in /usr/share/zoneinfo
+timezone: "Europe/Copenhagen"
+
+# # Update apt packages on first boot
+package_update: false
+package_reboot_if_required: true
+package_upgrade: false
+
+# # Install any additional apt packages you need here
+#packages:
+#  - sshfs
+
+# # WiFi connect to HotSpot
+# # - use `wpa_passphrase SSID PASSWORD` to encrypt the psk
+# # We can't have both eth0 and wlan0 up and running because Docker don't know which to bind to !!!
+write_files:
+  - content: |
+      persistent
+      # Generate Stable Private IPv6 Addresses instead of hardware based ones
+      slaac private
+      # static IP configuration:
+      interface eth0
+      static ip_address=192.168.1.235/24
+      static routers=192.168.1.1
+      static domain_name_servers=192.168.1.1 8.8.8.8 8.8.4.4
+    path: /etc/dhcpcd.conf
+  - content: |
+      127.0.1.1 ws06 ws06.wavesnake.local
+      127.0.0.1 localhost
+      192.168.1.230 ws01 ws01.wavesnake.local
+      192.168.1.231 ws02 ws02.wavesnake.local
+      192.168.1.232 ws03 ws03.wavesnake.local
+      192.168.1.233 ws04 ws04.wavesnake.local
+      192.168.1.234 ws05 ws05.wavesnake.local
+      192.168.1.235 ws06 ws06.wavesnake.local
+      # The following lines are desirable for IPv6 capable hosts
+      ::1 ip6-localhost ip6-loopback
+      fe00::0 ip6-localnet
+      ff00::0 ip6-mcastprefix
+      ff02::1 ip6-allnodes
+      ff02::2 ip6-allrouters
+      ff02::3 ip6-allhosts
+    path: /etc/hosts   
+  #
+  # Portainer
+  #
+  - content: |
+    path: /opt/containers/portainer/docker-compose.yml
+
+  #
+  # Traefik traefik.yml
+  #
+  - content: |
+
+      api:
+        dashboard: true
+
+        entryPoints:
+          http:
+            address: ":80"
+          https:
+            address: ":443"
+
+        providers:
+          docker:
+            endpoint: "unix:///var/run/docker.sock"
+            exposedByDefault: false
+
+        certificatesResolvers:
+          http:
+            acme:
+              email: jagdriver@hotmail.com
+              storage: acme.json
+              httpChallenge:
+                entryPoint: http
+
+    path: /opt/containers/traefik/data/traefik.yml
+
+  #
+  # Traefik docker-compose.yml
+  #
+  - content: |
+      version: '3'
+
+      services:
+        traefik:
+          image: traefik:v2.1.1
+          container_name: traefik
+          restart: unless-stopped
+          security_opt:
+            - no-new-privileges:true
+          networks:
+            - proxy
+          ports:
+            - 80:80
+            - 443:443
+          volumes:
+            - /etc/localtime:/etc/localtime:ro
+            - /var/run/docker.sock:/var/run/docker.sock:ro
+            - /opt/containers/traefik/data/traefik.yml:/traefik.yml:ro
+            - /opt/containers/traefik/data/acme.json:/acme.json
+            - /var/log/traefik:/log
+          labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.traefik.entrypoints=http"
+            - "traefik.http.routers.traefik.rule=Host(`traefik.example.com`)"
+            - "traefik.http.middlewares.traefik-auth.basicauth.users=manager:$2y$05$XtJCZAYmG41EnvLEMfhS3uf7vsszlv95Oxc3IakLOnXxfcXAPVd8W$$"
+            - "traefik.http.middlewares.traefik-https-redirect.redirectscheme.scheme=https"
+            - "traefik.http.routers.traefik.middlewares=traefik-https-redirect"
+            - "traefik.http.routers.traefik-secure.entrypoints=https"
+            - "traefik.http.routers.traefik-secure.rule=Host(`traefik.wavesnake.dk`)"
+            - "traefik.http.routers.traefik-secure.middlewares=traefik-auth"
+            - "traefik.http.routers.traefik-secure.tls=true"
+            - "traefik.http.routers.traefik-secure.tls.certresolver=http"
+            - "traefik.http.routers.traefik-secure.service=api@internal"
+
+      networks:
+      proxy:
+        external: true
+    path: /opt/containers/traefik/docker-compose.yml
+
+
+
+# These commands will be run once on first boot only
+runcmd:
+  # Pickup the hostname changes
+
+  - 'logger !!! wavesnake !!! Workaround for Buster error initializing date/time'
+  - 'sudo date'
+  - 'sudo service ntp --full-restart'
+  - 'sudo sleep 15'
+  - 'sudo date'
+
+  - 'logger !!! wavesnake !!! Restart avahi-deamon'  
+  - 'systemctl restart avahi-daemon'
+
+  - 'logger !!! wavesnake !!! Update Package list'
+  - 'sudo apt-get update --allow-releaseinfo-change'
+
+  - 'logger !!! wavesnake !!! Install packages'
+  - 'sudo apt-get -y install acl'
+  - 'sudo apt-get -y install dnsmasq'
+  - 'sudo apt-get -y install dnsutils'
+  - 'sudo apt-get -y install sshfs'
+  - 'sudo apt-get -y install certbot'
+
+  - 'logger !!! wavesnake !!! Set manager in docker group'
+  - 'sudo usermod -aG docker $(whoami)'
+  - 'sudo usermod -aG docker manager'
+
+  - 'logger !!! wavesnake !!! Docker Swarm Init with listen and advertise interface'
+  - 'docker swarm init --listen-addr eth0:2377 --advertise-addr eth0:2377'
+
+  - 'logger !!! wavesnake !!! Docker Node Label'
+  - 'docker node update --label-add wsnode=ws06 ws06'
+
+  - 'logger !!! wavesnake !!! Set manager as owner and set rights on home directory'
+  - 'sudo cp -P /etc/skel/.[^.]* /etc/skel/* /home/manager'
+  - 'sudo chown manager:manager /home/manager'
+  - 'sudo chmod -R u+rwX,go+rX-w /home/manager'
+
+  - 'logger !!! wavesnake !!! Create ssh private/public keys'
+  - 'sudo mkdir /home/manager/.ssh'
+  - 'sudo chown manager:manager /home/manager/.ssh'
+  - 'sudo touch /home/manager/.ssh/authorized_keys'
+  - 'sudo chmod 700 /home/manager/.ssh'
+  - 'sudo cp -P /boot/keyfile.txt /home/manager/.ssh/authorized_keys'
+  - 'sudo chown manager:manager /home/manager/.ssh/authorized_keys'
+  - 'sudo chmod 600 /home/manager/.ssh/authorized_keys'
+ 
+  - 'logger !!! wavesnake !!! Create container files'
+  - 'sudo mkdir /opt/containers'
+  - 'sudo chown manager:manager /opt/containers'
+  - 'sudo mkdir /opt/containers/traefik'
+  - 'sudo mkdir /opt/containers/portainer'
+  - 'sudo mkdir /opt/containers/portainer/data'
+  - 'sudo mkdir /opt/containers/traefik/data'
+  - 'sudo touch /opt/containers/traefik/data/acme.json'
+  - 'sudo chmod 600 /opt/containers/traefik/data/acme.json'
+
+  - 'logger !!! wavesnake !!! Create log files'
+  - 'sudo mkdir /var/log/traefik'
+  - 'sudo mkdir /var/log/snakelogs'
+  - 'sudo mkdir /var/log/mosquitto'
+
+  - 'logger !!! wavesnake !!! Create Traefik network'
+  - 'docker network create --driver overlay --attachable traefik-public'
+
+  - 'logger !!! wavesnake !!! Instantiate Traefik Container'
+  - 'logger !!! wavesnake !!! Instantiate Portainer Container' 
+
+  - 'logger !!! wavesnake !!! End of RUNCMD'
+  
+  
+  #
+  # Below command requires that we know the UUID of the mounted USB stick
+  #- 'echo "/dev/disk/by-uuid/3433-3231 /media/data vfat auto,nofail,noatime,users,rw,uid=manager,gid=manager 0 0" >> /etc/fstab'

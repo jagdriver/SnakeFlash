@@ -1,0 +1,103 @@
+#cloud-config
+# vim: syntax=yaml
+#
+
+# The current version of cloud-init in the Hypriot rpi-64 is 0.7.6
+# When dealing with cloud-init, it is SUPER important to know the version
+# I have wasted many hours creating servers to find out the module I was trying to use wasn't in the cloud-init version I had
+# Documentation: http://cloudinit.readthedocs.io/en/0.7.9/index.html
+
+# Set your hostname here, the manage_etc_hosts will update the hosts file entries as well
+hostname: ws03.wavesnake.local
+manage_etc_hosts: true
+
+# 
+# Create Users
+#
+users:
+  - name: manager
+    gecos: "Wavesnake Manager"
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+    groups: users,docker,video,input
+    #plain_text_passwd: wavesnake
+    passwd: $6$$lkFOYhhCGZiVmaOiZxSrpcvun.YOgyWuin0l0/aHRkep9sHrMTVp4uzHsAkTIJ.q3c8RuTA.NUNE8yqrh72O5/
+    lock_passwd: false
+    ssh_pwauth: true
+    chpasswd: { expire: false }
+#
+# Set the locale of the system
+#
+locale: "en_US.UTF-8"
+
+#
+# Set the timezone
+# Value of 'timezone' must exist in /usr/share/zoneinfo
+timezone: "Europe/Copenhagen"
+
+#
+# Update apt packages on first boot
+#
+package_update: true
+# package_reboot_if_required: true
+package_upgrade: false
+
+#
+# Install any additional apt packages you need here
+#
+packages:
+  - acl
+  - sshfs
+
+#
+# Write Files
+#
+write_files:
+  - content: |
+      persistent
+      # Generate Stable Private IPv6 Addresses instead of hardware based ones
+      slaac private
+      # static IP configuration:
+      interface eth0
+      static ip_address=192.168.1.232/24
+      # static ip6_address=fd51:42f8:caae:d92e::ff/64
+      static routers=192.168.1.1
+      static domain_name_servers=192.168.1.1 8.8.8.8 8.8.4.4
+    path: /etc/dhcpcd.conf
+  #
+  # Create Mosquitto Server Docker Compose file
+  #
+  - content: |
+     version: '3.6'
+     services:
+       mosquitto:
+         image: jagdriver/wavesnake:mosquitto-v1.0.2
+         ports:
+           - "9001:9001"
+         network_mode: host
+         volumes:
+            - "/opt/mosquitto/data:/mqtt/data"
+            - "/opt/mosquitto/logs:/mqtt/logs"
+    path: "/home/manager/mosquitto/docker-compose.yml"
+
+#
+# These commands will be run once on first boot only
+#
+runcmd:
+  # Pickup the hostname changes
+  - 'systemctl restart avahi-daemon'
+  - 'usermod -aG docker $(whoami)'
+  - 'usermod -aG docker manager'
+  - [chown, "manager:manager", "-R", "/home/manager"]
+
+  # Mosquitto
+  - [mkdir, "-p", "/home/manager/mosquitto" ]
+  - [mkdir, "-p", "/opt/mosquitto" ]
+  - [mkdir, "-p", "/opt/mosquitto/data" ]
+  - [mkdir, "-p", "/opt/mosquitto/logs" ]
+
+  #
+  # Create Mosquitto Container
+  #
+  - [cd, "/home/manager/mosquitto" ]
+  - [docker-compose, up, -d]

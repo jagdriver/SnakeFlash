@@ -1,0 +1,49 @@
+
+#
+# Swarm Properties
+#
+MANAGER_NAME="manager"
+MANAGER_PASSWORD="your manager password"
+TIME_ZONE="Europe/Copenhagen"
+SWARM_MANAGER_NODE="ws01"
+SWARM_PORT="2377"
+NODE-NAME="ws01"
+
+# WiFi properties
+COUNTRY_CODE=""
+WIFI_SSID="Your WiFi ssid"
+WIFI_PASSWD="Your WiFi password"
+
+# Lan ETH0 properties
+ETH0_LAN="192.168.8.0/24"
+ETH0_IP_ADDRESS="192.168.8.1"
+ETH0_STATIC_ROUTERS=""
+ETH0_STATIC_DNS_SERVERS="8.8.8.8 8.8.4.4"
+
+# Lan WLAN0 properties
+WLAN0_LAN="192.168.1.0/24"
+WLAN0_IP_ADDRESS="192.168.1.230"
+WLAN0_STATIC_ROUTERS="192.168.1.1"
+WLAN0_STATIC_DNS_SERVERS="8.8.8.8 8.8.4.4"
+
+# Domain properties
+INTERNAL_DOMAIN_NAME="wavesnake.local"
+EXTERNAL_DOMAIN_NAME="Your external domain name"
+
+# Dynamic DNS properties
+DYNAMIC_DNS_PROVIDER="Either GRATISDNS or CLOUDFLARE"
+GRATIS_DNS_USER="Your GratisDNS user"
+GRATIS_DNS_PASSWD="Your GratisDNS password"
+CLOUDFLARE_DNS_USER="Your CloudFlare user"
+CLOUDFLARE_DNS_PASSWD="Your CloudFlare password"
+
+# ACME properties
+ACME_EMAIL_ADDRESS="yourmail@mailserver.com"
+
+# Traefik properties
+TRAEFIK_ENTRYPOINT_ADDRESS=""
+
+
+
+
+

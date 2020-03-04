@@ -1,0 +1,150 @@
+#cloud-config
+# vim: syntax=yaml
+#
+
+# This file is the !! SWARM NODE !! Default Flash config.
+# You can change the configuration directly in the file or
+# run ./flash-config.zsh in the flash directory to be guided
+# thru the setup.
+
+# The current version of cloud-init in the Hypriot rpi-64 is 0.7.6
+# When dealing with cloud-init, it is SUPER important to know the version
+# I have wasted many hours creating servers to find out the module I was trying to use wasn't in the cloud-init version I had
+# Documentation: http://cloudinit.readthedocs.io/en/0.7.9/index.html
+
+# Set your hostname here, the manage_etc_hosts will update the hosts file entries as well
+hostname: NODE-NAME
+manage_etc_hosts: false
+
+# You could modify this for your own user information
+users:
+  - name: MANAGER-NAME
+    gecos: "Wavesnake Manager"
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+    groups: users,docker,video,input
+    #plain_text_passwd: MANAGER-PASSWORD
+    passwd: MANAGER-ENCRYPTED-PASSWORD
+    lock_passwd: false
+    ssh_pwauth: true
+    chpasswd: { expire: false }
+
+# # Set the locale of the system
+locale: "SWARM-LOCALE"
+
+# # Set the timezone
+# # Value of 'timezone' must exist in /usr/share/zoneinfo
+timezone: "TIME-ZONE"
+
+# # Update apt packages on first boot
+package_update: false
+package_reboot_if_required: true
+package_upgrade: false
+
+# # Install any additional apt packages you need here
+# # OBS! This is done in RUNCMD section caused by an
+# # error in debian Buster NTP time.
+# packages:
+#   - sshfs
+#   - acl
+#   - dnsmasq
+#   - dnsutils
+
+# # WiFi connect to HotSpot
+# # - use `wpa_passphrase SSID PASSWORD` to encrypt the psk
+write_files:
+
+  #
+  # dhcpcd.conf static network setup
+  #
+  - content: |
+      persistent
+      # Generate Stable Private IPv6 Addresses instead of hardware based ones
+      slaac private
+      # static IP configuration:
+      interface eth0
+      static ip_address=ETH0-IP-ADDRESS/24
+      static routers=ETH0-STATIC-ROUTERS
+      static domain_name_servers=ETH0-STATIC-DNS-SERVERS
+    path: /etc/dhcpcd.conf
+  #
+  # Hosts
+  #
+  - content: |
+      127.0.1.1 NODE-NAME NODE-NAME.INTERNAL-DOMAIN-NAME
+      127.0.0.1 localhost
+      DNS-STRING1
+      DNS-STRING2
+      DNS-STRING3
+
+      # The following lines are desirable for IPv6 capable hosts
+      ::1 ip6-localhost ip6-loopback
+      fe00::0 ip6-localnet
+      ff00::0 ip6-mcastprefix
+      ff02::1 ip6-allnodes
+      ff02::2 ip6-allrouters
+      ff02::3 ip6-allhosts
+    path: /etc/hosts   
+
+# These commands will be run once on first boot only
+runcmd:
+  # Restart Avahi daemon and sleep 30 seec
+  - 'logger !!! wavesnake !!! Restart avahi-deamon'  
+  - 'systemctl restart avahi-daemon'
+  #
+  # Restart NTP, workaround for Debian Buster time initialization
+  #
+  - 'logger !!! wavesnake !!! Workaround for Buster error initializing date/time'
+  - 'sudo date'
+  - 'sudo service ntp --full-restart'
+  - 'sudo sleep 15'
+  - 'sudo date'
+  # Update packagee index
+  - 'logger !!! wavesnake !!! Update Package list'
+  - 'sudo apt-get update --allow-releaseinfo-change'
+  # Install packages
+  - 'logger !!! wavesnake !!! Install packages'
+  - 'sudo apt-get -y install acl'
+  - 'sudo apt-get -y install sshfs'
+  # Set Manager in Docker group
+  - 'logger !!! wavesnake !!! Set manager in docker group'
+  - 'sudo usermod -aG docker $(whoami)'
+  - 'sudo usermod -aG docker manager'
+  # Add Node to Swarm
+  - 'logger !!! wavesnake !!! Join Worker Node to swarm'
+  - WORKER_SWARM_TOKEN=$(docker swarm join-token -q worker)
+  - docker swarm join --token WORKER_SWARM_TOKEN SWARM-MANAGER-NODE:SWARM-PORT
+  - 'sudo sleep 5'
+  # Set Node Label 
+  - 'logger !!! wavesnake !!! Docker Node Label'
+  - 'docker node update --label-add wsnode=NODE-NAME NODE-NAME'
+  # Create Home directory
+  - 'logger !!! wavesnake !!! Set manager as owner and set rights on home directory'
+  - 'sudo cp -P /etc/skel/.[^.]* /etc/skel/* /home/manager'
+  - 'sudo chown manager:manager /home/manager'
+  - 'sudo chmod -R u+rwX,go+rX-w /home/manager'
+  # Create SSH private/public key
+  - 'logger !!! wavesnake !!! Create ssh private/public keys'
+  - 'sudo mkdir /home/manager/.ssh'
+  - 'sudo chown manager:manager /home/manager/.ssh'
+  - 'sudo touch /home/manager/.ssh/authorized_keys'
+  - 'sudo chmod 700 /home/manager/.ssh'
+  - 'sudo cp -P /boot/keyfile.txt /home/manager/.ssh/authorized_keys'
+  - 'sudo chown manager:manager /home/manager/.ssh/authorized_keys'
+  - 'sudo chmod 600 /home/manager/.ssh/authorized_keys'
+  # Create Container directory
+  - 'logger !!! wavesnake !!! Create container directory'
+  - 'sudo mkdir /opt/containers'
+  - 'sudo chown manager:manager /opt/containers'
+  # Create log directories
+  - 'logger !!! wavesnake !!! Create log files'
+  - 'sudo mkdir /var/log/traefik'
+  - 'sudo mkdir /var/log/snakelogs'
+  - 'sudo mkdir /var/log/mosquitto'
+
+  - 'logger !!! wavesnake !!! End of RUNCMD'
+  
+  #
+  # Below command requires that we know the UUID of the mounted USB stick
+  # Also this must be done on the DB server
+  #- 'echo "/dev/disk/by-uuid/3433-3231 /media/data vfat auto,nofail,noatime,users,rw,uid=manager,gid=manager 0 0" >> /etc/fstab'

@@ -1,0 +1,60 @@
+
+#
+# WaveSnake Swarm Properties
+#
+# USER Properties
+MANAGER_NAME="manager"
+MANAGER_PASSWORD="your manager password"
+TEST_STR="$6$rounds=4096$CcgygeGa$kK0mdQnrECCZ9v.HaSe4Jlbsb1GmKqbAzMEeDbNAMBmVklIw8wi1rUkyZOhlQJ3PjaN.B2vuqaZeLgw1X6Uh0/"
+MANAGER_ENCRYPTED_PASSWORD="$6$$lkFOYhhCGZiVmaOiZxSrpcvun.YOgyWuin0l0/aHRkep9sHrMTVp4uzHsAkTIJ.q3c8RuTA.NUNE8yqrh72O5/"
+
+# Node properties
+NODE_NAME="ws01"
+SWARM_LOCALE="en_US.UTF-8"
+TIME_ZONE="Europe/Copenhagen"
+
+# Docker properties
+SWARM_MANAGER_NODE="ws01"
+SWARM_PORT="2377"
+SWARM_INTERFACE="eth0"
+
+# WiFi properties
+COUNTRY_CODE="DK"
+WIFI_SSID="Your WiFi ssid"
+WIFI_PASSWD="Your WiFi password"
+
+# Lan ETH0 properties
+ETH0_LAN="192.168.230.0/24"
+ETH0_IP_ADDRESS="192.168.230.1"
+ETH0_STATIC_ROUTERS="192.168.230.1"
+ETH0_DNS_SERVERS="8.8.8.8 8.8.4.4"
+WS01_IP_ADDRESS="192.168.230.1"
+WS02_IP_ADDRESS="192.168.230.2"
+WS03_IP_ADDRESS="192.168.230.3"
+WS04_IP_ADDRESS="192.168.230.4"
+
+# Lan WLAN0 properties
+WLAN0_LAN="192.168.1.0/24"
+WLAN0_IP_ADDRESS="192.168.1.230"
+WLAN0_STATIC_ROUTERS="192.168.1.1"
+WLAN0_DNS_SERVERS="8.8.8.8 8.8.4.4"
+
+# Domain properties
+INTERNAL_DOMAIN_NAME="wavesnake.local"
+EXTERNAL_DOMAIN_NAME="Your external domain name"
+
+# Dynamic DNS properties
+DYNAMIC_DNS_PROVIDER="1"
+DYNAMIC_DNS_USER="Your GratisDNS user"
+DYNAMIC_DNS_PASSWD="Your GratisDNS password"
+
+# ACME properties
+ACME_EMAIL_ADDRESS="yourmail@mailserver.com"
+
+# Traefik properties
+TRAEFIK_ENTRYPOINT_ADDRESS="192.168.1.230"
+
+
+
+
+

@@ -1,0 +1,38 @@
+ "remoteBrowser.connectionOptions": {
+        "host": "192.168.1.234",
+        "defaultPath": "/home/manager",
+        "localHostname": "snakemacpro",
+        "localUsername": "nielsjorgennielsen",
+        "username": "manager"
+      },
+    "remoteBrowser.additionalConnections":[
+    {
+        "host": "192.168.1.230",
+        "defaultPath": "/",
+        "username": "manager",
+    },
+    {
+        "host": "192.168.1.231",
+        "username": "manager",
+    },
+    {
+        "host": "192.168.1.232",
+        "username": "manager",
+    },
+    {
+        "host": "192.168.1.233",
+        "username": "manager",
+    },
+    {
+        "host": "192.168.1.234",
+        "username": "manager"
+    },
+    {
+        "host": "192.168.1.235",
+        "username": "manager",
+    },
+    {
+        "host": "192.168.1.236",
+        "username": "manager"
+    }
+],

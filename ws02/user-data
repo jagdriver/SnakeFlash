@@ -1,0 +1,88 @@
+#cloud-config
+# vim: syntax=yaml
+#
+
+# The current version of cloud-init in the Hypriot rpi-64 is 0.7.6
+# When dealing with cloud-init, it is SUPER important to know the version
+# I have wasted many hours creating servers to find out the module I was trying to use wasn't in the cloud-init version I had
+# Documentation: http://cloudinit.readthedocs.io/en/0.7.9/index.html
+
+# Set your hostname here, the manage_etc_hosts will update the hosts file entries as well
+hostname: ws02.wavesnake.local
+manage_etc_hosts: true
+
+# You could modify this for your own user information
+users:
+  - name: manager
+    gecos: "Wavesnake Manager"
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+    groups: users,docker,video,input
+    #plain_text_passwd: wavesnake
+    passwd: $6$$lkFOYhhCGZiVmaOiZxSrpcvun.YOgyWuin0l0/aHRkep9sHrMTVp4uzHsAkTIJ.q3c8RuTA.NUNE8yqrh72O5/
+    lock_passwd: false
+    ssh_pwauth: true
+    chpasswd: { expire: false }
+
+# # Set the locale of the system
+locale: "en_US.UTF-8"
+
+# # Set the timezone
+# # Value of 'timezone' must exist in /usr/share/zoneinfo
+timezone: "Europe/Copenhagen"
+
+# # Update apt package list on first boot
+package_update: true
+package_upgrade: false
+
+# # Install any additional apt packages you need here
+packages:
+  - acl
+  - sshfs
+
+# # 
+# # Write Files
+# # 
+write_files:
+  #
+  # Writing Static IP properties 
+  #
+  - content: |
+      persistent
+      # Generate Stable Private IPv6 Addresses instead of hardware based ones
+      slaac private
+      # static IP configuration:
+      interface eth0
+      static ip_address=192.168.1.231/24
+      static routers=192.168.1.1
+      static domain_name_servers=192.168.1.1 8.8.8.8 8.8.4.4
+    path: /etc/dhcpcd.conf
+#
+# These commands will be run once on first boot only
+runcmd:
+  # Pickup the hostname changes
+  - 'systemctl restart avahi-daemon'
+  
+  #
+  # Mount USB drive for data SnakeService data storage
+  # Below command requires that we know the UUID of the mounted USB stick
+  #
+  - 'echo "/dev/disk/by-uuid/3FFB-6CC8 /media/data vfat auto,nofail,noatime,users,rw,uid=manager,gid=manager 0 0" >> /etc/fstab'
+
+  # Attach to Docker Swarm 
+  # Working on it
+  
+  - 'usermod -aG docker $(whoami)'
+  - 'usermod -aG docker manager'
+  - [chown, "manager:manager", "-R", "/home/manager"]
+
+  #
+  # Create mount point for external USB flash drive
+  # for use by snakeService
+  #
+  - [mkdir, "-p", "/media/data" ]
+
+  # Below command must be executed from manager node
+  # we might create a batch job to execute on the manager
+  #- 'docker node update --label-add wsnode=ws02 ws02' 
+  
