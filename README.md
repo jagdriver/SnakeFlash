@@ -60,7 +60,9 @@ lukasz-wronski.ftp-sync
 ms-azuretools.vscode-docker
 sprdp.remote-browser
 jchannon.csharpextensions
+
 ronaldosena.arduino-snippets
+
 vsciot-vscode.vscode-arduino
 
 You can paste theese extension id's into VSCode extension search box and from there
