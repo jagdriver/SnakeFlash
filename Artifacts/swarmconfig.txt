@@ -5,7 +5,6 @@
 # USER Properties
 MANAGER_NAME="manager"
 MANAGER_PASSWORD="your manager password"
-TEST_STR="$6$rounds=4096$CcgygeGa$kK0mdQnrECCZ9v.HaSe4Jlbsb1GmKqbAzMEeDbNAMBmVklIw8wi1rUkyZOhlQJ3PjaN.B2vuqaZeLgw1X6Uh0/"
 MANAGER_ENCRYPTED_PASSWORD="$6$$lkFOYhhCGZiVmaOiZxSrpcvun.YOgyWuin0l0/aHRkep9sHrMTVp4uzHsAkTIJ.q3c8RuTA.NUNE8yqrh72O5/"
 
 # Node properties
@@ -17,6 +16,8 @@ TIME_ZONE="Europe/Copenhagen"
 SWARM_MANAGER_NODE="ws01"
 SWARM_PORT="2377"
 SWARM_INTERFACE="eth0"
+SWARM_WORKER_TOKEN="SWMTKN-1-41vje2s9ejwa3wmti1xfr797yf1wlv9x2qkkiftmzq9krb36k2-9qe4sed46u6prwp1i0z7uqml6"
+SWARM_MANAGER_TOKEN="SWMTKN-1-41vje2s9ejwa3wmti1xfr797yf1wlv9x2qkkiftmzq9krb36k2-46acn4i8q41d81o7hjimkpz6y"
 
 # WiFi properties
 COUNTRY_CODE="DK"

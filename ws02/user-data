@@ -24,7 +24,7 @@ users:
     shell: /bin/bash
     groups: users,docker,video,input
     plain_text_passwd: wavesnake
-    #passwd: 29194lkFOYhhCGZiVmaOiZxSrpcvun.YOgyWuin0l0/aHRkep9sHrMTVp4uzHsAkTIJ.q3c8RuTA.NUNE8yqrh72O5/
+    #passwd: 35368lkFOYhhCGZiVmaOiZxSrpcvun.YOgyWuin0l0/aHRkep9sHrMTVp4uzHsAkTIJ.q3c8RuTA.NUNE8yqrh72O5/
     lock_passwd: false
     ssh_pwauth: true
     chpasswd: { expire: false }
@@ -95,8 +95,8 @@ runcmd:
   # Restart NTP, workaround for Debian Buster fake time initialization
   #
   - 'logger !!! wavesnake !!! Workaround for Buster error initializing date/time'
-  - 'sudo date --set 2020-03-04'
-  - 'sudo date --set 13:32:11'
+  - 'sudo date --set 2020-03-05'
+  - 'sudo date --set 17:25:20'
   - 'sudo service ntp --full-restart'
   - 'sudo sleep 15'
   - 'sudo date'
@@ -112,12 +112,12 @@ runcmd:
   - 'sudo usermod -aG docker $(whoami)'
   # Add Node to Swarm
   - 'logger !!! wavesnake !!! Join Worker Node to swarm'
-  - 'WORKER_SWARM_TOKEN=$(docker swarm join-token -q worker)'
-  - 'docker swarm join --token WORKER_SWARM_TOKEN ws01:2377'
+  #- 'WORKER_SWARM_TOKEN=$(docker swarm join-token -q worker)'
+  - 'docker swarm join --token SWMTKN-1-41vje2s9ejwa3wmti1xfr797yf1wlv9x2qkkiftmzq9krb36k2-9qe4sed46u6prwp1i0z7uqml6 ws01:2377'
   - 'sudo sleep 5'
   # Set Node Label 
   - 'logger !!! wavesnake !!! Docker Node Label'
-  - 'docker node update --label-add wsnode=ws02 ws02'
+  # - 'docker node update --label-add wsnode=ws02 ws02'
   # Create Home directory
   - 'logger !!! wavesnake !!! Set manager as owner and set rights on home directory'
   - 'sudo chown manager:manager /home/manager'
@@ -140,7 +140,6 @@ runcmd:
 
   # Create log directories
   - 'logger !!! wavesnake !!! Create log files'
-  - 'sudo mkdir /var/log/traefik'
   - 'sudo mkdir /var/log/snakelogs'
   - 'sudo mkdir /var/log/mosquitto'
 

@@ -87,16 +87,20 @@ function EditProperties()
          # Worker node properties
          sed -i -n "s/SWARM-MANAGER-NODE/$SWARM_MANAGER_NODE/g" new-user-data
          sed -i -n "s/SWARM-PORT/$SWARM_PORT/g" new-user-data
+         sed -i -n "s*SWARM-WORKER-TOKEN*$SWARM_WORKER_TOKEN*" new-user-data
          # Setup DNSMasq A records
          sed -i -n "s#DNS-STRING1#$WS01_DNS_STRING#" new-user-data
          sed -i -n "s#DNS-STRING2#$WS03_DNS_STRING#" new-user-data
          sed -i -n "s#DNS-STRING3#$WS04_DNS_STRING#" new-user-data
+
       ;;
       "ws03" )
          cp ../Artifacts/default-worker-user-data new-user-data
          # Worker node properties
          sed -i -n "s/SWARM-MANAGER-NODE/$SWARM_MANAGER_NODE/g" new-user-data
          sed -i -n "s/SWARM-PORT/$SWARM_PORT/g" new-user-data
+         sed -i -n "s*SWARM-WORKER-TOKEN*$SWARM_WORKER_TOKEN*" new-user-data
+
          # Setup DNSMasq A records
          sed -i -n "s#DNS-STRING1#$WS01_DNS_STRING#" new-user-data
          sed -i -n "s#DNS-STRING2#$WS02_DNS_STRING#" new-user-data
@@ -107,6 +111,8 @@ function EditProperties()
          # Worker node properties
          sed -i -n "s/SWARM-MANAGER-NODE/$SWARM_MANAGER_NODE/g" new-user-data
          sed -i -n "s/SWARM-PORT/$SWARM_PORT/g" new-user-data
+         sed -i -n "s*SWARM-WORKER-TOKEN*$SWARM_WORKER_TOKEN*" new-user-data
+
          # Setup DNSMasq A records
          sed -i -n "s#DNS-STRING1#$WS01_DNS_STRING#" new-user-data
          sed -i -n "s#DNS-STRING2#$WS02_DNS_STRING#" new-user-data
@@ -520,7 +526,9 @@ function ReadProperties()
    SWARM_PORT=$SWARM_PORT
    NODE_NAME=$NODE_NAME
    SWARM_LOCALE=$SWARM_LOCALE
-
+   SWARM_WORKER_TOKEN=$SWARM_WORKER_TOKEN
+   SWARM_MANAGER_TOKEN=$SWARM_MANAGER_TOKEN
+   
    # WiFi properties
    COUNTRY_CODE=$COUNTRY_CODE
    WIFI_SSID=$WIFI_SSID

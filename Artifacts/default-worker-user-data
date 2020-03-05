@@ -112,12 +112,12 @@ runcmd:
   - 'sudo usermod -aG docker $(whoami)'
   # Add Node to Swarm
   - 'logger !!! wavesnake !!! Join Worker Node to swarm'
-  - 'WORKER_SWARM_TOKEN=$(docker swarm join-token -q worker)'
-  - 'docker swarm join --token WORKER_SWARM_TOKEN SWARM-MANAGER-NODE:SWARM-PORT'
+  #- 'WORKER_SWARM_TOKEN=$(docker swarm join-token -q worker)'
+  - 'docker swarm join --token SWARM-WORKER-TOKEN SWARM-MANAGER-NODE:SWARM-PORT'
   - 'sudo sleep 5'
   # Set Node Label 
-  - 'logger !!! wavesnake !!! Docker Node Label'
-  - 'docker node update --label-add wsnode=NODE-NAME NODE-NAME'
+  #- 'logger !!! wavesnake !!! Docker Node Label'
+  #- 'docker node update --label-add wsnode=NODE-NAME NODE-NAME'
   # Create Home directory
   - 'logger !!! wavesnake !!! Set manager as owner and set rights on home directory'
   - 'sudo chown manager:manager /home/manager'
@@ -140,7 +140,6 @@ runcmd:
 
   # Create log directories
   - 'logger !!! wavesnake !!! Create log files'
-  - 'sudo mkdir /var/log/traefik'
   - 'sudo mkdir /var/log/snakelogs'
   - 'sudo mkdir /var/log/mosquitto'
 
