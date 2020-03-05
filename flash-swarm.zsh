@@ -32,7 +32,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]
 then
    cd ws02
    echo -e "\n Flashing to WS02...\n"
-   flash --force --userdata user-data --metadata meta-data -d $DISK  ../hypriotos-rpi-v1.10.0.img
+   flash --force  --userdata user-data --metadata meta-data -d $DISK  https://github.com/hypriot/image-builder-rpi/releases/download/v1.12.0/hypriotos-rpi-v1.12.0.img.zip   
    cd ..
    echo "\n"
 fi
@@ -42,7 +42,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]
 then
    cd ws03
    #echo "\n Flashing to WS03...\n"
-   flash --force --userdata user-data --metadata meta-data -d $DISK  ../hypriotos-rpi-v1.10.0.img
+   flash --force  --userdata user-data --metadata meta-data -d $DISK  https://github.com/hypriot/image-builder-rpi/releases/download/v1.12.0/hypriotos-rpi-v1.12.0.img.zip   
    cd ..
    echo "\n"
 fi
@@ -52,7 +52,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]
 then
    cd ws04
    #echo "\n Flashing to WS04...\n"
-   flash --force --userdata user-data --metadata meta-data -d $DISK  ../hypriotos-rpi-v1.10.0.img
+   flash --force  --userdata user-data --metadata meta-data -d $DISK  https://github.com/hypriot/image-builder-rpi/releases/download/v1.12.0/hypriotos-rpi-v1.12.0.img.zip   
    cd ..
    echo "\n"
 fi
@@ -63,7 +63,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]
 then
    cd WS05
    #echo "\n Flashing to WS05...\n"
-   flash --force --userdata user-data --metadata meta-data -d $DISK  ../hypriotos-rpi-v1.10.0.img
+   flash --force  --userdata user-data --metadata meta-data -d $DISK  https://github.com/hypriot/image-builder-rpi/releases/download/v1.12.0/hypriotos-rpi-v1.12.0.img.zip   
    cd ..
    echo "\n"
 fi
@@ -74,7 +74,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]
 then
    cd WS06
    #echo "\n Flashing to WS06...\n"
-   flash --force --userdata user-data --metadata meta-data --file keyfile.txt  -d $DISK  ../hypriotos-rpi-v1.12.0.img
+   flash --force  --userdata user-data --metadata meta-data -d $DISK  https://github.com/hypriot/image-builder-rpi/releases/download/v1.12.0/hypriotos-rpi-v1.12.0.img.zip   
    #flash --force --userdata user-data --metadata meta-data --file keyfile.txt  -d $DISK  /Volumes/Backup/SDCard/sdcard13.dmg
 
    cd ..
@@ -88,7 +88,7 @@ then
    cd WS07
    #echo "\n Flashing to WS07...\n"
    # TODO: Get the Hypriot image from https://github.com/hypriot/image-builder-rpi/releases/download/v1.12.0/hypriotos-rpi-v1.12.0.img.zip
-   flash --force --userdata user-data --metadata meta-data --file keyfile.txt  -d $DISK  ../hypriotos-rpi-v1.12.0.img
+   lash --forfce --userdata user-data --metadata meta-data --file keyfile.txt  -d $DISK  ../hypriotos-rpi-v1.12.0.img
    #flash --force --userdata user-data --metadata meta-data --file keyfile.txt  -d $DISK  /Volumes/Backup/SDCard/sdcard13.dmg
 
    cd ..

@@ -2,14 +2,19 @@
 # vim: syntax=yaml
 #
 
+# This file is the !! SWARM NODE !! Default Flash config.
+# You can change the configuration directly in the file or
+# run ./flash-config.zsh in the flash directory to be guided
+# thru the setup.
+
 # The current version of cloud-init in the Hypriot rpi-64 is 0.7.6
 # When dealing with cloud-init, it is SUPER important to know the version
 # I have wasted many hours creating servers to find out the module I was trying to use wasn't in the cloud-init version I had
 # Documentation: http://cloudinit.readthedocs.io/en/0.7.9/index.html
 
 # Set your hostname here, the manage_etc_hosts will update the hosts file entries as well
-hostname: ws02.wavesnake.local
-manage_etc_hosts: true
+hostname: ws02
+manage_etc_hosts: false
 
 # You could modify this for your own user information
 users:
@@ -18,8 +23,8 @@ users:
     sudo: ALL=(ALL) NOPASSWD:ALL
     shell: /bin/bash
     groups: users,docker,video,input
-    #plain_text_passwd: wavesnake
-    passwd: $6$$lkFOYhhCGZiVmaOiZxSrpcvun.YOgyWuin0l0/aHRkep9sHrMTVp4uzHsAkTIJ.q3c8RuTA.NUNE8yqrh72O5/
+    plain_text_passwd: wavesnake
+    #passwd: 29194lkFOYhhCGZiVmaOiZxSrpcvun.YOgyWuin0l0/aHRkep9sHrMTVp4uzHsAkTIJ.q3c8RuTA.NUNE8yqrh72O5/
     lock_passwd: false
     ssh_pwauth: true
     chpasswd: { expire: false }
@@ -31,21 +36,26 @@ locale: "en_US.UTF-8"
 # # Value of 'timezone' must exist in /usr/share/zoneinfo
 timezone: "Europe/Copenhagen"
 
-# # Update apt package list on first boot
-package_update: true
+# # Update apt packages on first boot
+package_update: false
+package_reboot_if_required: true
 package_upgrade: false
 
 # # Install any additional apt packages you need here
-packages:
-  - acl
-  - sshfs
+# # OBS! This is done in RUNCMD section caused by an
+# # error in debian Buster NTP time.
+# packages:
+#   - sshfs
+#   - acl
+#   - dnsmasq
+#   - dnsutils
 
-# # 
-# # Write Files
-# # 
+# # WiFi connect to HotSpot
+# # - use `wpa_passphrase SSID PASSWORD` to encrypt the psk
 write_files:
+
   #
-  # Writing Static IP properties 
+  # dhcpcd.conf static network setup
   #
   - content: |
       persistent
@@ -53,36 +63,90 @@ write_files:
       slaac private
       # static IP configuration:
       interface eth0
-      static ip_address=192.168.1.231/24
-      static routers=192.168.1.1
-      static domain_name_servers=192.168.1.1 8.8.8.8 8.8.4.4
+      static ip_address=192.168.230.2/24
+      static routers=192.168.230.1
+      static domain_name_servers=8.8.8.8 8.8.4.4
     path: /etc/dhcpcd.conf
-#
+  #
+  # Hosts
+  #
+  - content: |
+      127.0.1.1 ws02 ws02.wavesnake.local
+      127.0.0.1 localhost
+      192.168.230.1 ws01 ws01.wavesnake.local
+      192.168.230.3 ws03 ws03.wavesnake.local
+      192.168.230.4 ws04 ws04.wavesnake.local
+
+      # The following lines are desirable for IPv6 capable hosts
+      ::1 ip6-localhost ip6-loopback
+      fe00::0 ip6-localnet
+      ff00::0 ip6-mcastprefix
+      ff02::1 ip6-allnodes
+      ff02::2 ip6-allrouters
+      ff02::3 ip6-allhosts
+    path: /etc/hosts
+
 # These commands will be run once on first boot only
 runcmd:
-  # Pickup the hostname changes
+  # Restart Avahi daemon and sleep 30 seec
+  - 'logger !!! wavesnake !!! Restart avahi-deamon'  
   - 'systemctl restart avahi-daemon'
+  #
+  # Restart NTP, workaround for Debian Buster fake time initialization
+  #
+  - 'logger !!! wavesnake !!! Workaround for Buster error initializing date/time'
+  - 'sudo date --set 2020-03-04'
+  - 'sudo date --set 13:32:11'
+  - 'sudo service ntp --full-restart'
+  - 'sudo sleep 15'
+  - 'sudo date'
+  # Update packagee index
+  - 'logger !!! wavesnake !!! Update Package list'
+  - 'sudo apt-get update --allow-releaseinfo-change'
+  # Install packages
+  - 'logger !!! wavesnake !!! Install packages'
+  - 'sudo apt-get -y install acl'
+  - 'sudo apt-get -y install sshfs'
+  # Set Manager in Docker group
+  - 'logger !!! wavesnake !!! Set manager in docker group'
+  - 'sudo usermod -aG docker $(whoami)'
+  # Add Node to Swarm
+  - 'logger !!! wavesnake !!! Join Worker Node to swarm'
+  - 'WORKER_SWARM_TOKEN=$(docker swarm join-token -q worker)'
+  - 'docker swarm join --token WORKER_SWARM_TOKEN ws01:2377'
+  - 'sudo sleep 5'
+  # Set Node Label 
+  - 'logger !!! wavesnake !!! Docker Node Label'
+  - 'docker node update --label-add wsnode=ws02 ws02'
+  # Create Home directory
+  - 'logger !!! wavesnake !!! Set manager as owner and set rights on home directory'
+  - 'sudo chown manager:manager /home/manager'
+  - 'sudo chmod -R u+rwX,go+rX-w /home/manager'
+  # Create SSH private/public key
+  - 'logger !!! wavesnake !!! Create ssh private/public keys'
+  - 'sudo mkdir /home/manager/.ssh'
+  - 'sudo chown manager:manager /home/manager/.ssh'
+  - 'sudo touch /home/manager/.ssh/authorized_keys'
+  - 'sudo chmod 700 /home/manager/.ssh'
+  # 'sudo cp -P /boot/keyfile.txt /home/manager/.ssh/authorized_keys'
+  - 'sudo chown manager:manager /home/manager/.ssh/authorized_keys'
+  - 'sudo chmod 600 /home/manager/.ssh/authorized_keys'
+  # Create Container directory
+  - 'logger !!! wavesnake !!! Create container directory'
+  - 'sudo mkdir /opt/containers'
+
+  # Give sudo group members write permission on /opt/containers + subfolders/files
+  - 'sudo chmod g+w /opt/containers -R'
+
+  # Create log directories
+  - 'logger !!! wavesnake !!! Create log files'
+  - 'sudo mkdir /var/log/traefik'
+  - 'sudo mkdir /var/log/snakelogs'
+  - 'sudo mkdir /var/log/mosquitto'
+
+  - 'logger !!! wavesnake !!! End of RUNCMD'
   
   #
-  # Mount USB drive for data SnakeService data storage
   # Below command requires that we know the UUID of the mounted USB stick
-  #
-  - 'echo "/dev/disk/by-uuid/3FFB-6CC8 /media/data vfat auto,nofail,noatime,users,rw,uid=manager,gid=manager 0 0" >> /etc/fstab'
-
-  # Attach to Docker Swarm 
-  # Working on it
-  
-  - 'usermod -aG docker $(whoami)'
-  - 'usermod -aG docker manager'
-  - [chown, "manager:manager", "-R", "/home/manager"]
-
-  #
-  # Create mount point for external USB flash drive
-  # for use by snakeService
-  #
-  - [mkdir, "-p", "/media/data" ]
-
-  # Below command must be executed from manager node
-  # we might create a batch job to execute on the manager
-  #- 'docker node update --label-add wsnode=ws02 ws02' 
-  
+  # Also this must be done on the DB server
+  #- 'echo "/dev/disk/by-uuid/3433-3231 /media/data vfat auto,nofail,noatime,users,rw,uid=manager,gid=manager 0 0" >> /etc/fstab'

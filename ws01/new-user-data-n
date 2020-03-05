@@ -29,7 +29,7 @@ users:
     shell: /bin/bash
     groups: users,docker,video,input
     plain_text_passwd: wavesnake
-    #passwd: 22192lkFOYhhCGZiVmaOiZxSrpcvun.YOgyWuin0l0/aHRkep9sHrMTVp4uzHsAkTIJ.q3c8RuTA.NUNE8yqrh72O5/
+    #passwd: 34606lkFOYhhCGZiVmaOiZxSrpcvun.YOgyWuin0l0/aHRkep9sHrMTVp4uzHsAkTIJ.q3c8RuTA.NUNE8yqrh72O5/
     lock_passwd: false
     ssh_authorized_keys:
       - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCdpRpqR6pSdoXVLH7pIFkVXY9KIZJVA0wfKlqvpeHD/iKl+0dVU0xRoZYO/+Bot2i0rTJdfTPjcGpgMm4rpqkLfUT6ryyGFRSMF/yObUf9vCCPlz/nRh//PQfAN+JPK61z104EeatHbQhSHuHhJPzVDBNYLhsi7O1wsOkTTtSMs1Xos28HXdB+gpKup1Uddb4lq+GkB110IN3mjHYo4Tckl5VNH9cmWBTYvyVSgzv3hIG2ur/jrQMB2dLzqkchjrKpV1VLjW4dpxNlSTRt/1eo+KCjRraBYALL8t5xiLZHSx/6mA91eQU2zBDufJKWzy93vdzd6r3DJcqDIAzQ2PFP nielsjorgennielsen@snakemacpro.local
@@ -38,7 +38,6 @@ users:
     chpasswd: { expire: false }
 
 # # Set the locale of the system
-# locale: "en_US.UTF-8"
 locale: "en_US.UTF-8"
 
 # # Set the timezone
@@ -219,9 +218,7 @@ write_files:
             - "--providers.docker.swarmMode=true"
             - "--providers.docker.exposedbydefault=false"
             # This section is for File provider
-            - "--providers.file"
             - "--providers.file.filename=traefik.yml"
-            - "--providers.file.directory=/opt/containers/traefik/data"
             - "--providers.file.watch=true"
 
           ports:
@@ -237,6 +234,7 @@ write_files:
 
           volumes:
             - /opt/containers/traefik/data/traefik.yml:/traefik.yml:ro
+            - /opt/containers/traefik/data/ssh.yml:/ssh.yml:ro
             - /opt/containers/traefik/data/acme.json:/acme.json
             - /var/log/traefik:/log
             - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -323,16 +321,57 @@ write_files:
         docker:
           endpoint: "unix:///var/run/docker.sock"
           exposedByDefault: false
-          
+        file:
+          filename: "ssh.yml"
+          watch: true
+
       certificatesResolvers:
         http:
           acme:
             email: jagdriver@hotmail.com
             storage: acme.json
-            #caServer: "https://acme-staging-v02.api.letsencrypt.org/directory"
             httpChallenge:
               entryPoint: web
     path: /opt/containers/traefik/data/traefik.yml
+
+  #
+  # Traefik ssh.yml to proxy SSH thru Traefik
+  #
+  - content: |
+
+      tcp:
+        services:
+          ssh-ws02:
+            loadBalancer:
+              servers:
+                - address: "192.168.230.2:22"
+          ssh-ws03:
+            loadBalancer:
+              servers:
+                - address: "192.168.230.3:22"
+          ssh-ws04:
+            loadBalancer:
+              servers:
+                - address: "192.168.230.4:22"
+        routers:
+          ssh-route-ws02:
+            entryPoints:
+              - "ssh2"
+            rule: "HostSNI(`*`)"
+            service: "ssh-ws02"
+      
+          ssh-route-ws03:
+            entryPoints:
+              - "ssh3"
+            rule: "HostSNI(`*`)"
+            service: "ssh-ws03"
+      
+          ssh-route-ws04:
+            entryPoints:
+              - "ssh4"
+            rule: "HostSNI(`*`)"
+            service: "ssh-ws04"
+    path: /opt/containers/traefik/data/ssh.yml
 
 # These commands will be run once on first boot only
 runcmd:
@@ -341,9 +380,9 @@ runcmd:
   - 'systemctl restart avahi-daemon'
 
   # Set Fake HW Date, Restart NTP, workaround for Debian Buster time initialization
-  - 'logger !!! wavesnake !!! Workaround for Buster error initializing date/time'
-  - 'sudo date --set 2020-03-03'
-  - 'sudo date --set 21:32:00'
+  - 'logger !!! wavesnake !!! Workaround for Buster Fake Time error initializing date/time'
+  - 'sudo date --set 2020-03-05'
+  - 'sudo date --set 16:38:25'
   - 'sudo service ntp --full-restart'
   - 'sudo sleep 15'
   - 'sudo date'
@@ -371,19 +410,19 @@ runcmd:
   # Install Dynamic DNS Client
   #- 'DYNAMIC-DNS'
 
-  - 'logger !!! wavesnake !!! Set manager in docker group'
-  - 'sudo usermod -aG docker $(whoami)'
-
   - 'logger !!! wavesnake !!! Docker Swarm Init with listen and advertise interface'
   - 'docker swarm init --listen-addr eth0:2377 --advertise-addr eth0:2377'
 
   - 'logger !!! wavesnake !!! Docker Node Label'
   - 'docker node update --label-add wsnode=NODE-NAME NODE-NAME'
 
+  # Setup manager
   - 'logger !!! wavesnake !!! Set manager as owner and set rights on home directory'
   - 'sudo chown manager:manager /home/manager'
   - 'sudo chmod -R u+rwX,go+rX-w /home/manager'
+  - 'sudo usermod -aG docker $(whoami)'
 
+  # Create SSH keys
   - 'logger !!! wavesnake !!! Create ssh private/public keys'
   - 'sudo mkdir -p /home/manager/.ssh'
   - 'sudo chown manager:manager /home/manager/.ssh'
@@ -392,16 +431,24 @@ runcmd:
   #- 'sudo cp -P /boot/keyfile.txt /home/manager/.ssh/authorized_keys'
   - 'sudo chown manager:manager /home/manager/.ssh/authorized_keys'
   - 'sudo chmod 600 /home/manager/.ssh/authorized_keys'
- 
+
+  # Setup Bridging between eth0 and wlan0
+  - 'sudo sed -i -n "s/#net.ipv4.ip_forward=1/net.ipv4.ip_forward=1/" /etc/sysctl.conf'
+  - 'sudo iptables -t nat -A POSTROUTING -o wlan0 -j MASQUERADE'
+  - 'sudo iptables -A FORWARD -i wlan0 -o eth0 -m state --state RELATED,ESTABLISHED -j ACCEPT'
+  - 'sudo iptables -A FORWARD -i eth0 -o wlan0 -j ACCEPT'
+  
+  # Prepare save of IPTables Docker might do this already
+  #- 'sudo touch /etc/rc.local'
+
+  # Create Container files
   - 'logger !!! wavesnake !!! Create container files'
   - 'sudo mkdir -p /opt/containers'
-  - 'sudo chown manager:manager /opt/containers'
   # Traefik
   - 'sudo mkdir -p /opt/containers/traefik'
   - 'sudo mkdir -p /opt/containers/traefik/data'
   - 'sudo mkdir -p /opt/containers/traefik/config'
   - 'sudo touch /opt/containers/traefik/data/acme.json'
-  - 'sudo chmod 600 /opt/containers/traefik/data/acme.json'
   # Portainer
   - 'sudo mkdir -p /opt/containers/portainer'
   - 'sudo mkdir -p /opt/containers/portainer/data'
@@ -417,17 +464,46 @@ runcmd:
   # SnakeApi
   - 'sudo mkdir -p /opt/containers/snakeapi'
   - 'sudo mkdir -p /opt/containers/snakeapi/data'
+  # SnakeConfig
+  - 'sudo mkdir -p /opt/containers/swarmconfig'
+  - 'sudo mkdir -p /opt/containers/swarmconfig/data'
   # MariaDB
   - 'sudo mkdir -p /opt/containers/mariadb'
   - 'sudo mkdir -p /opt/containers/mariadb/data'
+  # Set rights on container files
+  - 'sudo chgrp -R manager /opt/containers'
+  - 'sudo chmod g+w /opt/containers -R'
+  - 'sudo chmod 600 /opt/containers/traefik/data/acme.json'
+
+  # Give sudo group members write permission on /opt/containers + subfolders/files
+  #- 'sudo chown -R manager:manager /opt/containers'
+  #- 'sudo chown manager:manager /opt/containers'
+  #- 'sudo chmod g+w /opt/containers -R'
+  # Add these 
+  # sudo chgrp -R manager snakelogs/ "Recursiveely change the directory's group"
+  # sudo chmod g+w snakelogs -R "Recursively add write permission to the directory's group member's"
+  #- 'sudo chmod 600 /opt/containers/traefik/data/acme.json'
+  #- 'sudo chmod g+w /opt/containers -R'
+  # Set special rights on acme.json file
+  #- 'sudo chmod 600 /opt/containers/traefik/data/acme.json'
+  
   # Create log directories
   - 'logger !!! wavesnake !!! Create log files'
   - 'sudo mkdir -p /var/log/traefik'
   - 'sudo mkdir -p /var/log/snakelogs'
   - 'sudo mkdir -p /var/log/mosquitto'
+  # Set rights on log files
+  - 'sudo chgrp -R manager /var/log/snakelogs'
+  - 'sudo chgrp -R manager /var/log/traefik'
+  - 'sudo chgrp -R manager /var/log/mosquitto'
+  - 'sudo chmod g+w /var/log/snakelogs -R'
+  - 'sudo chmod g+w /var/log/traefik -R'
+  - 'sudo chmod g+w /var/log/mosquitto -R'
+
   # Create Docker network
   - 'logger !!! wavesnake !!! Create Traefik network'
   - 'docker network create --driver overlay --attachable traefik-public'
+
   # Create Traefik Docker stack
   - 'logger !!! wavesnake !!! Instantiate Traefik Container'
   - [

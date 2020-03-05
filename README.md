@@ -65,7 +65,7 @@ ronaldosena.arduino-snippets
 
 vsciot-vscode.vscode-arduino
 
-You can paste theese extension id's into VSCode extension search box and from there
+You can paste these extension id's into VSCode extension search box and from there
 install the extension.
 
 

@@ -18,23 +18,23 @@ manage_etc_hosts: false
 
 # You could modify this for your own user information
 users:
-  - name: MANAGER-NAME
+  - name: manager
     gecos: "Wavesnake Manager"
     sudo: ALL=(ALL) NOPASSWD:ALL
     shell: /bin/bash
     groups: users,docker,video,input
-    plain_text_passwd: MANAGER-PASSWORD
-    #passwd: MANAGER-ENCRYPTED-PASSWORD
+    plain_text_passwd: wavesnake
+    #passwd: 29194lkFOYhhCGZiVmaOiZxSrpcvun.YOgyWuin0l0/aHRkep9sHrMTVp4uzHsAkTIJ.q3c8RuTA.NUNE8yqrh72O5/
     lock_passwd: false
     ssh_pwauth: true
     chpasswd: { expire: false }
 
 # # Set the locale of the system
-locale: "SWARM-LOCALE"
+locale: "en_US.UTF-8"
 
 # # Set the timezone
 # # Value of 'timezone' must exist in /usr/share/zoneinfo
-timezone: "TIME-ZONE"
+timezone: "Europe/Copenhagen"
 
 # # Update apt packages on first boot
 package_update: false
@@ -63,19 +63,19 @@ write_files:
       slaac private
       # static IP configuration:
       interface eth0
-      static ip_address=ETH0-IP-ADDRESS/24
-      static routers=ETH0-STATIC-ROUTERS
-      static domain_name_servers=ETH0-DNS-SERVERS
+      static ip_address=192.168.230.2/24
+      static routers=192.168.230.1
+      static domain_name_servers=8.8.8.8 8.8.4.4
     path: /etc/dhcpcd.conf
   #
   # Hosts
   #
   - content: |
-      127.0.1.1 NODE-NAME NODE-NAME.INTERNAL-DOMAIN-NAME
+      127.0.1.1 NODE-NAME NODE-NAME.wavesnake.local
       127.0.0.1 localhost
-      DNS-STRING1
-      DNS-STRING2
-      DNS-STRING3
+      192.168.230.1 ws01 ws01.wavesnake.local
+      192.168.230.3 ws03 ws03.wavesnake.local
+      192.168.230.4 ws04 ws04.wavesnake.local
 
       # The following lines are desirable for IPv6 capable hosts
       ::1 ip6-localhost ip6-loopback
@@ -95,8 +95,8 @@ runcmd:
   # Restart NTP, workaround for Debian Buster fake time initialization
   #
   - 'logger !!! wavesnake !!! Workaround for Buster error initializing date/time'
-  - 'sudo date --set ISO-DATE'
-  - 'sudo date --set ISO-TIME'
+  - 'sudo date --set 2020-03-04'
+  - 'sudo date --set 13:32:11'
   - 'sudo service ntp --full-restart'
   - 'sudo sleep 15'
   - 'sudo date'
@@ -113,7 +113,7 @@ runcmd:
   # Add Node to Swarm
   - 'logger !!! wavesnake !!! Join Worker Node to swarm'
   - 'WORKER_SWARM_TOKEN=$(docker swarm join-token -q worker)'
-  - 'docker swarm join --token WORKER_SWARM_TOKEN SWARM-MANAGER-NODE:SWARM-PORT'
+  - 'docker swarm join --token WORKER_SWARM_TOKEN ws01:2377'
   - 'sudo sleep 5'
   # Set Node Label 
   - 'logger !!! wavesnake !!! Docker Node Label'
