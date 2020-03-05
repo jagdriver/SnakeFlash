@@ -84,7 +84,9 @@ Traefik and Portainer are installed at boot time, and will be available after sw
 #### SnakeRule  <a name="snakerule"></a>
 
 #### SnakeConfig  <a name="snakeconfig"></a>
-Repository URL: https://github.com/jagdriver/SnakeConfig.git
+Repository URL: https://github.com/jagdriver/Stacks.git
+
+Compose path: /SnakeConfig/docker-compose.yml
 
 ### Setup guide  <a name="setupguide"></a>
 The initial setup and flashing of the SnakeHome Swarm includes downloading [this](https://github.com/jagdriver/Flashing "this link") project from GitHub. Copy the project content into a folder called Flashing.
