@@ -29,7 +29,7 @@
 7. [Configuration documentation](#configdocumentation)
 
 ## SnakeHome <a name="introduction"></a>
-SnakeHome is the platform for hobbyist, who want the possibility to create their own IoT devices, but lack the background infrastructure, to integrate these devices into a manageable platform. I've put together some of the best tools available, written som apps, services, sketches and scripts, tested a lot, out came the SnakeHome management system. 
+SnakeHome is the platform for hobbyist, who want the possibility to create their own IoT devices, but lack the background infrastructure, to integrate these devices into a manageable platform. I've put together some of the best tools available, written som apps, services, sketches and scripts, tested a lot, out came the SnakeHome management system, and it's free.
 
 ## Prerequisites <a name="prerequisites"></a>
 prerequisites: Mac, Windows or Linux, Visual Studio Code with some extensions (free).  

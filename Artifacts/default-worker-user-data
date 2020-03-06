@@ -1,16 +1,10 @@
 #cloud-config
 # vim: syntax=yaml
 #
-
-# This file is the !! SWARM NODE !! Default Flash config.
-# You can change the configuration directly in the file or
-# run ./flash-config.zsh in the flash directory to be guided
-# thru the setup.
-
-# The current version of cloud-init in the Hypriot rpi-64 is 0.7.6
-# When dealing with cloud-init, it is SUPER important to know the version
-# I have wasted many hours creating servers to find out the module I was trying to use wasn't in the cloud-init version I had
-# Documentation: http://cloudinit.readthedocs.io/en/0.7.9/index.html
+# This file is the !! SWARM WORKER NODE !! Default Flash config.
+# You can change the configuration directly in the file "default-worker-user-data" 
+# before running ./flash-config.zsh which will prompt you for properties, 
+# and guide you thru the setup.
 
 # Set your hostname here, the manage_etc_hosts will update the hosts file entries as well
 hostname: NODE-NAME
@@ -100,37 +94,41 @@ runcmd:
   - 'sudo service ntp --full-restart'
   - 'sudo sleep 15'
   - 'sudo date'
+
   # Update packagee index
   - 'logger !!! wavesnake !!! Update Package list'
   - 'sudo apt-get update --allow-releaseinfo-change'
+
   # Install packages
   - 'logger !!! wavesnake !!! Install packages'
   - 'sudo apt-get -y install acl'
   - 'sudo apt-get -y install sshfs'
+
   # Set Manager in Docker group
   - 'logger !!! wavesnake !!! Set manager in docker group'
   - 'sudo usermod -aG docker $(whoami)'
+
   # Add Node to Swarm
   - 'logger !!! wavesnake !!! Join Worker Node to swarm'
-  #- 'WORKER_SWARM_TOKEN=$(docker swarm join-token -q worker)'
   - 'docker swarm join --token SWARM-WORKER-TOKEN SWARM-MANAGER-NODE:SWARM-PORT'
   - 'sudo sleep 5'
-  # Set Node Label 
-  #- 'logger !!! wavesnake !!! Docker Node Label'
-  #- 'docker node update --label-add wsnode=NODE-NAME NODE-NAME'
+  
   # Create Home directory
   - 'logger !!! wavesnake !!! Set manager as owner and set rights on home directory'
   - 'sudo chown manager:manager /home/manager'
   - 'sudo chmod -R u+rwX,go+rX-w /home/manager'
+
   # Create SSH private/public key
   - 'logger !!! wavesnake !!! Create ssh private/public keys'
   - 'sudo mkdir /home/manager/.ssh'
   - 'sudo chown manager:manager /home/manager/.ssh'
   - 'sudo touch /home/manager/.ssh/authorized_keys'
   - 'sudo chmod 700 /home/manager/.ssh'
+
   # 'sudo cp -P /boot/keyfile.txt /home/manager/.ssh/authorized_keys'
   - 'sudo chown manager:manager /home/manager/.ssh/authorized_keys'
   - 'sudo chmod 600 /home/manager/.ssh/authorized_keys'
+  
   # Create Container directory
   - 'logger !!! wavesnake !!! Create container directory'
   - 'sudo mkdir /opt/containers'
