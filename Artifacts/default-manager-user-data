@@ -441,6 +441,9 @@ runcmd:
   # Prepare save of IPTables Docker might do this already
   #- 'sudo touch /etc/rc.local'
 
+  # Skip Locale check on User Session Startup
+  - 'sudo touch /var/lib/cloud/instance/locale-check.skip'
+
   # Create Container files
   - 'logger !!! wavesnake !!! Create container files'
   - 'sudo mkdir -p /opt/containers'
@@ -470,36 +473,27 @@ runcmd:
   # MariaDB
   - 'sudo mkdir -p /opt/containers/mariadb'
   - 'sudo mkdir -p /opt/containers/mariadb/data'
+  
   # Set rights on container files
   - 'sudo chgrp -R manager /opt/containers'
   - 'sudo chmod g+w /opt/containers -R'
   - 'sudo chmod 600 /opt/containers/traefik/data/acme.json'
-
-  # Give sudo group members write permission on /opt/containers + subfolders/files
-  #- 'sudo chown -R manager:manager /opt/containers'
-  #- 'sudo chown manager:manager /opt/containers'
-  #- 'sudo chmod g+w /opt/containers -R'
-  # Add these 
-  # sudo chgrp -R manager snakelogs/ "Recursiveely change the directory's group"
-  # sudo chmod g+w snakelogs -R "Recursively add write permission to the directory's group member's"
-  #- 'sudo chmod 600 /opt/containers/traefik/data/acme.json'
-  #- 'sudo chmod g+w /opt/containers -R'
-  # Set special rights on acme.json file
-  #- 'sudo chmod 600 /opt/containers/traefik/data/acme.json'
   
   # Create log directories
   - 'logger !!! wavesnake !!! Create log files'
   - 'sudo mkdir -p /var/log/traefik'
   - 'sudo mkdir -p /var/log/snakelogs'
   - 'sudo mkdir -p /var/log/mosquitto'
-
-  # Set rights on log files
+  - 'sudo mkdir -p /var/log/redis'
+  # Set Owner and rights on log files
   - 'sudo chgrp -R manager /var/log/snakelogs'
   - 'sudo chgrp -R manager /var/log/traefik'
   - 'sudo chgrp -R manager /var/log/mosquitto'
+  - 'sudo chgrp -R manager /var/log/redis'
   - 'sudo chmod g+w /var/log/snakelogs -R'
   - 'sudo chmod g+w /var/log/traefik -R'
   - 'sudo chmod g+w /var/log/mosquitto -R'
+  - 'sudo chmod g+w /var/log/redis -R'
 
   # Create Docker network
   - 'logger !!! wavesnake !!! Create Traefik network'

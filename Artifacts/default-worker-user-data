@@ -104,6 +104,9 @@ runcmd:
   - 'sudo apt-get -y install acl'
   - 'sudo apt-get -y install sshfs'
 
+  # Skip Locale check on User Session Startup
+  - 'sudo touch /var/lib/cloud/instance/locale-check.skip'
+
   # Set Manager in Docker group
   - 'logger !!! wavesnake !!! Set manager in docker group'
   - 'sudo usermod -aG docker $(whoami)'
@@ -161,10 +164,16 @@ runcmd:
   - 'logger !!! wavesnake !!! Create log files'
   - 'sudo mkdir /var/log/snakelogs'
   - 'sudo mkdir /var/log/mosquitto'
+  - 'sudo mkdir /var/log/redis'
   
-  # Set rights on log files
+  # Set Owner and rights on log files
   - 'sudo chgrp -R manager /var/log/snakelogs'
-
+  - 'sudo chgrp -R manager /var/log/mosquitto'
+  - 'sudo chgrp -R manager /var/log/redis'
+  - 'sudo chmod 777 /var/log/snakelogs'
+  - 'sudo chmod 777 /var/log/mosquitto'
+  - 'sudo chmod 777 /var/log/redis'
+  
   - 'logger !!! wavesnake !!! End of RUNCMD'
   
   #

@@ -16,8 +16,8 @@ TIME_ZONE="Europe/Copenhagen"
 SWARM_MANAGER_NODE="ws01"
 SWARM_PORT="2377"
 SWARM_INTERFACE="eth0"
-SWARM_WORKER_TOKEN="SWMTKN-1-41vje2s9ejwa3wmti1xfr797yf1wlv9x2qkkiftmzq9krb36k2-9qe4sed46u6prwp1i0z7uqml6"
-SWARM_MANAGER_TOKEN="SWMTKN-1-41vje2s9ejwa3wmti1xfr797yf1wlv9x2qkkiftmzq9krb36k2-46acn4i8q41d81o7hjimkpz6y"
+SWARM_WORKER_TOKEN="SWMTKN-1-6cyk7y11vbx3e8sc5b8iqiao7sb9iyr8b2lheybtyjqhb8mfho-5bracqtjvzt2zcn7m0qp5w27w"
+SWARM_MANAGER_TOKEN="SWMTKN-1-6cyk7y11vbx3e8sc5b8iqiao7sb9iyr8b2lheybtyjqhb8mfho-cgxcsuzfarwy7m3eypj542pi1"
 
 # WiFi properties
 COUNTRY_CODE="DK"

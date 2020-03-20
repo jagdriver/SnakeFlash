@@ -7,7 +7,7 @@
 # and guide you thru the setup.
 
 # Set your hostname here, the manage_etc_hosts will update the hosts file entries as well
-hostname: ws04
+hostname: NODE-NAME
 manage_etc_hosts: false
 
 # You could modify this for your own user information
@@ -65,7 +65,7 @@ write_files:
   # Hosts
   #
   - content: |
-      127.0.1.1 ws04 ws04.wavesnake.local
+      127.0.1.1 NODE-NAME NODE-NAME.wavesnake.local
       127.0.0.1 localhost
       192.168.230.1 ws01 ws01.wavesnake.local
       192.168.230.2 ws02 ws02.wavesnake.local
