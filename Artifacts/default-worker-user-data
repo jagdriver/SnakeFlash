@@ -133,6 +133,27 @@ runcmd:
   - 'logger !!! wavesnake !!! Create container directory'
   - 'sudo mkdir /opt/containers'
 
+  # Create Container application directories on each
+  # Node, so we can move applications around.
+  # Apache
+  - 'sudo mkdir -p /opt/containers/apache'
+  - 'sudo mkdir -p /opt/containers/apache/data'
+  # Redis
+  - 'sudo mkdir -p /opt/containers/redis'
+  - 'sudo mkdir -p /opt/containers/redis/data'
+  # Mosquitto
+  - 'sudo mkdir -p /opt/containers/mosquitto'
+  - 'sudo mkdir -p /opt/containers/mosquitto/data'
+  # SnakeApi
+  - 'sudo mkdir -p /opt/containers/snakeapi'
+  - 'sudo mkdir -p /opt/containers/snakeapi/data'
+  # SnakeConfig
+  - 'sudo mkdir -p /opt/containers/swarmconfig'
+  - 'sudo mkdir -p /opt/containers/swarmconfig/data'
+  # MariaDB
+  - 'sudo mkdir -p /opt/containers/mariadb'
+  - 'sudo mkdir -p /opt/containers/mariadb/data'
+
   # Give sudo group members write permission on /opt/containers + subfolders/files
   - 'sudo chmod g+w /opt/containers -R'
 
@@ -140,6 +161,9 @@ runcmd:
   - 'logger !!! wavesnake !!! Create log files'
   - 'sudo mkdir /var/log/snakelogs'
   - 'sudo mkdir /var/log/mosquitto'
+  
+  # Set rights on log files
+  - 'sudo chgrp -R manager /var/log/snakelogs'
 
   - 'logger !!! wavesnake !!! End of RUNCMD'
   

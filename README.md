@@ -48,7 +48,9 @@ prerequisites: Mac, Windows or Linux, Visual Studio Code with some extensions (f
 | Ethernet cables 25cm    | 4             | 100                 |
 | USB-A to Micro USB 25cm | 4             | 200                 |
 | USB to DC cable 25cm    | 1             | 25                  |
-| Amount DKr              |               | 2,600 - 3,400       |
+| APC Nobreak 500         | 1             | 450                 |
+| Arcryllic Enclosure     | 1             | 900                 |
+| Amount DKr              |               | 3,700 - 4,500       |
 
 ### Toolchain<a name="tools"></a>
 The nescessary tools for building/Installing the SnakeSwarm project and developing Sketches for ESP8266/ESP32  
@@ -61,7 +63,7 @@ lukasz-wronski.ftp-sync
 ms-azuretools.vscode-docker
 sprdp.remote-browser
 jchannon.csharpextensions
-
+.gitignore generator
 ronaldosena.arduino-snippets
 
 vsciot-vscode.vscode-arduino

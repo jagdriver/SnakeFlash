@@ -492,6 +492,7 @@ runcmd:
   - 'sudo mkdir -p /var/log/traefik'
   - 'sudo mkdir -p /var/log/snakelogs'
   - 'sudo mkdir -p /var/log/mosquitto'
+
   # Set rights on log files
   - 'sudo chgrp -R manager /var/log/snakelogs'
   - 'sudo chgrp -R manager /var/log/traefik'
