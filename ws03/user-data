@@ -18,7 +18,7 @@ users:
     shell: /bin/bash
     groups: users,docker,video,input
     plain_text_passwd: wavesnake
-    #passwd: 41333lkFOYhhCGZiVmaOiZxSrpcvun.YOgyWuin0l0/aHRkep9sHrMTVp4uzHsAkTIJ.q3c8RuTA.NUNE8yqrh72O5/
+    #passwd: 27897lkFOYhhCGZiVmaOiZxSrpcvun.YOgyWuin0l0/aHRkep9sHrMTVp4uzHsAkTIJ.q3c8RuTA.NUNE8yqrh72O5/
     lock_passwd: false
     ssh_pwauth: true
     chpasswd: { expire: false }
@@ -89,8 +89,8 @@ runcmd:
   # Restart NTP, workaround for Debian Buster fake time initialization
   #
   - 'logger !!! wavesnake !!! Workaround for Buster error initializing date/time'
-  - 'sudo date --set 2020-03-06'
-  - 'sudo date --set 14:41:46'
+  - 'sudo date --set 2020-04-06'
+  - 'sudo date --set 13:32:42'
   - 'sudo service ntp --full-restart'
   - 'sudo sleep 15'
   - 'sudo date'
@@ -104,15 +104,21 @@ runcmd:
   - 'sudo apt-get -y install acl'
   - 'sudo apt-get -y install sshfs'
 
+  # Skip Locale check on User Session Startup
+  - 'sudo touch /var/lib/cloud/instance/locale-check.skip'
+
   # Set Manager in Docker group
   - 'logger !!! wavesnake !!! Set manager in docker group'
   - 'sudo usermod -aG docker $(whoami)'
 
   # Add Node to Swarm
   - 'logger !!! wavesnake !!! Join Worker Node to swarm'
-  - 'docker swarm join --token SWMTKN-1-41vje2s9ejwa3wmti1xfr797yf1wlv9x2qkkiftmzq9krb36k2-9qe4sed46u6prwp1i0z7uqml6 ws01:2377'
+  - 'docker swarm join --token SWMTKN-1-1zainx1ulxfavpccd7afrv26r6u4vicnaiqbh5f2zj01m5mkm4-0whu8mlofuipt0apy34ag4tox ws01:2377'
   - 'sudo sleep 5'
   
+  # Skip Locale check on User Session Startup
+  - 'sudo touch /var/lib/cloud/instance/locale-check.skip'
+
   # Create Home directory
   - 'logger !!! wavesnake !!! Set manager as owner and set rights on home directory'
   - 'sudo chown manager:manager /home/manager'
@@ -120,7 +126,7 @@ runcmd:
 
   # Create SSH private/public key
   - 'logger !!! wavesnake !!! Create ssh private/public keys'
-  - 'sudo mkdir /home/manager/.ssh'
+  - 'sudo mkdir -p /home/manager/.ssh'
   - 'sudo chown manager:manager /home/manager/.ssh'
   - 'sudo touch /home/manager/.ssh/authorized_keys'
   - 'sudo chmod 700 /home/manager/.ssh'
@@ -128,19 +134,63 @@ runcmd:
   # 'sudo cp -P /boot/keyfile.txt /home/manager/.ssh/authorized_keys'
   - 'sudo chown manager:manager /home/manager/.ssh/authorized_keys'
   - 'sudo chmod 600 /home/manager/.ssh/authorized_keys'
-  
+
   # Create Container directory
   - 'logger !!! wavesnake !!! Create container directory'
-  - 'sudo mkdir /opt/containers'
+  - 'sudo mkdir -p /opt/containers'
 
-  # Give sudo group members write permission on /opt/containers + subfolders/files
-  - 'sudo chmod g+w /opt/containers -R'
+  # Create Container application directories on each
+  # Node, so we can move applications around.
+  # Apache
+  - 'sudo mkdir -p /opt/containers/apache'
+  - 'sudo mkdir -p /opt/containers/apache/data'
+  # Redis
+  - 'sudo mkdir -p /opt/containers/redis'
+  - 'sudo mkdir -p /opt/containers/redis/data'
+  # Mosquitto
+  - 'sudo mkdir -p /opt/containers/mosquitto'
+  - 'sudo mkdir -p /opt/containers/mosquitto/data'
+  # SnakeApi
+  - 'sudo mkdir -p /opt/containers/snakeapi'
+  - 'sudo mkdir -p /opt/containers/snakeapi/data'
+  # SnakeConfig
+  - 'sudo mkdir -p /opt/containers/snakeconfig'
+  - 'sudo mkdir -p /opt/containers/snakeconfig/data'
+  # SnakeHistory
+  - 'sudo mkdir -p /opt/containers/snakehistory'
+  - 'sudo mkdir -p /opt/containers/snakehistory/data'
+  # SnakeTimer
+  - 'sudo mkdir -p /opt/containers/snaketimer'
+  - 'sudo mkdir -p /opt/containers/snaketimer/data'
+  # SnakeUtil
+  - 'sudo mkdir -p /opt/containers/snakeutil'
+  - 'sudo mkdir -p /opt/containers/snakeutil/data'
+  # MariaDB
+  - 'sudo mkdir -p /opt/containers/mariadb'
+  - 'sudo mkdir -p /opt/containers/mariadb/data'
+
+  # Set manager as owner and give rw permission to users
+  - 'chown -R manager /opt/containers'
+  - 'sudo chmod a+rw /opt/containers -R'
 
   # Create log directories
   - 'logger !!! wavesnake !!! Create log files'
-  - 'sudo mkdir /var/log/snakelogs'
-  - 'sudo mkdir /var/log/mosquitto'
-
+  - 'sudo mkdir -p /var/log/snakelogs'
+  - 'sudo mkdir -p /var/log/mosquitto'
+  - 'sudo mkdir -p /var/log/redis'
+  - 'sudo mkdir -p /var/log/mysql'
+  
+  # Set Owner and rights on log files
+  - 'sudo chgrp -R manager /var/log/snakelogs'
+  - 'sudo chgrp -R manager /var/log/mosquitto'
+  - 'sudo chgrp -R manager /var/log/redis'
+  - 'sudo chgrp -R manager /var/log/mysql'
+  
+  - 'sudo chmod a+rw /var/log/snakelogs -R'
+  - 'sudo chmod a+rw /var/log/mosquitto -R'
+  - 'sudo chmod a+rw /var/log/redis -R'
+  - 'sudo chmod a+rw /var/log/mysql -R'
+  
   - 'logger !!! wavesnake !!! End of RUNCMD'
   
   #

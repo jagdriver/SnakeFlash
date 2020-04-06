@@ -7,10 +7,7 @@
 # run ./flash-config.zsh in the flash directory to be guided
 # thru the setup.
 
-# The current version of cloud-init in the Hypriot rpi-64 is 0.7.6
-# When dealing with cloud-init, it is SUPER important to know the version
-# I have wasted many hours creating servers to find out the module I was trying to use wasn't in the cloud-init version I had
-# Documentation: http://cloudinit.readthedocs.io/en/0.7.9/index.html
+# Cloud_Init Documentation: http://cloudinit.readthedocs.io/en/0.7.9/index.html
 
 # TODO: Remove sudo from all commands
 # TODO: Docker label must be set
@@ -210,16 +207,7 @@ write_files:
 
       services:
         traefik:
-          image: traefik:v2.1.1
-
-          command:
-            # This section is for Docker provider
-            - "--providers.docker.endpoint=unix:///var/run/docker.sock"
-            - "--providers.docker.swarmMode=true"
-            - "--providers.docker.exposedbydefault=false"
-            # This section is for File provider
-            - "--providers.file.filename=traefik.yml"
-            - "--providers.file.watch=true"
+          image: traefik:v2.2.0
 
           ports:
             - 80:80
@@ -251,31 +239,6 @@ write_files:
               delay: 5s
               max_attempts: 3
               window: 120s
-
-          labels:
-            - "traefik.enable=true"
-
-            # This section is for local http access to Traefik
-            - "traefik.http.routers.local.rule=Host(`traefik.wavesnake.local`)"
-            - "traefik.http.routers.local.entrypoints=web"
-            - "traefik.http.routers.local.service=api@internal"
-            - "traefik.http.routers.local.middlewares=traefik-auth"
-
-            # This section is for external http access to Traefik, redirected to https
-            - "traefik.http.routers.api.rule=Host(`traefik.wavesnake.dk`)"
-            - "traefik.http.routers.api.entrypoints=web"
-            - "traefik.http.routers.api.middlewares=traefik-auth"
-            - "traefik.http.middlewares.traefik-auth.basicauth.users=manager:$$apr1$$ktr40m5i$$IPyM/4bfex8WbfpmsNl.9."
-
-            # This section is for external https access to Traefik
-            - "traefik.http.middlewares.traefik-https-redirect.redirectscheme.scheme=https"
-            - "traefik.http.routers.api.middlewares=traefik-https-redirect"
-            - "traefik.http.routers.traefik-secure.entrypoints=secure"
-            - "traefik.http.routers.traefik-secure.rule=Host(`traefik.wavesnake.dk`)"
-            - "traefik.http.routers.traefik-secure.middlewares=traefik-auth"
-            - "traefik.http.routers.traefik-secure.tls=true"
-            - "traefik.http.routers.traefik-secure.tls.certresolver=http"
-            - "traefik.http.routers.traefik-secure.service=api@internal"
 
       networks:
         traefik-public:
@@ -321,6 +284,7 @@ write_files:
         docker:
           endpoint: "unix:///var/run/docker.sock"
           exposedByDefault: false
+          swarmMode: true
         file:
           filename: "ssh.yml"
           watch: true
@@ -335,9 +299,42 @@ write_files:
     path: /opt/containers/traefik/data/traefik.yml
 
   #
-  # Traefik ssh.yml to proxy SSH thru Traefik
-  #
+  # Traefik Dynamic Configuration file ssh.yml 
+  # Setup Traefik API routes and proxy SSH thru Traefik
+  # 
   - content: |
+      http:
+        routers:
+          local:
+            rule: "Host(`traefik.wavesnake.local`)"
+            entrypoints: web
+            service: api@internal
+            middleware: traefik-auth
+
+          external:
+            rule: "Host(`traefik.wavesnake.dk`)"
+            entrypoint: web
+            middleware: traefik-auth
+            middleware: traefik-redirect
+
+          secure:
+            rule: "Host(`traefik.wavesnake.dk`)"
+            middleware: traefik-auth
+            entrypoint: secure
+            service: api@internal
+            tls: true
+            certresolver: http
+
+        middlewares:
+          traefik-auth:
+            basicauth:
+              users:
+                - manager:$$apr1$$ktr40m5i$$IPyM/4bfex8WbfpmsNl.9.
+
+          traefik-redirect:
+            redirectScheme:
+              scheme: https
+              permanent: true
 
       tcp:
         services:
@@ -444,9 +441,10 @@ runcmd:
   # Skip Locale check on User Session Startup
   - 'sudo touch /var/lib/cloud/instance/locale-check.skip'
 
-  # Create Container files
+  # Create Container directory
   - 'logger !!! wavesnake !!! Create container files'
   - 'sudo mkdir -p /opt/containers'
+
   # Traefik
   - 'sudo mkdir -p /opt/containers/traefik'
   - 'sudo mkdir -p /opt/containers/traefik/data'
@@ -476,7 +474,10 @@ runcmd:
   
   # Set rights on container files
   - 'sudo chgrp -R manager /opt/containers'
-  - 'sudo chmod g+w /opt/containers -R'
+  - 'chown -R manager /opt/containers'
+  - 'sudo chmod a+rw /opt/containers -R'
+
+  # set speccial rights on ACME file
   - 'sudo chmod 600 /opt/containers/traefik/data/acme.json'
   
   # Create log directories
@@ -485,15 +486,12 @@ runcmd:
   - 'sudo mkdir -p /var/log/snakelogs'
   - 'sudo mkdir -p /var/log/mosquitto'
   - 'sudo mkdir -p /var/log/redis'
+
   # Set Owner and rights on log files
-  - 'sudo chgrp -R manager /var/log/snakelogs'
-  - 'sudo chgrp -R manager /var/log/traefik'
-  - 'sudo chgrp -R manager /var/log/mosquitto'
-  - 'sudo chgrp -R manager /var/log/redis'
-  - 'sudo chmod g+w /var/log/snakelogs -R'
-  - 'sudo chmod g+w /var/log/traefik -R'
-  - 'sudo chmod g+w /var/log/mosquitto -R'
-  - 'sudo chmod g+w /var/log/redis -R'
+  - 'sudo chown -R manager /var/log/snakelogs'
+  - 'sudo chown -R manager /var/log/traefik'
+  - 'sudo chown -R manager /var/log/mosquitto'
+  - 'sudo chown -R manager /var/log/redis'
 
   # Create Docker network
   - 'logger !!! wavesnake !!! Create Traefik network'

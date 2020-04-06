@@ -1,16 +1,10 @@
 #cloud-config
 # vim: syntax=yaml
 #
-
-# This file is the !! SWARM NODE !! Default Flash config.
-# You can change the configuration directly in the file or
-# run ./flash-config.zsh in the flash directory to be guided
-# thru the setup.
-
-# The current version of cloud-init in the Hypriot rpi-64 is 0.7.6
-# When dealing with cloud-init, it is SUPER important to know the version
-# I have wasted many hours creating servers to find out the module I was trying to use wasn't in the cloud-init version I had
-# Documentation: http://cloudinit.readthedocs.io/en/0.7.9/index.html
+# This file is the !! SWARM WORKER NODE !! Default Flash config.
+# You can change the configuration directly in the file "default-worker-user-data" 
+# before running ./flash-config.zsh which will prompt you for properties, 
+# and guide you thru the setup.
 
 # Set your hostname here, the manage_etc_hosts will update the hosts file entries as well
 hostname: NODE-NAME
@@ -24,7 +18,7 @@ users:
     shell: /bin/bash
     groups: users,docker,video,input
     plain_text_passwd: wavesnake
-    #passwd: 35368lkFOYhhCGZiVmaOiZxSrpcvun.YOgyWuin0l0/aHRkep9sHrMTVp4uzHsAkTIJ.q3c8RuTA.NUNE8yqrh72O5/
+    #passwd: 23521lkFOYhhCGZiVmaOiZxSrpcvun.YOgyWuin0l0/aHRkep9sHrMTVp4uzHsAkTIJ.q3c8RuTA.NUNE8yqrh72O5/
     lock_passwd: false
     ssh_pwauth: true
     chpasswd: { expire: false }
@@ -95,54 +89,98 @@ runcmd:
   # Restart NTP, workaround for Debian Buster fake time initialization
   #
   - 'logger !!! wavesnake !!! Workaround for Buster error initializing date/time'
-  - 'sudo date --set 2020-03-05'
-  - 'sudo date --set 17:25:20'
+  - 'sudo date --set 2020-04-05'
+  - 'sudo date --set 19:22:13'
   - 'sudo service ntp --full-restart'
   - 'sudo sleep 15'
   - 'sudo date'
+
   # Update packagee index
   - 'logger !!! wavesnake !!! Update Package list'
   - 'sudo apt-get update --allow-releaseinfo-change'
+
   # Install packages
   - 'logger !!! wavesnake !!! Install packages'
   - 'sudo apt-get -y install acl'
   - 'sudo apt-get -y install sshfs'
+
+  # Skip Locale check on User Session Startup
+  - 'sudo touch /var/lib/cloud/instance/locale-check.skip'
+
   # Set Manager in Docker group
   - 'logger !!! wavesnake !!! Set manager in docker group'
   - 'sudo usermod -aG docker $(whoami)'
+
   # Add Node to Swarm
   - 'logger !!! wavesnake !!! Join Worker Node to swarm'
-  #- 'WORKER_SWARM_TOKEN=$(docker swarm join-token -q worker)'
-  - 'docker swarm join --token SWMTKN-1-41vje2s9ejwa3wmti1xfr797yf1wlv9x2qkkiftmzq9krb36k2-9qe4sed46u6prwp1i0z7uqml6 ws01:2377'
+  - 'docker swarm join --token SWMTKN-1-6cyk7y11vbx3e8sc5b8iqiao7sb9iyr8b2lheybtyjqhb8mfho-5bracqtjvzt2zcn7m0qp5w27w ws01:2377'
   - 'sudo sleep 5'
-  # Set Node Label 
-  - 'logger !!! wavesnake !!! Docker Node Label'
-  - 'docker node update --label-add wsnode=NODE-NAME NODE-NAME'
+  
+  # Skip Locale check on User Session Startup
+  - 'sudo touch /var/lib/cloud/instance/locale-check.skip'
+
   # Create Home directory
   - 'logger !!! wavesnake !!! Set manager as owner and set rights on home directory'
   - 'sudo chown manager:manager /home/manager'
   - 'sudo chmod -R u+rwX,go+rX-w /home/manager'
+
   # Create SSH private/public key
   - 'logger !!! wavesnake !!! Create ssh private/public keys'
-  - 'sudo mkdir /home/manager/.ssh'
+  - 'sudo mkdir -p /home/manager/.ssh'
   - 'sudo chown manager:manager /home/manager/.ssh'
   - 'sudo touch /home/manager/.ssh/authorized_keys'
   - 'sudo chmod 700 /home/manager/.ssh'
+
   # 'sudo cp -P /boot/keyfile.txt /home/manager/.ssh/authorized_keys'
   - 'sudo chown manager:manager /home/manager/.ssh/authorized_keys'
   - 'sudo chmod 600 /home/manager/.ssh/authorized_keys'
+
   # Create Container directory
   - 'logger !!! wavesnake !!! Create container directory'
-  - 'sudo mkdir /opt/containers'
+  - 'sudo mkdir -p /opt/containers'
 
-  # Give sudo group members write permission on /opt/containers + subfolders/files
-  - 'sudo chmod g+w /opt/containers -R'
+  # Create Container application directories on each
+  # Node, so we can move applications around.
+  # Apache
+  - 'sudo mkdir -p /opt/containers/apache'
+  - 'sudo mkdir -p /opt/containers/apache/data'
+  # Redis
+  - 'sudo mkdir -p /opt/containers/redis'
+  - 'sudo mkdir -p /opt/containers/redis/data'
+  # Mosquitto
+  - 'sudo mkdir -p /opt/containers/mosquitto'
+  - 'sudo mkdir -p /opt/containers/mosquitto/data'
+  # SnakeApi
+  - 'sudo mkdir -p /opt/containers/snakeapi'
+  - 'sudo mkdir -p /opt/containers/snakeapi/data'
+  # SnakeConfig
+  - 'sudo mkdir -p /opt/containers/swarmconfig'
+  - 'sudo mkdir -p /opt/containers/swarmconfig/data'
+  # MariaDB
+  - 'sudo mkdir -p /opt/containers/mariadb'
+  - 'sudo mkdir -p /opt/containers/mariadb/data'
+  # Apache
+  - 'sudo mkdir -p /opt/containers/busybox'
+  - 'sudo mkdir -p /opt/containers/busybox/data'
+
+  # Set manager as owner and give rw permission to users
+  - 'chown -R manager /opt/containers'
+  - 'sudo chmod a+rw /opt/containers -R'
 
   # Create log directories
   - 'logger !!! wavesnake !!! Create log files'
-  - 'sudo mkdir /var/log/snakelogs'
-  - 'sudo mkdir /var/log/mosquitto'
-
+  - 'sudo mkdir -p /var/log/snakelogs'
+  - 'sudo mkdir -p /var/log/mosquitto'
+  - 'sudo mkdir -p /var/log/redis'
+  
+  # Set Owner and rights on log files
+  - 'sudo chgrp -R manager /var/log/snakelogs'
+  - 'sudo chgrp -R manager /var/log/mosquitto'
+  - 'sudo chgrp -R manager /var/log/redis'
+  - 'sudo chmod 777 /var/log/snakelogs'
+  - 'sudo chmod 777 /var/log/mosquitto'
+  - 'sudo chmod 777 /var/log/redis'
+  
   - 'logger !!! wavesnake !!! End of RUNCMD'
   
   #

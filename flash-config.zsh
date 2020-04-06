@@ -9,14 +9,15 @@
 # 2020-02-20 Niels Jørgen Nielsen
 
 # TODO:
-# TODO: Configure Instance name meta-data Ok
-# TODO: Register with Letsencrypt ? I don't think it's necssecary to register
-# TODO: Get DynDns username and password Ok
-# TODO: Test DynDns install input OK
-# TODO: Generate SSH Private/Public keys and description
-# TODO: Set Swarm net to 192.168.230.0/24 OK
-# TODO: Retype password to check for correctness
-# TODO: User must type ACME email address and it must be checked for validity
+# 1 Configure Instance name meta-data Ok
+# 2 Register with Letsencrypt ? I don't think it's necssecary to register
+# 3 Get DynDns username and password Ok
+# 4 Test DynDns install input OK
+# 5 Generate SSH Private/Public keys and description
+# 6 Set Swarm net to 192.168.230.0/24 OK
+# 7 Retype password to check for correctness
+# 8 User must type ACME email address and it must be checked for validity
+# 9 User must paste in the Swarm Worker token, on Worker node config
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -357,6 +358,16 @@ function PromptForInput()
                echo -e -n "${SWARM_PORT}"
             else
                SWARM_PORT=$REPLY
+               echo -e -n "${SWARM_PORT}"
+         fi
+         #  # Configure Swarm Worker Token (worker)
+         echo -e "\n"
+         read -p "${GR}Paste Swarm Worker Token, obtained from Manager Node ${WH}> " 
+         if [[ -z "$REPLY" ]]
+            then
+               echo -e -n "${SWARM_WORKER_TOKEN}"
+            else
+               SWARM_WORKER_TOKEN=$REPLY
                echo -e -n "${SWARM_PORT}"
          fi
          ;;
