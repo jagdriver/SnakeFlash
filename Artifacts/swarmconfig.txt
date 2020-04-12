@@ -55,7 +55,9 @@ ACME_EMAIL_ADDRESS="yourmail@mailserver.com"
 # Traefik properties
 TRAEFIK_ENTRYPOINT_ADDRESS="192.168.1.230"
 
-
+# USB Disk Mount Command
+# /dev/sda1: UUID="3FFB-6CC8"
+USB_MOUNT_COMMAND="echo \"/dev/sda1/by-uuid/USB_UUID /media/data/mariadb vfat auto,nofail,noatime,users,rw,uid=manager,gid=manager 0 0\" >> /etc/fstab"
 
 
 

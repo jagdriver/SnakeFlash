@@ -118,6 +118,10 @@ function EditProperties()
          sed -i -n "s#DNS-STRING1#$WS01_DNS_STRING#" new-user-data
          sed -i -n "s#DNS-STRING2#$WS02_DNS_STRING#" new-user-data
          sed -i -n "s#DNS-STRING3#$WS03_DNS_STRING#" new-user-data
+
+         # USB Drive mount command
+         sed -i -n "s#USB-MOUNT-COMMAND#$USB_MOUNT_COMMAND#" new-user-data
+
       ;;
       *)
          echo -n "EditProperties unknown input parameter"
@@ -459,6 +463,19 @@ function PromptForInput()
        ETH0_DNS_SERVERS=$REPLY
        echo -e -n "${ETH0_DNS_SERVERS}"
    fi
+
+   #  # Configure USB Drive mount
+   echo -e "\n"
+   read -p "${GR}Mount USB Drive ? ${WH}y | n > " -n 1 -r
+   if [[ $REPLY =~ ^[Yy]$ ]]
+      then
+         echo -e "\n"
+         read -p "${GR}Type USB UUID ${WH}> "
+         #USB_MOUNT_COMMAND = ${USB_MOUNT_COMMAND#USB_UUID#$REPLY}
+         USB_MOUNT_COMMAND=$(echo "$USB_MOUNT_COMMAND" | sed "s/USB_UUID/$REPLY/")
+      else
+         USB_MOUNT_COMMAND="logger No USB Drive Mount"
+   fi
 }
 
 function ListProperties()
@@ -483,6 +500,8 @@ function ListProperties()
    echo -e "SWARM_PORT: " $SWARM_PORT
    echo -e "SWARM_LOCALE: " $SWARM_LOCALE
    echo -e "SWARM_MANAGER_NODE: " $SWARM_MANAGER_NODE
+   echo -e "SWARM_WORKER_TOKEN: " $SWARM_WORKER_TOKEN
+   echo -e "SWARM_MANAGER_TOKEN: " $SWARM_MANAGER_TOKEN
 
    echo -e "\n--- WiFi properties ---"
    echo -e "COUNTRY_CODE: " $COUNTRY_CODE
@@ -519,6 +538,10 @@ function ListProperties()
    echo -e "\n--- Traefik properties ---"
    echo -e "ACME_EMAIL_ADDRESS: " $ACME_EMAIL_ADDRESS
    echo -e "TRAEFIK_ENTRYPOINT_ADDRESS: " $TRAEFIK_ENTRYPOINT_ADDRESS
+
+   echo -e "\n--- USB Mount Command ---"
+   echo -e "USB_MOUNT_COMMAND: " $USB_MOUNT_COMMAND
+
    echo -e "---------- $1 ----------\n"
 }
 
@@ -577,6 +600,9 @@ function ReadProperties()
    
    # Traefik properties
    TRAEFIK_ENTRYPOINT_ADDRESS=$TRAEFIK_ENTRYPOINT_ADDRESS
+
+   # USB Drive mount command
+   USB_MOUNT_COMMAND=$USB_MOUNT_COMMAND
 }
 
 function SetNetAddress()

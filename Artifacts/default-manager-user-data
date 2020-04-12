@@ -149,34 +149,6 @@ write_files:
           volumes:
             - /etc/localtime:/etc/localtime:ro
             - /opt/containers/portainer/data:/data
-          labels:
-            - "traefik.enable=true"
-            - "traefik.docker.network=traefik-public"
-
-            # This section is for local http access ( at this moment this does not work )
-            #- "traefik.http.routers.portainer-local.entrypoints=web"
-            #- "traefik.http.routers.portainer-local.rule=Host(`portainer.wavesnake.local`)"
-            #- "traefik.http.routers.portainer-local.service=portainer-local"
-            ##- "traefik.http.services.portainer-local.loadbalancer.passhostheader=true"
-            ##- "traefik.http.services.portainer-local.loadbalancer.sticky=true"
-            #- "traefik.http.services.portainer-local.loadbalancer.server.port=9000"
-
-            # This section is for external http access
-            - "traefik.http.routers.portainer-external.entrypoints=web"
-            - "traefik.http.routers.portainer-external.rule=Host(`adm.wavesnake.dk`)"
-            - "traefik.http.routers.portainer-external.service=portainer-external"
-            - "traefik.http.services.portainer-external.loadbalancer.server.port=9000"
-            - "traefik.http.middlewares.portainer-https-redirect.redirectscheme.scheme=https"
-            - "traefik.http.middlewares.portainer-https-redirect.redirectscheme.permanent=true"
-            - "traefik.http.routers.portainer-external.middlewares=portainer-https-redirect"
-
-            # This section is for external https access
-            - "traefik.http.routers.portainer-secure.entrypoints=secure"
-            - "traefik.http.routers.portainer-secure.rule=Host(`adm.wavesnake.dk`)"
-            - "traefik.http.routers.portainer-secure.tls=true"
-            - "traefik.http.routers.portainer-secure.tls.certresolver=http"
-            - "traefik.http.routers.portainer-secure.service=portainer-secure"
-            - "traefik.http.services.portainer-secure.loadbalancer.server.port=9000"
 
 
           networks:
@@ -192,6 +164,32 @@ write_files:
               window: 120s
             placement:
               constraints: [node.role == manager]
+
+            labels:
+              - "traefik.enable=true"
+    
+              # This section is for local http access ( at this moment this does not work )
+              - "traefik.http.routers.portainer-local.entrypoints=web"
+              - "traefik.http.routers.portainer-local.rule=Host(`portainer.wavesnake.local`)"
+              - "traefik.http.routers.portainer-local.service=portainer-local"
+              - "traefik.http.services.portainer-local.loadbalancer.server.port=9000"
+
+              # This section is for external http access
+              - "traefik.http.routers.portainer-external.entrypoints=web"
+              - "traefik.http.routers.portainer-external.rule=Host(`adm.wavesnake.dk`)"
+              - "traefik.http.routers.portainer-external.service=portainer-external"
+              - "traefik.http.services.portainer-external.loadbalancer.server.port=9000"
+              - "traefik.http.middlewares.portainer-https-redirect.redirectscheme.scheme=https"
+              - "traefik.http.middlewares.portainer-https-redirect.redirectscheme.permanent=true"
+              - "traefik.http.routers.portainer-external.middlewares=portainer-https-redirect"
+
+              # This section is for external https access
+              - "traefik.http.routers.portainer-secure.entrypoints=secure"
+              - "traefik.http.routers.portainer-secure.rule=Host(`adm.wavesnake.dk`)"
+              - "traefik.http.routers.portainer-secure.tls=true"
+              - "traefik.http.routers.portainer-secure.tls.certresolver=http"
+              - "traefik.http.routers.portainer-secure.service=portainer-secure"
+              - "traefik.http.services.portainer-secure.loadbalancer.server.port=9000"
 
       networks:
         traefik-public:
@@ -316,13 +314,13 @@ write_files:
             entrypoint: web
             middleware: traefik-auth
             middleware: traefik-redirect
+            service: api@internal
 
           secure:
             rule: "Host(`traefik.wavesnake.dk`)"
             middleware: traefik-auth
             entrypoint: secure
             service: api@internal
-            tls: true
             certresolver: http
 
         middlewares:
@@ -369,6 +367,15 @@ write_files:
             rule: "HostSNI(`*`)"
             service: "ssh-ws04"
     path: /opt/containers/traefik/data/ssh.yml
+
+  # 
+  # Bridge Script to be run after each reboot
+  #
+  - content: |
+      sudo iptables -t nat -A POSTROUTING -o wlan0 -j MASQUERADE
+      sudo iptables -A FORWARD -i wlan0 -o eth0 -m state --state RELATED,ESTABLISHED -j ACCEPT
+      sudo iptables -A FORWARD -i eth0 -o wlan0 -j ACCEPT
+    path: /home/manager/bridge.sh
 
 # These commands will be run once on first boot only
 runcmd:
@@ -434,6 +441,11 @@ runcmd:
   - 'sudo iptables -t nat -A POSTROUTING -o wlan0 -j MASQUERADE'
   - 'sudo iptables -A FORWARD -i wlan0 -o eth0 -m state --state RELATED,ESTABLISHED -j ACCEPT'
   - 'sudo iptables -A FORWARD -i eth0 -o wlan0 -j ACCEPT'
+
+  # Setup cron job to add bridge rules to iptables after reboot
+  - 'sudo chmod +x /home/manager/bridge.sh'
+  - 'sudo sed  -i "$ a\@reboot	root /home/manager/bridge.sh" /etc/crontab'
+
   
   # Prepare save of IPTables Docker might do this already
   #- 'sudo touch /etc/rc.local'

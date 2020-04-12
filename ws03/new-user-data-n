@@ -18,7 +18,7 @@ users:
     shell: /bin/bash
     groups: users,docker,video,input
     plain_text_passwd: wavesnake
-    #passwd: 27897lkFOYhhCGZiVmaOiZxSrpcvun.YOgyWuin0l0/aHRkep9sHrMTVp4uzHsAkTIJ.q3c8RuTA.NUNE8yqrh72O5/
+    #passwd: 38466lkFOYhhCGZiVmaOiZxSrpcvun.YOgyWuin0l0/aHRkep9sHrMTVp4uzHsAkTIJ.q3c8RuTA.NUNE8yqrh72O5/
     lock_passwd: false
     ssh_pwauth: true
     chpasswd: { expire: false }
@@ -62,6 +62,75 @@ write_files:
       static domain_name_servers=8.8.8.8 8.8.4.4
     path: /etc/dhcpcd.conf
   #
+  # Mosquitto config file
+  #  
+  - content: |
+      # Place your local configuration in /mqtt/config/conf.d/
+      #
+      # A full description of the configuration file is at
+      # /usr/share/doc/mosquitto/examples/mosquitto.conf.example
+      # ---  WaveSnake Technologies --------
+
+      pid_file /var/run/mosquitto.pid
+
+      persistence true
+      persistence_location /mosquitto/data/
+
+      log_dest file /mosquitto/log/mosquitto.log
+      log_dest topic
+      log_timestamp true
+
+      log_type error
+      log_type warning
+      log_type notice
+      log_type information
+
+      connection_messages true
+
+      sys_interval 60
+
+      include_dir /mosquitto/config/conf.d
+      password_file /mosquitto/config/conf.d/pw
+      acl_file /mosquitto/config/conf.d/acl
+
+      allow_anonymous false
+
+      port 1883
+
+    path: /var/local/mosquitto.conf
+  #
+  # Mosquitto ACL file
+  #
+  - content: |
+      user wavesnake
+      topic readwrite homebridge/#
+      topic readwrite homeassistant/#
+      topic readwrite openhab/#
+
+      user WaveSnake
+      topic readwrite BA57D00A15054C2C/#
+
+      user manager
+      topic readwrite test/#
+      topic readwrite BA57D00A15054C2C/#
+      topic readwrite BA57D00A15054C2C/temp/to/#
+      topic readwrite 0489DD53321AF351/#
+      topic readwrite 6E9EBD20FC256C87/#
+      topic readwrite 1D9C7CF151EB3CF6/#
+      topic readwrite 33DA9E7B63025E56/#
+      topic readwrite 7155E1E0C60EA6B9/#
+      topic read $SYS/broker/#
+    path: /var/local/acl
+  #
+  # Mosquitto PW file
+  #
+  - content: |
+      wavesnake:$6$jSdkcgBqdInm4bOU$+qWvEDP/P8ydZzTz6eaR2/4FcRz1j2klgaEDWmKHcREZ6H0UwaL/so+nzPqwem8D0bvtQaHauun+XaTv+b4W5g==
+      WaveSnake:$6$6c8kY97qllo/M3pH$NHa7T41WMuY7RFGg242wxKoyc8XoYvwQ8IaguM5/8T/A+qVsvpzjvLvmk0Ae1uNwLr83b3yLViVt/8LeCHW6VA==
+      manager:$6$nOsgGCKqIEZx1rbO$JA1qDqW2/E7K+xWIY6csrrrlLC38Gmirn0ZnVBy6ASwhKfW63FCJchTAh0RYycjlqvpOZypxpfkCmJdN2ck7Eg==
+      pi:$6$jKCofPce5HszESHR$s8UwnZkVVye0/NC6gbE8tcF8IKiQYNRcLsqxOTMZM/Rbzpvt3gza60WWlvhX65djyJJ9roObdK/3hwIopGnamA==
+    path: /var/local/pw
+  #
   # Hosts
   #
   - content: |
@@ -89,8 +158,8 @@ runcmd:
   # Restart NTP, workaround for Debian Buster fake time initialization
   #
   - 'logger !!! wavesnake !!! Workaround for Buster error initializing date/time'
-  - 'sudo date --set 2020-04-06'
-  - 'sudo date --set 13:32:42'
+  - 'sudo date --set 2020-04-07'
+  - 'sudo date --set 09:27:51'
   - 'sudo service ntp --full-restart'
   - 'sudo sleep 15'
   - 'sudo date'
@@ -149,23 +218,36 @@ runcmd:
   - 'sudo mkdir -p /opt/containers/redis/data'
   # Mosquitto
   - 'sudo mkdir -p /opt/containers/mosquitto'
-  - 'sudo mkdir -p /opt/containers/mosquitto/data'
+  - 'sudo mkdir -p /opt/containers/mosquitto/data' 
+  - 'sudo mkdir -p /opt/containers/mosquitto/config'
+  - 'sudo mkdir -p /opt/containers/mosquitto/config/conf.d'
   # SnakeApi
   - 'sudo mkdir -p /opt/containers/snakeapi'
   - 'sudo mkdir -p /opt/containers/snakeapi/data'
   # SnakeConfig
   - 'sudo mkdir -p /opt/containers/swarmconfig'
   - 'sudo mkdir -p /opt/containers/swarmconfig/data'
+  # SnakeHistory
+  - 'sudo mkdir -p /opt/containers/snakehistory'
+  - 'sudo mkdir -p /opt/containers/snakehistory/data'
+  # SnakeTimer
+  - 'sudo mkdir -p /opt/containers/snaketimer'
+  - 'sudo mkdir -p /opt/containers/snaketimer/data'
+  # SnakeUtil
+  - 'sudo mkdir -p /opt/containers/snakeutil'
+  - 'sudo mkdir -p /opt/containers/snakeutil/data'
   # MariaDB
   - 'sudo mkdir -p /opt/containers/mariadb'
   - 'sudo mkdir -p /opt/containers/mariadb/data'
-  # Apache
-  - 'sudo mkdir -p /opt/containers/busybox'
-  - 'sudo mkdir -p /opt/containers/busybox/data'
-
+ 
   # Set manager as owner and give rw permission to users
   - 'chown -R manager /opt/containers'
   - 'sudo chmod a+rw /opt/containers -R'
+
+  # Copy Mosquitto files to Container dir
+  - 'sudo cp /var/local/mosquitto.conf /opt/containers/mosquitto/config/'
+  - 'sudo cp /var/local/acl /opt/containers/mosquitto/config/config.d/'
+  - 'sudo cp /var/local/pw /opt/containers/mosquitto/config/config.d/'
 
   # Create log directories
   - 'logger !!! wavesnake !!! Create log files'
@@ -185,9 +267,13 @@ runcmd:
   - 'sudo chmod a+rw /var/log/redis -R'
   - 'sudo chmod a+rw /var/log/mysql -R'
   
+  # Create Media drive to mysql
+  - 'sudo mkdir -p /media/data' 
+  - 'sudo mkdir -p /media/data/mariadb'
+  - 'sudo chmod a+rw /media/data/mariadb -R'
+
+  # Mount USB Drive, which requires that we know the UUID of the USB stick
+  # Can be obtained on Unix(RPI) with command: sudo blkid -sUUID
+  - 'USB-MOUNT-COMMAND'
+
   - 'logger !!! wavesnake !!! End of RUNCMD'
-  
-  #
-  # Below command requires that we know the UUID of the mounted USB stick
-  # Also this must be done on the DB server
-  #- 'echo "/dev/disk/by-uuid/3433-3231 /media/data vfat auto,nofail,noatime,users,rw,uid=manager,gid=manager 0 0" >> /etc/fstab'

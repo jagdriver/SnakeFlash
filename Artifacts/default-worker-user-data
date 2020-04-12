@@ -239,14 +239,16 @@ runcmd:
   # MariaDB
   - 'sudo mkdir -p /opt/containers/mariadb'
   - 'sudo mkdir -p /opt/containers/mariadb/data'
-
+ 
   # Set manager as owner and give rw permission to users
   - 'chown -R manager /opt/containers'
   - 'sudo chmod a+rw /opt/containers -R'
+
   # Copy Mosquitto files to Container dir
   - 'sudo cp /var/local/mosquitto.conf /opt/containers/mosquitto/config/'
   - 'sudo cp /var/local/acl /opt/containers/mosquitto/config/config.d/'
   - 'sudo cp /var/local/pw /opt/containers/mosquitto/config/config.d/'
+
   # Create log directories
   - 'logger !!! wavesnake !!! Create log files'
   - 'sudo mkdir -p /var/log/snakelogs'
@@ -265,9 +267,13 @@ runcmd:
   - 'sudo chmod a+rw /var/log/redis -R'
   - 'sudo chmod a+rw /var/log/mysql -R'
   
+  # Create Media drive to mysql
+  - 'sudo mkdir -p /media/data' 
+  - 'sudo mkdir -p /media/data/mariadb'
+  - 'sudo chmod a+rw /media/data/mariadb -R'
+
+  # Mount USB Drive, which requires that we know the UUID of the USB stick
+  # Can be obtained on Unix(RPI) with command: sudo blkid -sUUID
+  - 'USB-MOUNT-COMMAND'
+
   - 'logger !!! wavesnake !!! End of RUNCMD'
-  
-  #
-  # Below command requires that we know the UUID of the mounted USB stick
-  # Also this must be done on the DB server
-  #- 'echo "/dev/disk/by-uuid/3433-3231 /media/data vfat auto,nofail,noatime,users,rw,uid=manager,gid=manager 0 0" >> /etc/fstab'
