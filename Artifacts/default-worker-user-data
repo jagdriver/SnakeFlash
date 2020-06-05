@@ -47,7 +47,12 @@ package_upgrade: false
 # # WiFi connect to HotSpot
 # # - use `wpa_passphrase SSID PASSWORD` to encrypt the psk
 write_files:
-
+  #
+  # NodeName.env
+  #
+  - content: |
+      NODE_NAME=NODE-NAME
+    path:  /opt/containers/environment/nodename.env
   #
   # dhcpcd.conf static network setup
   #
@@ -239,7 +244,11 @@ runcmd:
   # MariaDB
   - 'sudo mkdir -p /opt/containers/mariadb'
   - 'sudo mkdir -p /opt/containers/mariadb/data'
- 
+  # Environment
+  - 'sudo mkdir -p /opt/containers/environment'
+  # Synchronization
+  - 'sudo mkdir -p /opt/containers/synchronization'
+  
   # Set manager as owner and give rw permission to users
   - 'chown -R manager /opt/containers'
   - 'sudo chmod a+rw /opt/containers -R'
