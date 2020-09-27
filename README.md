@@ -53,28 +53,27 @@ prerequisites: Mac, Windows or Linux, Visual Studio Code with some extensions (f
 | Amount DKr              |               | 3,700 - 4,500       |
 
 ### Toolchain<a name="tools"></a>
-The nescessary tools for building/Installing the SnakeSwarm project and developing Sketches for ESP8266/ESP32  
-Visual Studio Code for Mac, latest version with some extensions: 
-Python3 
-Arduino for Visual Studio Code
-C/C++
-ms-vscode.cpptools
-lukasz-wronski.ftp-sync
-ms-azuretools.vscode-docker
-sprdp.remote-browser
-jchannon.csharpextensions
-.gitignore generator
-ronaldosena.arduino-snippets
+The nescessary tools for building/installing the SnakeSwarm project and developing Sketches for ESP8266/ESP32  
+1. Visual Studio Code for Mac, latest version with some extensions: 
+2. Python3 
+3. Arduino for Visual Studio Code
+4. C/C++
+5. ms-vscode.cpptools
+6. lukasz-wronski.ftp-sync
+7. ms-azuretools.vscode-docker
+8. sprdp.remote-browser
+9. jchannon.csharpextensions
+10. .gitignore generator
+11. ronaldosena.arduino-snippets
+12. vsciot-vscode.vscode-arduino
 
-vsciot-vscode.vscode-arduino
-
-You can paste these extension id's into VSCode extension search box and from there
-install the extension.
+You can paste above extension id's into VSCode extension search box, and from there
+install the extensions.
 
 
 
 ### RPI software <a name="software"></a>
-The software running on the RPI's are all Docker Containers, which are installed onto the RPI from Portainer console. 
+The software running on the RPI's are all Docker Containers, installed onto the RPI from within Portainer console. 
 Traefik and Portainer are installed at boot time, and will be available after swarm initialization.
 
 #### Redis  <a name="redis"></a>
@@ -91,9 +90,9 @@ Repository URL: https://github.com/jagdriver/Stacks.git
 Compose path: /SnakeConfig/docker-compose.yml
 
 ### Setup guide  <a name="setupguide"></a>
-The initial setup and flashing of the SnakeHome Swarm includes downloading [this](https://github.com/jagdriver/Flashing "this link") project from GitHub. Copy the project content into a folder called Flashing.
+The initial setup and flashing of the SnakeHome Swarm includes downloading [this](https://github.com/jagdriver/SnakeFlash "this link") project from GitHub. Copy the project content into a folder called Flashing.
 
-Next read the documentation on Swarm Configuration before going into actual setup steps.
+Next, read the documentation on Swarm Configuration before going into actual setup steps.
 
 Download the latest HypriotOS from this url https://blog.hypriot.com/downloads/
 
