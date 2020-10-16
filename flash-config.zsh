@@ -130,6 +130,21 @@ function EditProperties()
 
    # Swarm Common properties
    echo -n "Editing GLOBAL Properties"
+   
+   # Global application properties
+   sed -i -n "s#REDIS-MASTER-SERVER-ADDRESS#$REDIS_MASTER_SERVER_ADDRESS#" new-user-data
+   sed -i -n "s#REDIS-MASTER-SERVER-PORT#$REDIS_MASTER_SERVER_PORT#" new-user-data
+   sed -i -n "s#REDIS-REPLICA-SERVER-ADDRESS#$REDIS_REPLICA_SERVER_ADDRESS#" new-user-data
+   sed -i -n "s#REDIS-REPLICA-SERVER-PORT#$REDIS_REPLICA_SERVER_PORT#" new-user-data
+   sed -i -n "s#SKETCH-SERVER-ADDRESS#$SKETCH_SERVER_ADDRESS#" new-user-data
+   sed -i -n "s#SKETCH-SERVER-PORT#$SKETCH_SERVER_PORT#" new-user-data
+   sed -i -n "s#API-SERVER-ADDRESS#$API_SERVER_ADDRESS#" new-user-data
+   sed -i -n "s#API-SERVER-PORT#$API_SERVER_PORT#" new-user-data
+   sed -i -n "s#MQTT-SERVER-ADDRESS#$MQTT_SERVER_ADDRESS#" new-user-data
+   sed -i -n "s#MQTT-SERVER-PORT#$MQTT_SERVER_PORT#" new-user-data
+   sed -i -n "s#APPLICATION-LIST#$APPLICATION_LIST#" new-user-data
+   sed -i -n "s#ENVIRONMENT-LIST#$ENVIRONMENT_LIST#" new-user-data
+
    # ETH0
    sed -i -n "s/ETH0-DNS-SERVERS/$ETH0_DNS_SERVERS/" new-user-data
    sed -i -n "s/ETH0-STATIC-ROUTERS/$ETH0_STATIC_ROUTERS/" new-user-data
@@ -143,11 +158,12 @@ function EditProperties()
    sed -i -n "s#TIME-ZONE#$TIME_ZONE#" new-user-data
    sed -i -n "s#ISO-DATE#$ISO_DATE#" new-user-data
    sed -i -n "s#ISO-TIME#$ISO_TIME#" new-user-data
+   
    # Domains
    sed -i -n "s/INTERNAL-DOMAIN-NAME/$INTERNAL_DOMAIN_NAME/" new-user-data
    sed -i -n "s/EXTERNAL-DOMAIN-NAME/$EXTERNAL_DOMAIN_NAME/" new-user-data
    
-   # Swarn Manager
+   # Swarm Manager
    sed -i -n "s/MANAGER-PASSWORD/$MANAGER_PASSWORD/" new-user-data
    sed -i -n "s/MANAGER-NAME/$MANAGER_NAME/" new-user-data
    sed -i -n "s*MANAGER-ENCRYPTED-PASSWORD*$MANAGER_ENCRYPTED_PASSWORD*" new-user-data
@@ -542,45 +558,77 @@ function ListProperties()
    echo -e "\n--- USB Mount Command ---"
    echo -e "USB_MOUNT_COMMAND: " $USB_MOUNT_COMMAND
 
+   echo -e "\n--- GLOBAL APPLICATION Properties ---"
+   echo -e "REDIS_MASTER_SERVER_ADDRESS: " $REDIS_MASTER_SERVER_ADDRESS
+   echo -e "REDIS_MASTER_SERVER_PORT: " $REDIS_MASTER_SERVER_PORT
+   echo -e "REDIS_REPLICA_SERVER_ADDRESS: " $REDIS_REPLICA_SERVER_ADDRESS
+   echo -e "REDIS_REPLICA_SERVER_PORT: " $REDIS_REPLICA_SERVER_PORT
+   echo -e "API_SERVER_ADDRESS: " $API_SERVER_ADDRESS
+   echo -e "API_SERVER_PORT: " $API_SERVER_PORT
+   echo -e "MQTT_SERVER_ADDRESS: " $MQTT_SERVER_ADDRESS
+   echo -e "MQTT_SERVER_PORT: " $MQTT_SERVER_PORT
+   echo -e "SKETCH_SERVER_ADDRESS: " $SKETCH_SERVER_ADDRESS
+   echo -e "SKETCH_SERVER_PORT: " $SKETCH_SERVER_PORT
+   echo -e "APPLICATION_LIST: " $APPLICATION_LIST
+   echo -e "ENVIRONMENT_LIST: " $ENVIRONMENT_LIST
    echo -e "---------- $1 ----------\n"
 }
 
 function ReadProperties()
 {
+  # Keep sections/lines in this function synchronized
+  # with swarmconfig.txt
+  #
   # Read all properties from swarmconfig.txt
    source ./Artifacts/swarmconfig.txt
-   
-   # Swarm Properties
-   
+
+   # MANAGER Properties
    MANAGER_NAME=$MANAGER_NAME
    MANAGER_PASSWORD=$MANAGER_PASSWORD
    MANAGER_ENCRYPTED_PASSWORD=$MANAGER_ENCRYPTED_PASSWORD
-   TIME_ZONE=$TIME_ZONE
-   SWARM_MANAGER_NODE=$SWARM_MANAGER_NODE
-   SWARM_PORT=$SWARM_PORT
+   
+   # NODE Properties
    NODE_NAME=$NODE_NAME
    SWARM_LOCALE=$SWARM_LOCALE
+   TIME_ZONE=$TIME_ZONE
+
+   # Docker Swarm Properties
+   SWARM_MANAGER_NODE=$SWARM_MANAGER_NODE
+   SWARM_PORT=$SWARM_PORT
+   #SWARM_INTERFACE=$SWARM_INTERFACE
    SWARM_WORKER_TOKEN=$SWARM_WORKER_TOKEN
    SWARM_MANAGER_TOKEN=$SWARM_MANAGER_TOKEN
    
+   # Swarm External Application URL's
+   API_SERVER_URL=$API_SERVER_URL
+   DB_SERVER_URL=$DB_SERVER_URL
+   MQTT_SERVER_URL=$MQTT_SERVER_URL
+   SKETCH_SERVER_URL=$INTERNAL_SKETCH_SERVER_URL
+
+   # Swarm Internal Application URL's
+   INTERNAL_API_SERVER_URL=$INTERNAL_API_SERVER_URL
+   INTERNAL_DB_SERVER_URL=$INTERNAL_DB_SERVER_URL
+   INTERNAL_MQTT_SERVER_URL=$INTERNAL_MQTT_SERVER_URL
+   INTERNAL_SKETCH_SERVER_URL=$INTERNAL_SKETCH_SERVER_URL
+
    # WiFi properties
    COUNTRY_CODE=$COUNTRY_CODE
    WIFI_SSID=$WIFI_SSID
    WIFI_PASSWD=$WIFI_PASSWORD
    
-   # LAN ETH0 properties
+   # Swarm Node ETH0 properties
    ETH0_LAN=$ETH0_LAN
    ETH0_IP_ADDRESS=$ETH0_IP_ADDRESS
    ETH0_STATIC_ROUTERS=$ETH0_STATIC_ROUTERS
    ETH0_DNS_SERVERS=$ETH0_DNS_SERVERS
    
-   # HOSTS A Records
+   # Swarm Node IP Address
    WS01_DNS_ADDRESS=$WS01_DNS_ADDRESS
    WS02_DNS_ADDRESS=$WS02_DNS_ADDRESS
    WS03_DNS_ADDRESS=$WS03_DNS_ADDRESS
    WS04_DNS_ADDRESS=$WS04_DNS_ADDRESS
 
-   # LAN WLAN0 properties
+   # Manager Node WLAN0 properties
    WLAN0_LAN=$WLAN0_LAN
    WLAN0_IP_ADDRESS=$WLAN0_IP_ADDRESS
    WLAN0_STATIC_ROUTERS=$WLAN0_STATIC_ROUTERS
@@ -600,6 +648,28 @@ function ReadProperties()
    
    # Traefik properties
    TRAEFIK_ENTRYPOINT_ADDRESS=$TRAEFIK_ENTRYPOINT_ADDRESS
+   
+   # SnakeApi properties
+   API_SERVER_ADDRESS=$API_SERVER_ADDRESS
+   API_SERVER_PORT=$API_SERVER_PORT
+
+   # SnakeConfig properties
+   APPLICATION_LIST=$APPLICATION_LIST
+   ENVIRONMENT_LIST=$ENVIRONMENT_LIST
+
+   # Redis properties
+   REDIS_MASTER_SERVER_ADDRESS=$REDIS_MASTER_SERVER_ADDRESS
+   REDIS_MASTER_SERVER_PORT=$REDIS_MASTER_SERVER_PORT
+   REDIS_REPLICA_SERVER_ADDRESS=$REDIS_REPLICA_SERVER_ADDRESS
+   REDIS_REPLICA_SERVER_PORT=$REDIS_REPLICA_SERVER_PORT
+
+   # Sketch properties
+   SKETCH_SERVER_ADDRESS=$SKETCH_SERVER_ADDRESS
+   SKETCH_SERVER_PORT=$SKETCH_SERVER_PORT
+
+   # MQTT properties
+   MQTT_SERVER_ADDRESS=$MQTT_SERVER_ADDRESS
+   MQTT_SERVER_PORT=$MQTT_SERVER_PORT
 
    # USB Drive mount command
    USB_MOUNT_COMMAND=$USB_MOUNT_COMMAND

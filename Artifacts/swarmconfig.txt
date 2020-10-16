@@ -2,7 +2,7 @@
 #
 # WaveSnake Swarm Properties
 #
-# USER Properties
+# MANAGER Properties
 MANAGER_NAME="manager"
 MANAGER_PASSWORD="your manager password"
 MANAGER_ENCRYPTED_PASSWORD="$6$$lkFOYhhCGZiVmaOiZxSrpcvun.YOgyWuin0l0/aHRkep9sHrMTVp4uzHsAkTIJ.q3c8RuTA.NUNE8yqrh72O5/"
@@ -12,29 +12,43 @@ NODE_NAME="ws01"
 SWARM_LOCALE="en_US.UTF-8"
 TIME_ZONE="Europe/Copenhagen"
 
-# Docker properties
+# Docker Swarm properties
 SWARM_MANAGER_NODE="ws01"
 SWARM_PORT="2377"
 SWARM_INTERFACE="eth0"
 SWARM_WORKER_TOKEN="SWMTKN-1-6cyk7y11vbx3e8sc5b8iqiao7sb9iyr8b2lheybtyjqhb8mfho-5bracqtjvzt2zcn7m0qp5w27w"
 SWARM_MANAGER_TOKEN="SWMTKN-1-6cyk7y11vbx3e8sc5b8iqiao7sb9iyr8b2lheybtyjqhb8mfho-cgxcsuzfarwy7m3eypj542pi1"
 
+# Swarm External Application URL's
+API_SERVER_URL="api.wavesnake.dk"
+DB_SERVER_URL="sql.wavesnake.dk"
+MQTT_SERVER_URL="mqt.wavesnake.dk"
+SKETCH_SERVER_URL="sketch.wavesnake.dk"
+
+# Swarm Internal Application URL's
+INTERNAL_API_SERVER_URL="api.wavesnake.local"
+INTERNAL_DB_SERVER_URL="sql.wavesnake.local"
+INTERNAL_MQTT_SERVER_URL="mqt.wavesnake.local"
+INTERNAL_SKETCH_SERVER_URL="sketch.wavesnake.local"
+
 # WiFi properties
 COUNTRY_CODE="DK"
 WIFI_SSID="Your WiFi ssid"
 WIFI_PASSWD="Your WiFi password"
 
-# Lan ETH0 properties
+# Swarm Node ETH0 properties
 ETH0_LAN="192.168.230.0/24"
 ETH0_IP_ADDRESS="192.168.230.1"
 ETH0_STATIC_ROUTERS="192.168.230.1"
 ETH0_DNS_SERVERS="8.8.8.8 8.8.4.4"
+
+# Swarm Node IP Address
 WS01_IP_ADDRESS="192.168.230.1"
 WS02_IP_ADDRESS="192.168.230.2"
 WS03_IP_ADDRESS="192.168.230.3"
 WS04_IP_ADDRESS="192.168.230.4"
 
-# Lan WLAN0 properties
+# Manager Node WLAN0 properties
 WLAN0_LAN="192.168.1.0/24"
 WLAN0_IP_ADDRESS="192.168.1.230"
 WLAN0_STATIC_ROUTERS="192.168.1.1"
@@ -55,8 +69,29 @@ ACME_EMAIL_ADDRESS="yourmail@mailserver.com"
 # Traefik properties
 TRAEFIK_ENTRYPOINT_ADDRESS="192.168.1.230"
 
-# USB Disk Mount Command
-# /dev/sda1: UUID="3FFB-6CC8"
+# SnakeApi properties
+API_SERVER_ADDRESS="192.168.1.230"
+API_SERVER_PORT="80"
+
+# SnakeConfig properties
+APPLICATION_LIST="SnakeApi,SnakeHistory,SnakeUtil,SnakeConfig,SnakeTimer,SnakeConsole"
+ENVIRONMENT_LIST="Development,Test,Production"
+
+# Redis properties
+REDIS_MASTER_SERVER_ADDRESS="192.168.230.1"
+REDIS_MASTER_SERVER_PORT="8376"
+REDIS_REPLICA_SERVER_ADDRESS="192.168.230.4"
+REDIS_REPLICA_SERVER_PORT="8376"
+
+# Sketch properties
+SKETCH_SERVER_ADDRESS="192.168.1.230"
+SKETCH_SERVER_PORT="80"
+
+# MQTT properties
+MQTT_SERVER_ADDRESS="192.168.1.230"
+MQTT_SERVER_PORT="6379"
+
+# USB Drive mount Command (/dev/sda1: UUID="3FFB-6CC8")
 USB_MOUNT_COMMAND="echo \"/dev/sda1/by-uuid/USB_UUID /media/data/mariadb vfat auto,nofail,noatime,users,rw,uid=manager,gid=manager 0 0\" >> /etc/fstab"
 
 

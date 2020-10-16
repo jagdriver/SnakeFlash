@@ -59,6 +59,56 @@ package_upgrade: false
 # # - use `wpa_passphrase SSID PASSWORD` to encrypt the psk
 write_files:
   #
+  # Global.prop (Not finished)
+  #
+  - content: |
+      LOG_PATH=LOG-PATH
+      API_SERVER_ADDRESS=API-SERVER-ADDRESS
+      API_SERVER_PORT=API-SERVER-PORT
+      MQTT_SERVER_ADDRESS=MQTT-SERVER-ADDRESS
+      MQTT_SERVER_PORT=MQTT-SERVER-PORT
+      SKETCH_SERVER_ADDRESS=SKETCH-SERVER-ADDRESS
+      SKETCH_SERVER_PORT=SKETCH-SERVER-PORT
+      REDIS_MASTER_SERVER_ADDRESS=REDIS-MASTER-SERVER-ADDRESS
+      REDIS_MASTER_SERVER_PORT=REDIS-MASTER-SERVER-PORT
+      REDIS_REPLICA_SERVER_ADDRESS=REDIS-REPLICA-SERVER-ADDRESS
+      REDIS_REPLICA_SERVER_PORT=REDIS-REPLICA-SERVER-PORT
+      MANAGER_PASSWORD=MANAGER-PASSWORD
+      MANAGER_NAME=MANAGER-NAME
+
+    path:  /opt/containers/configuration/global.prop
+  #
+  # SnakeApi.prop (Not finished)
+  #
+  - content: |
+      DEFAULT_SQL_TEMPLATE=DEFAULT-SQL-TEMPLATE
+      CREATE_USER_TEMPLATE=CREATE-USER-TEMPLATE
+      DELETE_USER_TEMPLATE=DELETE-USER-TEMPLATE
+    path:  /opt/containers/configuration/snakeapi.prop
+  #
+  # SnakeConfig.prop (Not finished)
+  #
+  - content: |
+      APPLICATION_LIST=APPLICATION-LIST
+      ENVIRONMENT_LIST=ENVIRONMENT-LIST
+    path:  /opt/containers/configuration/snakeconfig.prop
+  #
+  # SnakeUtil.prop (Not finished)
+  #
+  - content: |
+      DNS_PROVIDER_LIST=DNS-PROVIDER-LIST
+      DNS_PROVIDER_ID=DNS-PROVIDER-ID
+      DNS_PROVIDER_URL=DNS-PROVIDER-URL
+      DNS_PROVIDER_USER=DYNAMIC-DNS-USER
+      DNS_PROVIDER_PASSWORD=DYNAMIC-DNS-PASSWORD
+    path:  /opt/containers/configuration/snakeutil.prop
+  #
+  # SnakeHistory.prop (Not finished)
+  #
+  - content: |
+      HISTORY_DB_NAME=HISTORY-DB-NAME
+    path:  /opt/containers/configuration/snakehistory.prop
+  #
   # NodeName.env
   #
   - content: |
@@ -122,7 +172,7 @@ write_files:
       ff02::3 ip6-allhosts
     path: /etc/hosts   
   #
-  # Portainer Docker Compose
+  # Portainer Docker Compose (Version 2.0)
   #
   - content: |
       version: '3.7'
@@ -138,7 +188,7 @@ write_files:
           deploy:
             mode: global
             restart_policy:
-              condition: on-failure
+              condition: any
               delay: 5s
               max_attempts: 3
               window: 120s
@@ -146,7 +196,7 @@ write_files:
               constraints: [node.platform.os == linux]
 
         portainer:
-          image: portainer/portainer
+          image: portainer/portainer-ce
           command: -H tcp://tasks.agent:9001 --tlsskipverify --admin-password "$$2y$$05$$/.uo0TOISIA0iObDNskHkuGHlb/74AhYeDSccTs1V.mzRC8iAYUbm"
           ports:
             - "9000:9000"
@@ -164,7 +214,7 @@ write_files:
             mode: replicated
             replicas: 1
             restart_policy:
-              condition: on-failure
+              condition: any
               delay: 5s
               max_attempts: 3
               window: 120s
@@ -239,7 +289,7 @@ write_files:
               constraints:
                 - node.role == manager
             restart_policy:
-              condition: on-failure
+              condition: any
               delay: 5s
               max_attempts: 3
               window: 120s
@@ -382,8 +432,23 @@ write_files:
       sudo iptables -A FORWARD -i wlan0 -o eth0 -m state --state RELATED,ESTABLISHED -j ACCEPT
       sudo iptables -A FORWARD -i eth0 -o wlan0 -j ACCEPT
     path: /home/manager/bridge.sh
-
+  # 
+  # NFS Exports settings (not finished)
+  #
+  - content: |
+      /mnt/nfs WS01-IP-ADDRESS(rw,root_squash)
+    path: /etc/exports
+    # UUID="bd44867c-447c-4f85-8dbf-dc6b9bc65c91"    /srv/nfs    auto    nosuid,nodev,nofail,noatime 0 0
+  #
+  # Edit FSTAB add USB-DB and USB-NFS (Not finished)
+  # OBS! Lines must be appended
+  # AND first find UUID of USB stick
+  - content: |
+      UUID="bd44867c-447c-4f85-8dbf-dc6b9bc65c91" /mnt/nfs auto nosuid,nodev,nofail,noatime 0 0  
+    path: /etc/exports 
+#
 # These commands will be run once on first boot only
+#
 runcmd:
   # Restart Avahi daemon
   - 'logger !!! wavesnake !!! Restart avahi-deamon'  
@@ -416,7 +481,7 @@ runcmd:
   - 'logger !!! wavesnake !!! Install packages'
   - 'sudo apt-get -y install acl'
   - 'sudo apt-get -y install sshfs'
-  
+  - 'sudo apt-get -y install nfs-common nfs-kernel-server'
   # Install Dynamic DNS Client
   #- 'DYNAMIC-DNS'
 
@@ -452,12 +517,18 @@ runcmd:
   - 'sudo chmod +x /home/manager/bridge.sh'
   - 'sudo sed  -i "$ a\@reboot	root /home/manager/bridge.sh" /etc/crontab'
 
-  
-  # Prepare save of IPTables Docker might do this already
+  # Prepare save of IPTables (Docker might do this already)
   #- 'sudo touch /etc/rc.local'
 
   # Skip Locale check on User Session Startup
   - 'sudo touch /var/lib/cloud/instance/locale-check.skip'
+
+  # Setup NFS Services
+  - 'sudo mkdir -p /mnt/nfs'
+  - 'sudo systemctl enable rpcbind.service'
+  - 'sudo systemctl enable nfs-server.service'
+  - 'sudo systemctl start rpcbind.service'
+  - 'sudo systemctl start nfs-server.service'
 
   # Create Container directory
   - 'logger !!! wavesnake !!! Create container files'
@@ -534,10 +605,14 @@ runcmd:
        "--compose-file", "/opt/containers/portainer/docker-compose.yml",
        "portainer"
     ]
+  # Create NFS File Sharing
+  - 'logger !!! wavesnake !!! Configure fstab entries for NFS'
 
   - 'logger !!! wavesnake !!! End of RUNCMD'
   
   #
   # Below command requires that we know the UUID of the mounted USB stick
-  # Also this must be done on the DB server
+  # and then append a line for each USB stick
+  # Also this must be done on the DB Node
   #- 'echo "/dev/disk/by-uuid/3433-3231 /media/data vfat auto,nofail,noatime,users,rw,uid=manager,gid=manager 0 0" >> /etc/fstab'
+  #- 'mount nfs disk !!!!' Must be done on the WS01 Node

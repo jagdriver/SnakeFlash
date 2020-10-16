@@ -7,10 +7,7 @@
 # run ./flash-config.zsh in the flash directory to be guided
 # thru the setup.
 
-# The current version of cloud-init in the Hypriot rpi-64 is 0.7.6
-# When dealing with cloud-init, it is SUPER important to know the version
-# I have wasted many hours creating servers to find out the module I was trying to use wasn't in the cloud-init version I had
-# Documentation: http://cloudinit.readthedocs.io/en/0.7.9/index.html
+# Cloud_Init Documentation: http://cloudinit.readthedocs.io/en/0.7.9/index.html
 
 # TODO: Remove sudo from all commands
 # TODO: Docker label must be set
@@ -29,7 +26,7 @@ users:
     shell: /bin/bash
     groups: users,docker,video,input
     plain_text_passwd: wavesnake
-    #passwd: 34606lkFOYhhCGZiVmaOiZxSrpcvun.YOgyWuin0l0/aHRkep9sHrMTVp4uzHsAkTIJ.q3c8RuTA.NUNE8yqrh72O5/
+    #passwd: 8879lkFOYhhCGZiVmaOiZxSrpcvun.YOgyWuin0l0/aHRkep9sHrMTVp4uzHsAkTIJ.q3c8RuTA.NUNE8yqrh72O5/
     lock_passwd: false
     ssh_authorized_keys:
       - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCdpRpqR6pSdoXVLH7pIFkVXY9KIZJVA0wfKlqvpeHD/iKl+0dVU0xRoZYO/+Bot2i0rTJdfTPjcGpgMm4rpqkLfUT6ryyGFRSMF/yObUf9vCCPlz/nRh//PQfAN+JPK61z104EeatHbQhSHuHhJPzVDBNYLhsi7O1wsOkTTtSMs1Xos28HXdB+gpKup1Uddb4lq+GkB110IN3mjHYo4Tckl5VNH9cmWBTYvyVSgzv3hIG2ur/jrQMB2dLzqkchjrKpV1VLjW4dpxNlSTRt/1eo+KCjRraBYALL8t5xiLZHSx/6mA91eQU2zBDufJKWzy93vdzd6r3DJcqDIAzQ2PFP nielsjorgennielsen@snakemacpro.local
@@ -61,6 +58,62 @@ package_upgrade: false
 # # WiFi connect to HotSpot
 # # - use `wpa_passphrase SSID PASSWORD` to encrypt the psk
 write_files:
+  #
+  # Global.prop (Not finished)
+  #
+  - content: |
+      LOG_PATH=LOG-PATH
+      API_SERVER_ADDRESS=192.168.1.230
+      API_SERVER_PORT=80
+      MQTT_SERVER_ADDRESS=192.168.1.230
+      MQTT_SERVER_PORT=6379
+      SKETCH_SERVER_ADDRESS=192.168.1.230
+      SKETCH_SERVER_PORT=80
+      REDIS_MASTER_SERVER_ADDRESS=192.168.230.1
+      REDIS_MASTER_SERVER_PORT=8376
+      REDIS_REPLICA_SERVER_ADDRESS=192.168.230.4
+      REDIS_REPLICA_SERVER_PORT=8376
+      MANAGER_PASSWORD=wavesnake
+      MANAGER_NAME=manager
+
+    path:  /opt/containers/configuration/global.prop
+  #
+  # SnakeApi.prop (Not finished)
+  #
+  - content: |
+      DEFAULT_SQL_TEMPLATE=DEFAULT-SQL-TEMPLATE
+      CREATE_USER_TEMPLATE=CREATE-USER-TEMPLATE
+      DELETE_USER_TEMPLATE=DELETE-USER-TEMPLATE
+    path:  /opt/containers/configuration/snakeapi.prop
+  #
+  # SnakeConfig.prop (Not finished)
+  #
+  - content: |
+      APPLICATION_LIST=SnakeApi,SnakeHistory,SnakeUtil,SnakeConfig,SnakeTimer,SnakeConsole
+      ENVIRONMENT_LIST=Development,Test,Production
+    path:  /opt/containers/configuration/snakeconfig.prop
+  #
+  # SnakeUtil.prop (Not finished)
+  #
+  - content: |
+      DNS_PROVIDER_LIST=DNS-PROVIDER-LIST
+      DNS_PROVIDER_ID=DNS-PROVIDER-ID
+      DNS_PROVIDER_URL=DNS-PROVIDER-URL
+      DNS_PROVIDER_USER=Jaguarxk120
+      DNS_PROVIDER_PASSWORD=DYNAMIC-DNS-PASSWORD
+    path:  /opt/containers/configuration/snakeutil.prop
+  #
+  # SnakeHistory.prop (Not finished)
+  #
+  - content: |
+      HISTORY_DB_NAME=HISTORY-DB-NAME
+    path:  /opt/containers/configuration/snakehistory.prop
+  #
+  # NodeName.env
+  #
+  - content: |
+      NODE_NAME=NODE-NAME
+    path:  /opt/containers/environment/nodename.env
   #
   # WiFi interface setup
   #
@@ -119,7 +172,7 @@ write_files:
       ff02::3 ip6-allhosts
     path: /etc/hosts   
   #
-  # Portainer
+  # Portainer Docker Compose
   #
   - content: |
       version: '3.7'
@@ -152,34 +205,6 @@ write_files:
           volumes:
             - /etc/localtime:/etc/localtime:ro
             - /opt/containers/portainer/data:/data
-          labels:
-            - "traefik.enable=true"
-            - "traefik.docker.network=traefik-public"
-
-            # This section is for local http access ( at this moment this does not work )
-            #- "traefik.http.routers.portainer-local.entrypoints=web"
-            #- "traefik.http.routers.portainer-local.rule=Host(`portainer.wavesnake.local`)"
-            #- "traefik.http.routers.portainer-local.service=portainer-local"
-            ##- "traefik.http.services.portainer-local.loadbalancer.passhostheader=true"
-            ##- "traefik.http.services.portainer-local.loadbalancer.sticky=true"
-            #- "traefik.http.services.portainer-local.loadbalancer.server.port=9000"
-
-            # This section is for external http access
-            - "traefik.http.routers.portainer-external.entrypoints=web"
-            - "traefik.http.routers.portainer-external.rule=Host(`adm.wavesnake.dk`)"
-            - "traefik.http.routers.portainer-external.service=portainer-external"
-            - "traefik.http.services.portainer-external.loadbalancer.server.port=9000"
-            - "traefik.http.middlewares.portainer-https-redirect.redirectscheme.scheme=https"
-            - "traefik.http.middlewares.portainer-https-redirect.redirectscheme.permanent=true"
-            - "traefik.http.routers.portainer-external.middlewares=portainer-https-redirect"
-
-            # This section is for external https access
-            - "traefik.http.routers.portainer-secure.entrypoints=secure"
-            - "traefik.http.routers.portainer-secure.rule=Host(`adm.wavesnake.dk`)"
-            - "traefik.http.routers.portainer-secure.tls=true"
-            - "traefik.http.routers.portainer-secure.tls.certresolver=http"
-            - "traefik.http.routers.portainer-secure.service=portainer-secure"
-            - "traefik.http.services.portainer-secure.loadbalancer.server.port=9000"
 
 
           networks:
@@ -196,6 +221,32 @@ write_files:
             placement:
               constraints: [node.role == manager]
 
+            labels:
+              - "traefik.enable=true"
+    
+              # This section is for local http access ( at this moment this does not work )
+              - "traefik.http.routers.portainer-local.entrypoints=web"
+              - "traefik.http.routers.portainer-local.rule=Host(`portainer.wavesnake.local`)"
+              - "traefik.http.routers.portainer-local.service=portainer-local"
+              - "traefik.http.services.portainer-local.loadbalancer.server.port=9000"
+
+              # This section is for external http access
+              - "traefik.http.routers.portainer-external.entrypoints=web"
+              - "traefik.http.routers.portainer-external.rule=Host(`adm.wavesnake.dk`)"
+              - "traefik.http.routers.portainer-external.service=portainer-external"
+              - "traefik.http.services.portainer-external.loadbalancer.server.port=9000"
+              - "traefik.http.middlewares.portainer-https-redirect.redirectscheme.scheme=https"
+              - "traefik.http.middlewares.portainer-https-redirect.redirectscheme.permanent=true"
+              - "traefik.http.routers.portainer-external.middlewares=portainer-https-redirect"
+
+              # This section is for external https access
+              - "traefik.http.routers.portainer-secure.entrypoints=secure"
+              - "traefik.http.routers.portainer-secure.rule=Host(`adm.wavesnake.dk`)"
+              - "traefik.http.routers.portainer-secure.tls=true"
+              - "traefik.http.routers.portainer-secure.tls.certresolver=http"
+              - "traefik.http.routers.portainer-secure.service=portainer-secure"
+              - "traefik.http.services.portainer-secure.loadbalancer.server.port=9000"
+
       networks:
         traefik-public:
           external: true
@@ -210,16 +261,7 @@ write_files:
 
       services:
         traefik:
-          image: traefik:v2.1.1
-
-          command:
-            # This section is for Docker provider
-            - "--providers.docker.endpoint=unix:///var/run/docker.sock"
-            - "--providers.docker.swarmMode=true"
-            - "--providers.docker.exposedbydefault=false"
-            # This section is for File provider
-            - "--providers.file.filename=traefik.yml"
-            - "--providers.file.watch=true"
+          image: traefik:v2.2.0
 
           ports:
             - 80:80
@@ -251,31 +293,6 @@ write_files:
               delay: 5s
               max_attempts: 3
               window: 120s
-
-          labels:
-            - "traefik.enable=true"
-
-            # This section is for local http access to Traefik
-            - "traefik.http.routers.local.rule=Host(`traefik.wavesnake.local`)"
-            - "traefik.http.routers.local.entrypoints=web"
-            - "traefik.http.routers.local.service=api@internal"
-            - "traefik.http.routers.local.middlewares=traefik-auth"
-
-            # This section is for external http access to Traefik, redirected to https
-            - "traefik.http.routers.api.rule=Host(`traefik.wavesnake.dk`)"
-            - "traefik.http.routers.api.entrypoints=web"
-            - "traefik.http.routers.api.middlewares=traefik-auth"
-            - "traefik.http.middlewares.traefik-auth.basicauth.users=manager:$$apr1$$ktr40m5i$$IPyM/4bfex8WbfpmsNl.9."
-
-            # This section is for external https access to Traefik
-            - "traefik.http.middlewares.traefik-https-redirect.redirectscheme.scheme=https"
-            - "traefik.http.routers.api.middlewares=traefik-https-redirect"
-            - "traefik.http.routers.traefik-secure.entrypoints=secure"
-            - "traefik.http.routers.traefik-secure.rule=Host(`traefik.wavesnake.dk`)"
-            - "traefik.http.routers.traefik-secure.middlewares=traefik-auth"
-            - "traefik.http.routers.traefik-secure.tls=true"
-            - "traefik.http.routers.traefik-secure.tls.certresolver=http"
-            - "traefik.http.routers.traefik-secure.service=api@internal"
 
       networks:
         traefik-public:
@@ -321,6 +338,7 @@ write_files:
         docker:
           endpoint: "unix:///var/run/docker.sock"
           exposedByDefault: false
+          swarmMode: true
         file:
           filename: "ssh.yml"
           watch: true
@@ -335,9 +353,42 @@ write_files:
     path: /opt/containers/traefik/data/traefik.yml
 
   #
-  # Traefik ssh.yml to proxy SSH thru Traefik
-  #
+  # Traefik Dynamic Configuration file ssh.yml 
+  # Setup Traefik API routes and proxy SSH thru Traefik
+  # 
   - content: |
+      http:
+        routers:
+          local:
+            rule: "Host(`traefik.wavesnake.local`)"
+            entrypoints: web
+            service: api@internal
+            middleware: traefik-auth
+
+          external:
+            rule: "Host(`traefik.wavesnake.dk`)"
+            entrypoint: web
+            middleware: traefik-auth
+            middleware: traefik-redirect
+            service: api@internal
+
+          secure:
+            rule: "Host(`traefik.wavesnake.dk`)"
+            middleware: traefik-auth
+            entrypoint: secure
+            service: api@internal
+            certresolver: http
+
+        middlewares:
+          traefik-auth:
+            basicauth:
+              users:
+                - manager:$$apr1$$ktr40m5i$$IPyM/4bfex8WbfpmsNl.9.
+
+          traefik-redirect:
+            redirectScheme:
+              scheme: https
+              permanent: true
 
       tcp:
         services:
@@ -373,7 +424,31 @@ write_files:
             service: "ssh-ws04"
     path: /opt/containers/traefik/data/ssh.yml
 
+  # 
+  # Bridge Script to be run after each reboot
+  #
+  - content: |
+      sudo iptables -t nat -A POSTROUTING -o wlan0 -j MASQUERADE
+      sudo iptables -A FORWARD -i wlan0 -o eth0 -m state --state RELATED,ESTABLISHED -j ACCEPT
+      sudo iptables -A FORWARD -i eth0 -o wlan0 -j ACCEPT
+    path: /home/manager/bridge.sh
+  # 
+  # NFS Exports settings
+  #
+  - content: |
+      /mnt/nfs 192.168.230.1(rw,root_squash)
+    path: /etc/exports
+    # UUID="bd44867c-447c-4f85-8dbf-dc6b9bc65c91"    /srv/nfs    auto    nosuid,nodev,nofail,noatime 0 0
+  #
+  # Edit FSTAB add USB-DB and USB-NFS
+  # OBS! Lines must be appended
+  # AND first find UUID of USB stick
+  - content: |
+      UUID="bd44867c-447c-4f85-8dbf-dc6b9bc65c91" /mnt/nfs auto nosuid,nodev,nofail,noatime 0 0  
+    path: /etc/exports 
+#
 # These commands will be run once on first boot only
+#
 runcmd:
   # Restart Avahi daemon
   - 'logger !!! wavesnake !!! Restart avahi-deamon'  
@@ -381,8 +456,8 @@ runcmd:
 
   # Set Fake HW Date, Restart NTP, workaround for Debian Buster time initialization
   - 'logger !!! wavesnake !!! Workaround for Buster Fake Time error initializing date/time'
-  - 'sudo date --set 2020-03-05'
-  - 'sudo date --set 16:38:25'
+  - 'sudo date --set 2020-10-15'
+  - 'sudo date --set 17:46:33'
   - 'sudo service ntp --full-restart'
   - 'sudo sleep 15'
   - 'sudo date'
@@ -406,7 +481,7 @@ runcmd:
   - 'logger !!! wavesnake !!! Install packages'
   - 'sudo apt-get -y install acl'
   - 'sudo apt-get -y install sshfs'
-  
+  - 'sudo apt-get -y install nfs-common nfs-kernel-server'
   # Install Dynamic DNS Client
   #- 'DYNAMIC-DNS'
 
@@ -437,13 +512,28 @@ runcmd:
   - 'sudo iptables -t nat -A POSTROUTING -o wlan0 -j MASQUERADE'
   - 'sudo iptables -A FORWARD -i wlan0 -o eth0 -m state --state RELATED,ESTABLISHED -j ACCEPT'
   - 'sudo iptables -A FORWARD -i eth0 -o wlan0 -j ACCEPT'
-  
-  # Prepare save of IPTables Docker might do this already
+
+  # Setup cron job to add bridge rules to iptables after reboot
+  - 'sudo chmod +x /home/manager/bridge.sh'
+  - 'sudo sed  -i "$ a\@reboot	root /home/manager/bridge.sh" /etc/crontab'
+
+  # Prepare save of IPTables (Docker might do this already)
   #- 'sudo touch /etc/rc.local'
 
-  # Create Container files
+  # Skip Locale check on User Session Startup
+  - 'sudo touch /var/lib/cloud/instance/locale-check.skip'
+
+  # Setup NFS Services
+  - 'sudo mkdir -p /mnt/nfs'
+  - 'sudo systemctl enable rpcbind.service'
+  - 'sudo systemctl enable nfs-server.service'
+  - 'sudo systemctl start rpcbind.service'
+  - 'sudo systemctl start nfs-server.service'
+
+  # Create Container directory
   - 'logger !!! wavesnake !!! Create container files'
   - 'sudo mkdir -p /opt/containers'
+
   # Traefik
   - 'sudo mkdir -p /opt/containers/traefik'
   - 'sudo mkdir -p /opt/containers/traefik/data'
@@ -460,6 +550,8 @@ runcmd:
   - 'sudo mkdir -p /opt/containers/redis/data'
   # Mosquitto
   - 'sudo mkdir -p /opt/containers/mosquitto'
+  - 'sudo mkdir -p /opt/containers/mosquitto/config'
+  - 'sudo mkdir -p /opt/containers/mosquitto/cconfig/conf.d'
   - 'sudo mkdir -p /opt/containers/mosquitto/data'
   # SnakeApi
   - 'sudo mkdir -p /opt/containers/snakeapi'
@@ -470,35 +562,30 @@ runcmd:
   # MariaDB
   - 'sudo mkdir -p /opt/containers/mariadb'
   - 'sudo mkdir -p /opt/containers/mariadb/data'
+  # Environment
+  - 'sudo mkdir -p /opt/containers/environment'
+  # Synchronization
+  - 'sudo mkdir -p /opt/containers/synchronization'
   # Set rights on container files
   - 'sudo chgrp -R manager /opt/containers'
-  - 'sudo chmod g+w /opt/containers -R'
-  - 'sudo chmod 600 /opt/containers/traefik/data/acme.json'
+  - 'chown -R manager /opt/containers'
+  - 'sudo chmod a+rw /opt/containers -R'
 
-  # Give sudo group members write permission on /opt/containers + subfolders/files
-  #- 'sudo chown -R manager:manager /opt/containers'
-  #- 'sudo chown manager:manager /opt/containers'
-  #- 'sudo chmod g+w /opt/containers -R'
-  # Add these 
-  # sudo chgrp -R manager snakelogs/ "Recursiveely change the directory's group"
-  # sudo chmod g+w snakelogs -R "Recursively add write permission to the directory's group member's"
-  #- 'sudo chmod 600 /opt/containers/traefik/data/acme.json'
-  #- 'sudo chmod g+w /opt/containers -R'
-  # Set special rights on acme.json file
-  #- 'sudo chmod 600 /opt/containers/traefik/data/acme.json'
+  # set special rights on ACME file
+  - 'sudo chmod 600 /opt/containers/traefik/data/acme.json'
   
   # Create log directories
   - 'logger !!! wavesnake !!! Create log files'
   - 'sudo mkdir -p /var/log/traefik'
   - 'sudo mkdir -p /var/log/snakelogs'
   - 'sudo mkdir -p /var/log/mosquitto'
-  # Set rights on log files
-  - 'sudo chgrp -R manager /var/log/snakelogs'
-  - 'sudo chgrp -R manager /var/log/traefik'
-  - 'sudo chgrp -R manager /var/log/mosquitto'
-  - 'sudo chmod g+w /var/log/snakelogs -R'
-  - 'sudo chmod g+w /var/log/traefik -R'
-  - 'sudo chmod g+w /var/log/mosquitto -R'
+  - 'sudo mkdir -p /var/log/redis'
+
+  # Set Owner and rights on log files
+  - 'sudo chown -R manager /var/log/snakelogs'
+  - 'sudo chown -R manager /var/log/traefik'
+  - 'sudo chown -R manager /var/log/mosquitto'
+  - 'sudo chown -R manager /var/log/redis'
 
   # Create Docker network
   - 'logger !!! wavesnake !!! Create Traefik network'
@@ -518,10 +605,14 @@ runcmd:
        "--compose-file", "/opt/containers/portainer/docker-compose.yml",
        "portainer"
     ]
+  # Create NFS File Sharing
+  - 'logger !!! wavesnake !!! Configure fstab entries for NFS'
 
   - 'logger !!! wavesnake !!! End of RUNCMD'
   
   #
   # Below command requires that we know the UUID of the mounted USB stick
-  # Also this must be done on the DB server
+  # and then append a line for each USB stick
+  # Also this must be done on the DB Node
   #- 'echo "/dev/disk/by-uuid/3433-3231 /media/data vfat auto,nofail,noatime,users,rw,uid=manager,gid=manager 0 0" >> /etc/fstab'
+  #- 'mount nfs disk !!!!' Must be done on the WS01 Node
