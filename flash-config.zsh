@@ -131,6 +131,9 @@ function EditProperties()
    # Swarm Common properties
    echo -n "Editing GLOBAL Properties"
    
+   # Redis properties
+   sed -i -n "s#REDIS-DEFAULT-CONFIG#$REDIS_DEFAULT_CONFIG#" new-user-data
+
    # Global application properties
    sed -i -n "s#REDIS-MASTER-SERVER-ADDRESS#$REDIS_MASTER_SERVER_ADDRESS#" new-user-data
    sed -i -n "s#REDIS-MASTER-SERVER-PORT#$REDIS_MASTER_SERVER_PORT#" new-user-data
@@ -571,6 +574,9 @@ function ListProperties()
    echo -e "SKETCH_SERVER_PORT: " $SKETCH_SERVER_PORT
    echo -e "APPLICATION_LIST: " $APPLICATION_LIST
    echo -e "ENVIRONMENT_LIST: " $ENVIRONMENT_LIST
+
+   # Test of json string
+   echo -e "REDIS_DEFAULT_CONFIG: " $REDIS_DEFAULT_CONFIG
    echo -e "---------- $1 ----------\n"
 }
 
@@ -604,6 +610,12 @@ function ReadProperties()
    DB_SERVER_URL=$DB_SERVER_URL
    MQTT_SERVER_URL=$MQTT_SERVER_URL
    SKETCH_SERVER_URL=$INTERNAL_SKETCH_SERVER_URL
+
+   # Swarm Application DNS Prefix's
+   API_PREFIX=$API_PREFIX
+   DB_PREFIX=$DB_PREFIX
+   MQTT_PREFIX=$MQTT_PREFIX
+   SKETCH_PREFIX=$SKETCH_PREFIX
 
    # Swarm Internal Application URL's
    INTERNAL_API_SERVER_URL=$INTERNAL_API_SERVER_URL
@@ -673,6 +685,8 @@ function ReadProperties()
 
    # USB Drive mount command
    USB_MOUNT_COMMAND=$USB_MOUNT_COMMAND
+
+   REDIS_DEFAULT_CONFIG=$REDIS_DEFAULT_CONFIG
 }
 
 function SetNetAddress()

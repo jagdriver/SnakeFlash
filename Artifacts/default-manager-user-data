@@ -59,6 +59,12 @@ package_upgrade: false
 # # - use `wpa_passphrase SSID PASSWORD` to encrypt the psk
 write_files:
   #
+  # Redis.prop (Not finished)
+  #
+  - content: |
+      REDIS-DEFAULT-CONFIG
+    path:  /opt/containers/configuration/redis.prop
+  #
   # Global.prop (Not finished)
   #
   - content: |
@@ -75,7 +81,6 @@ write_files:
       REDIS_REPLICA_SERVER_PORT=REDIS-REPLICA-SERVER-PORT
       MANAGER_PASSWORD=MANAGER-PASSWORD
       MANAGER_NAME=MANAGER-NAME
-
     path:  /opt/containers/configuration/global.prop
   #
   # SnakeApi.prop (Not finished)
@@ -433,19 +438,20 @@ write_files:
       sudo iptables -A FORWARD -i eth0 -o wlan0 -j ACCEPT
     path: /home/manager/bridge.sh
   # 
+  # NFS Crontab script, Mount & Export NFS file system
+  # 
+  - content: |
+      sudo mount /dev/sda1 /mnt/nfs
+      sudo exportfs -r
+    path: /home/manager/nfs.sh
+  # 
   # NFS Exports settings (not finished)
-  #
+  # 
   - content: |
-      /mnt/nfs WS01-IP-ADDRESS(rw,root_squash)
+      /mnt/nfs WS02-IP-ADDRESS(rw,sync,no_subtree_check)
+      /mnt/nfs WS03-IP-ADDRESS(rw,sync,no_subtree_check)
+      /mnt/nfs WS04-IP-ADDRESS(rw,sync,no_subtree_check)
     path: /etc/exports
-    # UUID="bd44867c-447c-4f85-8dbf-dc6b9bc65c91"    /srv/nfs    auto    nosuid,nodev,nofail,noatime 0 0
-  #
-  # Edit FSTAB add USB-DB and USB-NFS (Not finished)
-  # OBS! Lines must be appended
-  # AND first find UUID of USB stick
-  - content: |
-      UUID="bd44867c-447c-4f85-8dbf-dc6b9bc65c91" /mnt/nfs auto nosuid,nodev,nofail,noatime 0 0  
-    path: /etc/exports 
 #
 # These commands will be run once on first boot only
 #
@@ -481,7 +487,9 @@ runcmd:
   - 'logger !!! wavesnake !!! Install packages'
   - 'sudo apt-get -y install acl'
   - 'sudo apt-get -y install sshfs'
-  - 'sudo apt-get -y install nfs-common nfs-kernel-server'
+  - 'sudo apt-get -y install nfs-common'
+  - 'sudo apt-get -y install nfs-kernel-server'
+  - 'sudo apt-get -y install rpcbind'
   # Install Dynamic DNS Client
   #- 'DYNAMIC-DNS'
 
@@ -517,21 +525,29 @@ runcmd:
   - 'sudo chmod +x /home/manager/bridge.sh'
   - 'sudo sed  -i "$ a\@reboot	root /home/manager/bridge.sh" /etc/crontab'
 
+  # Setup cron job to startup NFS server on reboot
+  - 'sudo chmod +x /home/manager/nfs.sh'
+  - 'sudo sed  -i "$ a\@reboot	root /home/manager/nfs.sh" /etc/crontab'
+
   # Prepare save of IPTables (Docker might do this already)
   #- 'sudo touch /etc/rc.local'
 
   # Skip Locale check on User Session Startup
   - 'sudo touch /var/lib/cloud/instance/locale-check.skip'
 
-  # Setup NFS Services
+  # Setup & Start NFS Services
+  - 'logger !!! wavesnake !!! Setup and Start NFS Services'
   - 'sudo mkdir -p /mnt/nfs'
+  - 'sudo chown -R manager:manager /mnt/nfs'
   - 'sudo systemctl enable rpcbind.service'
   - 'sudo systemctl enable nfs-server.service'
   - 'sudo systemctl start rpcbind.service'
   - 'sudo systemctl start nfs-server.service'
+  - 'sudo mount /dev/sda1 /mnt/nfs'
+  - 'sudo exportfs -r'
 
   # Create Container directory
-  - 'logger !!! wavesnake !!! Create container files'
+  - 'logger !!! wavesnake !!! Create container directory and files'
   - 'sudo mkdir -p /opt/containers'
 
   # Traefik
