@@ -25,7 +25,7 @@ INTERNAL_SWARM_IP_NET="192.168.230.0"
 
 # MANAGER Properties
 MANAGER_NAME="manager"
-MANAGER_PASSWORD="your manager password"
+MANAGER_PASSWORD="your-manager-password"
 MANAGER_ENCRYPTED_PASSWORD="$6$$lkFOYhhCGZiVmaOiZxSrpcvun.YOgyWuin0l0/aHRkep9sHrMTVp4uzHsAkTIJ.q3c8RuTA.NUNE8yqrh72O5/"
 
 # Node properties

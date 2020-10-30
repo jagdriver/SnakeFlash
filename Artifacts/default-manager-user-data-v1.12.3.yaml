@@ -3,6 +3,8 @@
 #
 
 # This file is the !! SWARM MANAGER NODE !! Default Flash config.
+# Version: 1.12.3 
+# The version are paired with Hypriot OS version 1.12.13.
 # You can change the configuration directly in the file or
 # run ./flash-config.zsh in the flash directory to be guided
 # thru the setup.
@@ -13,21 +15,20 @@
 # TODO: Docker label must be set
 # TODO: Docker port must be set
 # TODO: Keep 2.4G radio
-# TODO: Change Node name to ws001 while testing
 
 # Set your hostname here, the manage_etc_hosts will update the hosts file entries as well
-hostname: ws001
+hostname: NODE-NAME
 manage_etc_hosts: false
 
 # You could modify this for your own user information
 users:
-  - name: manager
+  - name: MANAGER-NAME
     gecos: "Wavesnake Manager"
     sudo: ALL=(ALL) NOPASSWD:ALL
     shell: /bin/bash
     groups: users,docker,video,input
-    plain_text_passwd: wavesnake
-    #passwd: 21965lkFOYhhCGZiVmaOiZxSrpcvun.YOgyWuin0l0/aHRkep9sHrMTVp4uzHsAkTIJ.q3c8RuTA.NUNE8yqrh72O5/
+    plain_text_passwd: MANAGER-PASSWORD
+    #passwd: MANAGER-ENCRYPTED-PASSWORD
     lock_passwd: false
     ssh_authorized_keys:
       - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCdpRpqR6pSdoXVLH7pIFkVXY9KIZJVA0wfKlqvpeHD/iKl+0dVU0xRoZYO/+Bot2i0rTJdfTPjcGpgMm4rpqkLfUT6ryyGFRSMF/yObUf9vCCPlz/nRh//PQfAN+JPK61z104EeatHbQhSHuHhJPzVDBNYLhsi7O1wsOkTTtSMs1Xos28HXdB+gpKup1Uddb4lq+GkB110IN3mjHYo4Tckl5VNH9cmWBTYvyVSgzv3hIG2ur/jrQMB2dLzqkchjrKpV1VLjW4dpxNlSTRt/1eo+KCjRraBYALL8t5xiLZHSx/6mA91eQU2zBDufJKWzy93vdzd6r3DJcqDIAzQ2PFP nielsjorgennielsen@snakemacpro.local
@@ -36,11 +37,11 @@ users:
     chpasswd: { expire: false }
 
 # # Set the locale of the system
-locale: "en_US.UTF-8"
+locale: "SWARM-LOCALE"
 
 # # Set the timezone
 # # Value of 'timezone' must exist in /usr/share/zoneinfo
-timezone: "Europe/Copenhagen"
+timezone: "TIME-ZONE"
 
 # # Update apt packages on first boot
 package_update: false
@@ -60,87 +61,128 @@ package_upgrade: false
 # # - use `wpa_passphrase SSID PASSWORD` to encrypt the psk
 write_files:
   #
-  # Redis.prop (Not finished)
-  #
+  # Redis.prop (Must be tested)
+  # This must be a valid json file 
   - content: |
-      {'REDIS_MASTER_SERVER_ADDRESS':'192.168.1.220','REDIS_MASTER_SERVER_PORT':'8376'}
+      {
+        "REDIS_MASTER_SERVER_ADDRESS":"REDIS-MASTER-SERVER-ADDRESS",
+        "REDIS_MASTER_SERVER_PORT":"REDIS-MASTER-SERVER-PORT",
+        "REDIS_REPLICA_SERVER_ADDRESS":"REDIS-REPLICA-SERVER-ADDRESS",
+        "REDIS_REPLICA_SERVER_PORT":"REDIS-REPLICA-SERVER-PORT"
+      }
     path:  /opt/containers/configuration/redis.prop
   #
-  # Global.prop (Not finished)
+  # Global.prop (Must be tested)
   #
   - content: |
-      LOG_PATH=LOG-PATH
-      API_SERVER_ADDRESS=192.168.1.220
-      API_SERVER_PORT=80
-      MQTT_SERVER_ADDRESS=192.168.1.220
-      MQTT_SERVER_PORT=6379
-      SKETCH_SERVER_ADDRESS=192.168.1.220
-      SKETCH_SERVER_PORT=80
-      REDIS_MASTER_SERVER_ADDRESS=192.168.230.1
-      REDIS_MASTER_SERVER_PORT=8376
-      REDIS_REPLICA_SERVER_ADDRESS=192.168.230.4
-      REDIS_REPLICA_SERVER_PORT=8376
-      MANAGER_PASSWORD=wavesnake
-      MANAGER_NAME=manager
+      {
+      "LOG_PATH":"LOG-PATH",
+      "API_SERVER_ADDRESS":"API-SERVER-ADDRESS",
+      "API_SERVER_PORT":"API-SERVER-PORT",
+      "MQTT_SERVER_ADDRESS":"MQTT-SERVER-ADDRESS",
+      "MQTT_SERVER_PORT":"MQTT-SERVER-PORT",
+      "SKETCH_SERVER_ADDRESS":"SKETCH-SERVER-ADDRESS",
+      "SKETCH_SERVER_PORT":"SKETCH-SERVER-PORT",
+      "REDIS_MASTER_SERVER_ADDRESS":"REDIS-MASTER-SERVER-ADDRESS",
+      "REDIS_MASTER_SERVER_PORT":"REDIS-MASTER-SERVER-PORT",
+      "REDIS_REPLICA_SERVER_ADDRESS":"REDIS-REPLICA-SERVER-ADDRESS",
+      "REDIS_REPLICA_SERVER_PORT":"REDIS-REPLICA-SERVER-PORT",
+      "MANAGER_PASSWORD":"MANAGER-PASSWORD",
+      "MANAGER_NAME":"MANAGER-NAME"
+      }
     path:  /opt/containers/configuration/global.prop
   #
-  # SnakeApi.prop (Not finished)
+  # SnakeApi.prop (Must be tested)
   #
   - content: |
-      DEFAULT_SQL_TEMPLATE=DEFAULT-SQL-TEMPLATE
-      CREATE_USER_TEMPLATE=CREATE-USER-TEMPLATE
-      DELETE_USER_TEMPLATE=DELETE-USER-TEMPLATE
+      {
+      "DEFAULT_SQL_TEMPLATE":"DEFAULT-SQL-TEMPLATE",
+      "CREATE_USER_TEMPLATE":"CREATE-USER-TEMPLATE",
+      "DELETE_USER_TEMPLATE":"DELETE-USER-TEMPLATE"
+      }
     path:  /opt/containers/configuration/snakeapi.prop
   #
-  # SnakeConfig.prop (Not finished)
+  # SnakeConfig.prop (Must be tested)
   #
   - content: |
-      APPLICATION_LIST=SnakeApi,SnakeHistory,SnakeUtil,SnakeConfig,SnakeTimer,SnakeConsole
-      ENVIRONMENT_LIST=Development,Test,Production
+      {
+      "APPLICATION_LIST":"APPLICATION-LIST",
+      "ENVIRONMENT_LIST":"ENVIRONMENT-LIST"
+      }
     path:  /opt/containers/configuration/snakeconfig.prop
   #
-  # SnakeUtil.prop (Not finished)
+  # SnakeUtil.prop (Must be tested)
   #
   - content: |
-      DNS_PROVIDER_LIST=DNS-PROVIDER-LIST
-      DNS_PROVIDER_ID=DNS-PROVIDER-ID
-      DNS_PROVIDER_URL=DNS-PROVIDER-URL
-      DNS_PROVIDER_USER=Your GratisDNS user
-      DNS_PROVIDER_PASSWORD=DYNAMIC-DNS-PASSWORD
+      {
+      "DNS_PROVIDER_LIST":"DNS-PROVIDER-LIST",
+      "DNS_PROVIDER_ID":"DNS-PROVIDER-ID",
+      "DNS_PROVIDER_URL":"DNS-PROVIDER-URL",
+      "DNS_PROVIDER_USER":"DYNAMIC-DNS-USER",
+      "DNS_PROVIDER_PASSWORD":"DYNAMIC-DNS-PASSWORD"
+      }
     path:  /opt/containers/configuration/snakeutil.prop
   #
-  # SnakeHistory.prop (Not finished)
+  # SnakeHistory.prop (Must be tested)
   #
   - content: |
-      HISTORY_DB_NAME=HISTORY-DB-NAME
+      {
+      "HISTORY_DB_NAME":"HISTORY-DB-NAME"
+      }
     path:  /opt/containers/configuration/snakehistory.prop
   #
-  # NodeName.env
+  # NodeName.env ( Should this be a json file?)
   #
   - content: |
-      NODE_NAME=ws001
+      NODE_NAME=NODE-NAME
     path:  /opt/containers/environment/nodename.env
   #
-  # WiFi interface setup
+  # ETH0 interface setup
   #
   - content: |
-      allow-hotplug wlan0
-      iface wlan0 inet dhcp
+      auto wlan0
+      iface eth0 inet static
+      address ETH0-IP-ADDRESS
+      network ETH0-LAN-ADDRESS
+      netmask ETH0-LAN-NETMASK
+      gateway ETH0-STATIC-ROUTERS
+      dns-nameservers ETH0-DNS-SERVERS
+    path: /etc/network/interfaces.d/eth0
+  #
+  # WiFi interface setup
+  # allow-hotplug wlan0
+  # iface wlan0 inet dhcp
+  - content: |
+      auto wlan0
+      iface wlan0 inet static
+      address WLAN0-IP-ADDRESS
+      network WLAN0-LAN-ADDRESS
+      netmask WLAN0-LAN-NETMASK
+      gateway WLAN0-STATIC-ROUTERS
+      dns-nameservers WLAN0-DNS-SERVERS
       wpa-conf /etc/wpa_supplicant/wpa_supplicant.conf
-      iface default inet dhcp
     path: /etc/network/interfaces.d/wlan0
   #
   # WiFi properties setup
   #
   - content: |
-      country=DK
+      country=COUNTRY-CODE
       ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
       update_config=1
       network={
-        ssid="Toften8_2.4G"
-        psk="Jaguarxk120"
+        ssid="WIFI-SSID"
+        psk="WIFI-PASSWD"
       }
     path: /etc/wpa_supplicant/wpa_supplicant.conf
+  #
+  # Disable cloud-init DHCP
+  # The DHCP Service will be masked 
+  # So if you need  DHCP, unmask and start the service
+  #
+  - content: |
+      network: {config: disabled}
+    path: /etc/cloud/cloud.cfg.d/95-debian-network-config.cfg
+
   #
   # dhcpcd.conf static network setup
   #
@@ -150,24 +192,24 @@ write_files:
       slaac private
       # static IP configuration:
       interface eth0
-      static ip_address=192.168.230.1/24
+      static ip_address=ETH0-IP-ADDRESS/24
       # No eth0 static routes on manager node
-      # static routers=192.168.230.1
-      static domain_name_servers=8.8.8.8 8.8.4.4
+      # static routers=ETH0-STATIC-ROUTERS
+      static domain_name_servers=ETH0-DNS-SERVERS
       interface wlan0
-      static ip_address=192.168.1.220/24
-      static routers=192.168.1.1
-      static domain_name_servers=8.8.8.8 8.8.4.4
+      static ip_address=WLAN0-IP-ADDRESS/24
+      static routers=WLAN0-STATIC-ROUTERS
+      static domain_name_servers=WLAN0-DNS-SERVERS
     path: /etc/dhcpcd.conf
   #
   # Hosts
   #
   - content: |
-      127.0.1.1 ws001 ws001.wavesnake.local
+      127.0.1.1 NODE-NAME NODE-NAME.INTERNAL-DOMAIN-NAME
       127.0.0.1 localhost
-      192.168.230.2 ws02 ws02.wavesnake.local
-      192.168.230.3 ws03 ws03.wavesnake.local
-      192.168.230.4 ws04 ws04.wavesnake.local
+      DNS-STRING1
+      DNS-STRING2
+      DNS-STRING3
 
       # The following lines are desirable for IPv6 capable hosts
       ::1 ip6-localhost ip6-loopback
@@ -352,7 +394,7 @@ write_files:
       certificatesResolvers:
         http:
           acme:
-            email: jagdriver@hotmail.com
+            email: ACME-EMAIL-ADDRESS
             storage: acme.json
             httpChallenge:
               entryPoint: web
@@ -401,15 +443,15 @@ write_files:
           ssh-ws02:
             loadBalancer:
               servers:
-                - address: "192.168.230.2:22"
+                - address: "WS02-IP-ADDRESS:22"
           ssh-ws03:
             loadBalancer:
               servers:
-                - address: "192.168.230.3:22"
+                - address: "WS03-IP-ADDRESS:22"
           ssh-ws04:
             loadBalancer:
               servers:
-                - address: "192.168.230.4:22"
+                - address: "WS04-IP-ADDRESS:22"
         routers:
           ssh-route-ws02:
             entryPoints:
@@ -440,18 +482,18 @@ write_files:
     path: /home/manager/bridge.sh
   # 
   # NFS Crontab script, Mount & Export NFS file system
-  # 
+  # I might mount the NFS drive in FSTAB instead
   - content: |
       sudo mount /dev/sda1 /mnt/nfs
       sudo exportfs -r
     path: /home/manager/nfs.sh
   # 
   # NFS Exports settings (not finished)
-  # 
+  # How to get the right  ip addresses
   - content: |
-      /mnt/nfs 192.168.230.2(rw,sync,no_subtree_check)
-      /mnt/nfs 192.168.230.3(rw,sync,no_subtree_check)
-      /mnt/nfs 192.168.230.4(rw,sync,no_subtree_check)
+      /mnt/nfs WS02-IP-ADDRESS(rw,sync,no_subtree_check)
+      /mnt/nfs WS03-IP-ADDRESS(rw,sync,no_subtree_check)
+      /mnt/nfs WS04-IP-ADDRESS(rw,sync,no_subtree_check)
     path: /etc/exports
 #
 # These commands will be run once on first boot only
@@ -463,17 +505,17 @@ runcmd:
 
   # Set Fake HW Date, Restart NTP, workaround for Debian Buster time initialization
   - 'logger !!! wavesnake !!! Workaround for Buster Fake Time error initializing date/time'
-  - 'sudo date --set 2020-10-17'
-  - 'sudo date --set 09:18:58'
+  - 'sudo date --set ISO-DATE'
+  - 'sudo date --set ISO-TIME'
   - 'sudo service ntp --full-restart'
   - 'sudo sleep 15'
   - 'sudo date'
   
   # Create IP route between ETH0 & WLAN0
   - 'logger !!! wavesnake !!! Create bidirectional Route between WLAN0 network and ETH0 network'
-  - 'sudo ip route delete default via 192.168.230.1'
-  - 'sudo ip route delete default via 192.168.1.1'
-  - 'sudo ip route add default via 192.168.1.1 dev wlan0 src 192.168.1.220 metric 100'
+  - 'sudo ip route delete default via ETH0-IP-ADDRESS'
+  - 'sudo ip route delete default via WLAN0-STATIC-ROUTERS'
+  - 'sudo ip route add default via WLAN0-STATIC-ROUTERS dev wlan0 src WLAN0-IP-ADDRESS metric 100'
   
   # Start WLAN0 interface and wait 15 sec.
   - 'logger !!! wavesnake !!! Start WiFi Interface' 
@@ -495,10 +537,10 @@ runcmd:
   #- 'DYNAMIC-DNS'
 
   - 'logger !!! wavesnake !!! Docker Swarm Init with listen and advertise interface'
-  - 'docker swarm init --listen-addr eth0:2377 --advertise-addr eth0:2377'
+  - 'docker swarm init --listen-addr SWARM-INTERFACE:SWARM-PORT --advertise-addr SWARM-INTERFACE:SWARM-PORT'
 
   - 'logger !!! wavesnake !!! Docker Node Label'
-  - 'docker node update --label-add wsnode=ws001 ws001'
+  - 'docker node update --label-add wsnode=NODE-NAME NODE-NAME'
 
   # Setup manager
   - 'logger !!! wavesnake !!! Set manager as owner and set rights on home directory'
@@ -537,7 +579,7 @@ runcmd:
   - 'sudo touch /var/lib/cloud/instance/locale-check.skip'
 
   # Setup & Start NFS Services
-  - 'logger !!! wavesnake !!! Setup & Start NFS Services'
+  - 'logger !!! wavesnake !!! Setup and Start NFS Services'
   - 'sudo mkdir -p /mnt/nfs'
   - 'sudo chown -R manager:manager /mnt/nfs'
   - 'sudo systemctl enable rpcbind.service'
@@ -548,7 +590,7 @@ runcmd:
   - 'sudo exportfs -r'
 
   # Create Container directory
-  - 'logger !!! wavesnake !!! Create container directory & files'
+  - 'logger !!! wavesnake !!! Create container directory and files'
   - 'sudo mkdir -p /opt/containers'
 
   # Traefik
@@ -632,4 +674,4 @@ runcmd:
   # and then append a line for each USB stick
   # Also this must be done on the DB Node
   #- 'echo "/dev/disk/by-uuid/3433-3231 /media/data vfat auto,nofail,noatime,users,rw,uid=manager,gid=manager 0 0" >> /etc/fstab'
-  #- 'mount nfs disk !!!!' Must be done on the ws001 Node
+  #- 'mount nfs disk !!!!' Must be done on the WS01 Node

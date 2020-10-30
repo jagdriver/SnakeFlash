@@ -1,0 +1,2 @@
+- 'sudo sed  -i "$ a\@reboot	root /home/manager/bridge.sh" /etc/crontab'
+- 'sudo sed  -i "$ a\@reboot	root /home/manager/nfs.sh" /etc/crontab'

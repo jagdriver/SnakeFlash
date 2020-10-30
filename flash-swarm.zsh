@@ -22,7 +22,7 @@ read -p "Are you ready for Flashing $NODE? y/n " -n 1 -r
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
    cd $NODE
-   flash --force  --userdata user-data --metadata meta-data -d $DISK  https://github.com/hypriot/image-builder-rpi/releases/download/v1.12.3/hypriotos-rpi-v1.12.3.img.zip   
+   flash --force  --userdata user-data-test-1.12.3 --metadata meta-data -d $DISK  https://github.com/hypriot/image-builder-rpi/releases/download/v1.12.3/hypriotos-rpi-v1.12.3.img.zip   
    cd ..
    echo -e "\n"
 fi

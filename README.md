@@ -138,6 +138,131 @@ The configuration starts with preparing the information going into the configura
 You can find the properties in the file Artifacts/swarmconfig.txt.
 test test
 
+#
+# WaveSnake Swarm Properties
+#
+# --- New Properties section
+# You can change the Noded name prefix here eg. sn0
+NODENAME_PREFIX="ws0"
+
+# Number of nodde in the Swarm
+NODENAME_COUNT="4"
+
+# Change the WLAN0 address here. The script auto detects the current lan
+# address, so you just set the last byte of the IP address.
+WLAN0_IP_ADDRESS_LAST_BYTE="230"
+
+# Set the internal Swarm IP net.
+INTERNAL_SWARM_IP_NET="192.168.230.0"
+
+# --- New Properties section
+
+# MANAGER Properties
+MANAGER_NAME="manager"
+MANAGER_PASSWORD="your manager password"
+MANAGER_ENCRYPTED_PASSWORD="$6$$lkFOYhhCGZiVmaOiZxSrpcvun.YOgyWuin0l0/aHRkep9sHrMTVp4uzHsAkTIJ.q3c8RuTA.NUNE8yqrh72O5/"
+
+# Node properties
+NODE_NAME="ws01"
+SWARM_LOCALE="en_US.UTF-8"
+TIME_ZONE="Europe/Copenhagen"
+
+# Docker Swarm properties
+SWARM_MANAGER_NODE="ws01"
+SWARM_PORT="2377"
+SWARM_INTERFACE="eth0"
+SWARM_WORKER_TOKEN="SWMTKN-1-6cyk7y11vbx3e8sc5b8iqiao7sb9iyr8b2lheybtyjqhb8mfho-5bracqtjvzt2zcn7m0qp5w27w"
+SWARM_MANAGER_TOKEN="SWMTKN-1-6cyk7y11vbx3e8sc5b8iqiao7sb9iyr8b2lheybtyjqhb8mfho-cgxcsuzfarwy7m3eypj542pi1"
+
+# Swarm Application DNS Prefix's
+API_PREFIX="api"
+DB_PREFIX="sql"
+MQTT_PREFIX="mqt"
+SKETCH_PREFIX="sketch"
+
+# Swarm External Application URL's
+API_SERVER_URL="api.wavesnake.dk"
+DB_SERVER_URL="sql.wavesnake.dk"
+MQTT_SERVER_URL="mqt.wavesnake.dk"
+SKETCH_SERVER_URL="sketch.wavesnake.dk"
+
+# Swarm Internal Application URL's
+INTERNAL_API_SERVER_URL="api.wavesnake.local"
+INTERNAL_DB_SERVER_URL="sql.wavesnake.local"
+INTERNAL_MQTT_SERVER_URL="mqt.wavesnake.local"
+INTERNAL_SKETCH_SERVER_URL="sketch.wavesnake.local"
+
+# WiFi properties
+COUNTRY_CODE="DK"
+WIFI_SSID="Your WiFi ssid"
+WIFI_PASSWD="Your WiFi password"
+
+# Swarm Node ETH0 properties
+ETH0_LAN="192.168.230.0/24"
+ETH0_IP_ADDRESS="192.168.230.1"
+ETH0_STATIC_ROUTERS="192.168.230.1"
+ETH0_DNS_SERVERS="8.8.8.8 8.8.4.4"
+
+# Node names
+#WS01_NODE_NAME="ws01"
+#WS02_NODE_NAME="ws02"
+#WS03_NODE_NAME="ws03"
+#WS04_NODE_NAME="ws04"
+
+# Swarm Node IP Address
+WS01_IP_ADDRESS="192.168.230.1"
+WS02_IP_ADDRESS="192.168.230.2"
+WS03_IP_ADDRESS="192.168.230.3"
+WS04_IP_ADDRESS="192.168.230.4"
+
+# Manager Node WLAN0 properties
+WLAN0_LAN="192.168.1.0/24"
+WLAN0_IP_ADDRESS="192.168.1.220"
+WLAN0_STATIC_ROUTERS="192.168.1.1"
+WLAN0_DNS_SERVERS="8.8.8.8 8.8.4.4"
+
+# Domain properties
+INTERNAL_DOMAIN_NAME="wavesnake.local"
+EXTERNAL_DOMAIN_NAME="Your external domain name"
+
+# Dynamic DNS properties
+DYNAMIC_DNS_PROVIDER="1"
+DYNAMIC_DNS_USER="Your GratisDNS user"
+DYNAMIC_DNS_PASSWD="Your GratisDNS password"
+
+# ACME properties
+ACME_EMAIL_ADDRESS="yourmail@mailserver.com"
+
+# Traefik properties
+TRAEFIK_ENTRYPOINT_ADDRESS="192.168.1.220"
+
+# SnakeApi properties
+API_SERVER_ADDRESS="192.168.1.220"
+API_SERVER_PORT="80"
+
+# SnakeConfig properties
+APPLICATION_LIST="SnakeApi,SnakeHistory,SnakeUtil,SnakeConfig,SnakeTimer,SnakeConsole"
+ENVIRONMENT_LIST="Development,Test,Production"
+
+# Redis properties
+REDIS_MASTER_SERVER_ADDRESS="192.168.230.1"
+REDIS_MASTER_SERVER_PORT="8376"
+REDIS_REPLICA_SERVER_ADDRESS="192.168.230.4"
+REDIS_REPLICA_SERVER_PORT="8376"
+
+# Sketch properties
+SKETCH_SERVER_ADDRESS="192.168.1.220"
+SKETCH_SERVER_PORT="80"
+
+# MQTT properties
+MQTT_SERVER_ADDRESS="192.168.1.220"
+MQTT_SERVER_PORT="6379"
+
+# USB Drive mount Command (/dev/sda1: UUID="3FFB-6CC8")
+USB_MOUNT_COMMAND="echo \"/dev/sda1/by-uuid/USB_UUID /media/data/mariadb vfat auto,nofail,noatime,users,rw,uid=manager,gid=manager 0 0\" >> /etc/fstab"
+
+# Redis Default SnakeConfig
+REDIS_DEFAULT_CONFIG="{'REDIS_MASTER_SERVER_ADDRESS':'192.168.1.220','REDIS_MASTER_SERVER_PORT':'8376'}"
 
 
 
