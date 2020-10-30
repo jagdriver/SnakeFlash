@@ -25,9 +25,9 @@
             "type": "bashdb",
             "request": "launch",
             "name": "Bash-Debug1",
-            "internalConsoleOptions": "openOnSessionStart",
             "cwd": "${workspaceFolder}",
             "program": "/Volumes/Samsung_T5/Projects/VSCode/SnakeFlash/flash-config.zsh",
+            "terminalKind": "integrated",
             "args": []
         },
         {

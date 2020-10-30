@@ -23,7 +23,7 @@
 # 13 Make it possible to change Manager WiFi IP address
 # 14 Obfuscate passwords in files OK
 
-1RED='\033[0;31m'
+RED='\033[0;31m'
 GREEN='\033[0;32m'
 BLUE='\033[0;34m'
 NC='\033[0m'
@@ -791,8 +791,9 @@ function ConfigureManagerNode() {
          echo -e -n "You must supply password"
       else
          #MANAGER_PASSWORD=$(GetPWHash $REPLY)
-         MANAGER_PASSWORD=$REPLY
-         echo -e -n "${MANAGER_ENCRYPTED_PASSWORD}"
+         MANAGER_PASSWORD=$(python3 ./Artifacts/Hidepw.py $REPLY)
+         #MANAGER_PASSWORD=$REPLY
+         echo -e -n "${MANAGER_PASSWORD}"
          GETPW=false
       fi
    done
@@ -962,6 +963,7 @@ function ConfigureWiFiNetwork() {
          echo -e -n "You must provide WiFi SSID"
       else
          WIFI_PASSWD=$REPLY
+         WIFI_PASSWD=$(python3 ./Artifacts/Hidepw.py $REPLY)
          echo -e -n "${WIFI_PASSWD}"
          GETPW=FALSE
       fi
