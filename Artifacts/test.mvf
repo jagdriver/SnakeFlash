@@ -9,14 +9,14 @@
 # as NODENAME_PREFIX + "0" + NODENAME_COUNT, e.g. sn01, sn02 ...
 # The Swarm manager node will always be the first node.
 NODENAME_PREFIX="sn"
+PROPERTY_FILE_NAME="swarmproperties"
+PROPERTY_FILE_EXT="mvf"
+MANAGER_TEMPLATE_FILE_NAME="managertemplate"
+WORKER_TEMPLATE_FILE_NAME="workertemplate"
+TEMPLATE_FILE_EXT="yaml"
 
 # Number of node's in the Swarm, max 4.
 NODENAME_COUNT="4"
-
-# Change the WLAN0 address here. The script auto detects the current lan
-# address, so you just set the last byte of the IP address. Preferrably
-# a value > 200, so we don't interfere with DHCP leases.
-WLAN0_IP_ADDRESS_LAST_BYTE="230"
 
 # Set the internal Swarm IP net.
 INTERNAL_SWARM_IP_NET="192.168.230.0"
@@ -53,6 +53,8 @@ MQTT_SERVER_URL="mqt.wavesnake.dk"
 SKETCH_SERVER_URL="sketch.wavesnake.dk"
 
 # Swarm Internal Application URL's
+# OBS! These have to be set in script, based on internal
+# and external domain name.
 INTERNAL_API_SERVER_URL="api.wavesnake.local"
 INTERNAL_DB_SERVER_URL="sql.wavesnake.local"
 INTERNAL_MQTT_SERVER_URL="mqt.wavesnake.local"
@@ -78,12 +80,17 @@ ETH0_LAN_NETMASK="255.255.255.0"
 #WS04_NODE_NAME="ws04"
 
 # Swarm Node IP Address
+# Here you set the IP addresses of Eth0 interfaces on all Swarm Nodes
 WS01_IP_ADDRESS="192.168.230.1"
 WS02_IP_ADDRESS="192.168.230.2"
 WS03_IP_ADDRESS="192.168.230.3"
 WS04_IP_ADDRESS="192.168.230.4"
 
 # Manager Node WLAN0 properties
+# Change the WLAN0 address here. The script auto detects the current lan
+# address, so you just set the last byte of the IP address. Preferrably
+# a value > 200, so we don't interfere with DHCP leases.
+WLAN0_IP_ADDRESS_LAST_BYTE="230"
 WLAN0_LAN_ADDRESS="192.168.1.0"
 WLAN0_LAN_NETMASK="255.255.255.0"
 WLAN0_LAN="192.168.1.0/24"

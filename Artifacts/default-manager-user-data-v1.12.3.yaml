@@ -491,9 +491,9 @@ write_files:
   # NFS Exports settings (not finished)
   # How to get the right  ip addresses
   - content: |
-      /mnt/nfs WS02-IP-ADDRESS(rw,sync,no_subtree_check)
-      /mnt/nfs WS03-IP-ADDRESS(rw,sync,no_subtree_check)
-      /mnt/nfs WS04-IP-ADDRESS(rw,sync,no_subtree_check)
+      /mnt/nfs WS02-IP-ADDRESS(rw,sync,no_subtree_check,root_squash)
+      /mnt/nfs WS03-IP-ADDRESS(rw,sync,no_subtree_check,root_squash)
+      /mnt/nfs WS04-IP-ADDRESS(rw,sync,no_subtree_check,root_squash)
     path: /etc/exports
 #
 # These commands will be run once on first boot only
@@ -530,12 +530,13 @@ runcmd:
   - 'logger !!! wavesnake !!! Install packages'
   - 'sudo apt-get -y install acl'
   - 'sudo apt-get -y install sshfs'
-  - 'sudo apt-get -y install nfs-common'
   - 'sudo apt-get -y install nfs-kernel-server'
-  - 'sudo apt-get -y install rpcbind'
-  # Install Dynamic DNS Client
+  - 'sudo apt-get -y install nfs-common'
+  - 'sudo apt-get -y install cifs-utils'
+  
   #- 'DYNAMIC-DNS'
 
+  #  Docker Swarm Initialization
   - 'logger !!! wavesnake !!! Docker Swarm Init with listen and advertise interface'
   - 'docker swarm init --listen-addr SWARM-INTERFACE:SWARM-PORT --advertise-addr SWARM-INTERFACE:SWARM-PORT'
 
@@ -675,3 +676,6 @@ runcmd:
   # Also this must be done on the DB Node
   #- 'echo "/dev/disk/by-uuid/3433-3231 /media/data vfat auto,nofail,noatime,users,rw,uid=manager,gid=manager 0 0" >> /etc/fstab'
   #- 'mount nfs disk !!!!' Must be done on the WS01 Node
+
+  # !!! There must be a newline after this line
+

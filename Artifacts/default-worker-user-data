@@ -286,3 +286,5 @@ runcmd:
   - 'USB-MOUNT-COMMAND'
 
   - 'logger !!! wavesnake !!! End of RUNCMD'
+  
+  # !!! There must be a newline after this line

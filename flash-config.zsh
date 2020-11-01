@@ -38,6 +38,18 @@ WH=$'\e[97m'
 BC=$'\e[4m'
 EC=$'\e[0m'
 BO=$'\e[1m'
+CHECK_DONE="\xE2\x9C\x94"
+CHECK_UNDONE="\xE2\x9D\x8C"
+
+# Config Check Menu
+WLAN0_DONE=$CHECK_UNDONE
+ETH0_DONE=$CHECK_UNDONE
+MANAGER_DONE=$CHECK_UNDONE
+USB_DONE=$CHECK_UNDONE
+EDIT_DONE=$CHECK_UNDONE
+MANAGER_DONE=$CHECK_UNDONE
+WORKER_DONE=$CHECK_UNDONE
+
 SWARM_NODES=()
 NODE_DIRS=()
 ETH0_ADDRESS_BYTES=()
@@ -77,7 +89,7 @@ function EditProperties() {
       sed -i -n "s/COUNTRY-CODE/$COUNTRY_CODE/" new-user-data
       sed -i -n "s#WLAN0-LAN#$WLAN0_LAN#" new-user-data
 
-      # Setup DNSMasq A records
+      # Setup DNS A records
       sed -i -n "s#DNS-STRING1#$WS02_DNS_STRING#" new-user-data
       sed -i -n "s#DNS-STRING2#$WS03_DNS_STRING#" new-user-data
       sed -i -n "s#DNS-STRING3#$WS04_DNS_STRING#" new-user-data
@@ -489,6 +501,8 @@ function ListProperties() {
    echo -e "MANAGER_ENCRYPTED_PASSWORD: " $MANAGER_ENCRYPTED_PASSWORD
 
    echo -e "\n--- Swarm properties ---"
+   echo -e "SWARM_NODES: " $NODENAME_COUNT
+   echo -e "NODE_NAME_PREFIX: " $NODENAME_PREFIX
    echo -e "SWARM_INTERFACE: " $SWARM_PORT
    echo -e "SWARM_PORT: " $SWARM_PORT
    echo -e "SWARM_LOCALE: " $SWARM_LOCALE
@@ -512,6 +526,7 @@ function ListProperties() {
    echo -e "WLAN0_IP_ADDRESS: " $WLAN0_IP_ADDRESS
    echo -e "WLAN0_STATIC_ROUTERS: " $WLAN0_STATIC_ROUTERS
    echo -e "WLAN0_DNS_SERVERS: " $WLAN0_DNS_SERVERS
+   echo -e "WLAN0_IP_ADDRESS_LAST_BYTE: " $WLAN0_IP_ADDRESS_LAST_BYTE
 
    echo -e "\n--- Domain properties ---"
    echo -e "INTERNAL_DOMAIN_NAME: " $INTERNAL_DOMAIN_NAME
@@ -554,6 +569,48 @@ function ListProperties() {
    echo -e "---------- $1 ----------\n"
 }
 
+function SaveProperties() {
+   # create new file
+   # write  new file
+   # Filename prefix swarmconfig-date.mvf (date = yyyy-mm-dd)
+
+   #  # Ask for new file name
+   echo -e "\n"
+   read -p "${GR}Type new file name${WH}> "
+   if [ $REPLY 1= "" ]; then
+      echo -e -n "${PROPERTY_FILE_NAME}"
+   else
+      PROPERTY_FILE_NAME="$REPLY_"
+      echo -e -n "${PROPERTY_FILE_NAME}"
+   fi
+}
+
+function SaveTemplate() {
+
+   echo -e "\n"
+   read -p "${GR}Type new file name${WH}> "
+   # Check that $REPLY is not empty
+   if [[ $REPLY != "" ]]; then
+      # And that we are not overwriting the current template file
+      if [[ "./Artifacts/$REPLY.mvt" != $INPUT_TEMPLATE ]]; then
+         echo 'WaveSnake Template File' >./Artifacts/$REPLY.mvt
+         while read line; do
+            echo $line >>"./Artifacts/$REPLY.mvt"
+         done <$INPUT_TEMPLATE
+
+         INPUT_TEMPLATE="$REPLY.mvt"
+         echo -e "New Template file: $INPUT_TEMPLATE"
+      fi
+   fi
+}
+
+function GetUSBUUID() {
+   USB_STR=$(diskutil list | grep -i -w 'hypriotos' | cut -c 69-)
+   UUID_STR=$(diskutil info $USB_STR | grep -i -w 'Volume UUID:' | cut -c 31-)
+   echo -e "USB Drive: $USB_STR"
+   echo -e "USB UUID: $UUID_STR"
+}
+
 function ReadProperties() {
    # Keep sections/lines in this function synchronized
    # with swarmconfig.txt
@@ -565,6 +622,11 @@ function ReadProperties() {
    # Node properties
    NODENAME_PREFIX=$NODENAME_PREFIX
    NODENAME_COUNT=$NODENAME_COUNT
+   PROPERTY_FILE_NAME=$PROPERTY_FILE_NAME
+   PROPERTY_FILE_EXT=$PROPERTY_FILE_EXT
+   MANAGER_TEMPLATE_FILE_NAME=$MANAGER_TEMPLATE_FILE_NAME
+   WORKER_TEMPLATE_FILE_NAME=$WORKER_TEMPLATE_FILE_NAME
+   TEMPLATE_FILE_EXT=$TEMPLATE_FILE_EXT
 
    # MANAGER Properties
    MANAGER_NAME=$MANAGER_NAME
@@ -624,7 +686,7 @@ function ReadProperties() {
    WLAN0_IP_ADDRESS=$WLAN0_IP_ADDRESS
    WLAN0_STATIC_ROUTERS=$WLAN0_STATIC_ROUTERS
    WLAN0_DNS_SERVERS=$WLAN0_DNS_SERVERS
-
+   WLAN0_IP_ADDRESS_LAST_BYTE=$WLAN0_IP_ADDRESS_LAST_BYTE
    # Domain properties
    INTERNAL_DOMAIN_NAME=$INTERNAL_DOMAIN_NAME
    EXTERNAL_DOMAIN_NAME=$EXTERNAL_DOMAIN_NAME
@@ -686,8 +748,28 @@ function SetNetAddress() {
 }
 
 function SetNodeNames() {
+   #  # Configure Node Name Count
+   echo -e "\n"
+   read -p "${GR}Type Node Count${RD}${BO} default=[${NODENAME_COUNT}] ${WH}> "
+   if [[ -z "$REPLY" ]]; then
+      echo -e -n "${NODENAME_COUNT}"
+   else
+      NODENAME_COUNT=$REPLY
+      echo -e -n "${NODENAME_COUNT}"
+   fi
+
+   #  # Configure Node Name Prefix
+   echo -e "\n"
+   read -p "${GR}Type Node Name Prefix${RD}${BO} default=[${NODENAME_PREFIX}] ${WH}> "
+   if [[ -z "$REPLY" ]]; then
+      echo -e -n "${NODENAME_PREFIX}"
+   else
+      NODENAME_PREFIX=$REPLY
+      echo -e -n "${NODENAME_PREFIX}"
+   fi
+
    # Set node names from NODENAME_PREFIX and NODENAME_COUNT
-   nodeCount=1
+   local nodeCount=1
    while [ $nodeCount -le $(($NODENAME_COUNT)) ]; do
       echo "Nodename $NODENAME_PREFIX"0"$nodeCount"
       SWARM_NODES[$nodeCount - 1]=$"$NODENAME_PREFIX"0"$nodeCount"
@@ -1074,6 +1156,7 @@ function DetailMenu() {
    #
    QUIT_MENU="---"
    while [ "$QUIT_MENU" == "---" ]; do
+      ConfigCheckMenu
       echo -e "\n${GR}Detail Menu${WH}"
       DETAIL_MENU=("Configure_USB_Drives"
          "Change_Node_Names"
@@ -1081,6 +1164,7 @@ function DetailMenu() {
          "List_Properties"
          "Hide_Password"
          "Show_Password"
+         "get_USB_ID"
          "Quit")
 
       select fav in "${DETAIL_MENU[@]}"; do
@@ -1088,13 +1172,17 @@ function DetailMenu() {
          "Configure_USB_Drives")
             echo "$fav"
             ConfigureUSBDrives
+            break
             ;;
          "Change_Node_Names")
             echo "$fav"
             SetNodedNames
+            break
             ;;
          "Change_IP_Addresses")
             echo "$fav"
+            SetNetAddress
+            break
             ;;
          "List_Properties")
             ListProperties
@@ -1108,6 +1196,9 @@ function DetailMenu() {
             ShowPassword
             break
             ;;
+         "get_USB_ID")
+            GetUSBUUID
+            ;;
          "Quit")
             echo "$fav"
             QUIT_MENU="QUIT"
@@ -1117,6 +1208,14 @@ function DetailMenu() {
       done
    done
 }
+
+function ConfigCheckMenu() {
+   echo -e "_____________________________________ Visited Menu's ______________________________________\n"
+   echo -e "WLan0[$WLAN0_DONE] | Eth0 [$ETH0_DONE] | Manager[$MANAGER_DONE] | USB[$USB_DONE] | EDIT[$EDIT_DONE]\
+ | ManagerNode[$MANAGER_DONE] | WorkerNode[$WORKER_DONE]"
+   echo -e "___________________________________________________________________________________________\n"
+}
+
 # Start Script execution
 printf "\033c"
 echo -e "\n"
@@ -1137,6 +1236,7 @@ echo -e "${WHITE}"
 #
 QUIT_MENU="---"
 while [ "$QUIT_MENU" == "---" ]; do
+   ConfigCheckMenu
    echo -e "\n${GR}Main Menu${WH}"
 
    SCRIPT_MENU=("Select_Configuration_File"
@@ -1158,6 +1258,7 @@ while [ "$QUIT_MENU" == "---" ]; do
          SelectInputConfig
          SelectInputFile
          ReadProperties
+         SetDateTime
          break
          ;;
       "Configure_Manager_Node")
@@ -1173,6 +1274,7 @@ while [ "$QUIT_MENU" == "---" ]; do
       "Configure_WiFi_Network")
          echo "$fav"
          ConfigureWiFiNetwork
+         break
          ;;
       "Configure_Internal_Network")
          echo "$fav"
@@ -1182,10 +1284,12 @@ while [ "$QUIT_MENU" == "---" ]; do
       "Configure_DNS")
          echo "$fav"
          ConfigureDNS
+         break
          ;;
       "Save_Config_File")
          # And then take input from this template
          echo "$fav"
+         break
          ;;
       "Select_Node_Template")
          echo "$fav"
@@ -1204,7 +1308,9 @@ while [ "$QUIT_MENU" == "---" ]; do
       esac
    done
 done
+#
 # Ask for Manager or Worker node
+#
 #read -p "${GR}Flash configuration for Swarm ${RD}${BO}Manager Node ${GR}or${RD} Worker Node${GR} ? m | w ${EC}${WH}> " -n 1 -r
 read -p "${GR}Flash configuration for Swarm ${RD}${BO}Manager Node ${GR}or${RD} Worker Node${GR} ? m | w ${EC}${WH}> " -n 1 -r
 if [[ $REPLY =~ ^[Mm]$ ]]; then

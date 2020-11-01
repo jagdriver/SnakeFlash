@@ -632,3 +632,6 @@ runcmd:
   # Also this must be done on the DB Node
   #- 'echo "/dev/disk/by-uuid/3433-3231 /media/data vfat auto,nofail,noatime,users,rw,uid=manager,gid=manager 0 0" >> /etc/fstab'
   #- 'mount nfs disk !!!!' Must be done on the WS01 Node
+
+  # !!! There must be a newline after this line
+  

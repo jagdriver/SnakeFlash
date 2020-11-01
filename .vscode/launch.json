@@ -24,9 +24,18 @@
         {
             "type": "bashdb",
             "request": "launch",
-            "name": "Bash-Debug1",
+            "name": "Debug flash-config",
             "cwd": "${workspaceFolder}",
             "program": "/Volumes/Samsung_T5/Projects/VSCode/SnakeFlash/flash-config.zsh",
+            "terminalKind": "integrated",
+            "args": []
+        },
+        {
+            "type": "bashdb",
+            "request": "launch",
+            "name": "Debug test",
+            "cwd": "${workspaceFolder}",
+            "program": "/Volumes/Samsung_T5/Projects/VSCode/SnakeFlash/test.zsh",
             "terminalKind": "integrated",
             "args": []
         },

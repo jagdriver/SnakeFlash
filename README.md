@@ -162,63 +162,63 @@ test test
 - MANAGER_ENCRYPTED_PASSWORD="$6$$lkFOYhhCGZiVmaOiZxSrpcvun.YOgyWuin0l0/aHRkep9sHrMTVp4uzHsAkTIJ.q3c8RuTA.NUNE8yqrh72O5/"
 
 ### Node properties
-NODE_NAME="ws01"
-SWARM_LOCALE="en_US.UTF-8"
-TIME_ZONE="Europe/Copenhagen"
+- NODE_NAME="ws01"
+- SWARM_LOCALE="en_US.UTF-8"
+- IME_ZONE="Europe/Copenhagen"
 
 ### Docker Swarm properties
-SWARM_MANAGER_NODE="ws01"
-SWARM_PORT="2377"
-SWARM_INTERFACE="eth0"
-SWARM_WORKER_TOKEN="SWMTKN-1-6cyk7y11vbx3e8sc5b8iqiao7sb9iyr8b2lheybtyjqhb8mfho-5bracqtjvzt2zcn7m0qp5w27w"
-SWARM_MANAGER_TOKEN="SWMTKN-1-6cyk7y11vbx3e8sc5b8iqiao7sb9iyr8b2lheybtyjqhb8mfho-cgxcsuzfarwy7m3eypj542pi1"
+- SWARM_MANAGER_NODE="ws01"
+- SWARM_PORT="2377"
+- SWARM_INTERFACE="eth0"
+- SWARM_WORKER_TOKEN="SWMTKN-1-6cyk7y11vbx3e8sc5b8iqiao7sb9iyr8b2lheybtyjqhb8mfho-5bracqtjvzt2zcn7m0qp5w27w"
+- SWARM_MANAGER_TOKEN="SWMTKN-1-6cyk7y11vbx3e8sc5b8iqiao7sb9iyr8b2lheybtyjqhb8mfho-cgxcsuzfarwy7m3eypj542pi1"
 
 ### Swarm Application DNS Prefix's
-API_PREFIX="api"
-DB_PREFIX="sql"
-MQTT_PREFIX="mqt"
-SKETCH_PREFIX="sketch"
+- API_PREFIX="api"
+- DB_PREFIX="sql"
+- MQTT_PREFIX="mqt"
+- SKETCH_PREFIX="sketch"
 
 ### Swarm External Application URL's
-API_SERVER_URL="api.wavesnake.dk"
-DB_SERVER_URL="sql.wavesnake.dk"
-MQTT_SERVER_URL="mqt.wavesnake.dk"
-SKETCH_SERVER_URL="sketch.wavesnake.dk"
+- API_SERVER_URL="api.wavesnake.dk"
+- DB_SERVER_URL="sql.wavesnake.dk"
+- MQTT_SERVER_URL="mqt.wavesnake.dk"
+- SKETCH_SERVER_URL="sketch.wavesnake.dk"
 
 ### Swarm Internal Application URL's
-INTERNAL_API_SERVER_URL="api.wavesnake.local"
-INTERNAL_DB_SERVER_URL="sql.wavesnake.local"
-INTERNAL_MQTT_SERVER_URL="mqt.wavesnake.local"
-INTERNAL_SKETCH_SERVER_URL="sketch.wavesnake.local"
+- INTERNAL_API_SERVER_URL="api.wavesnake.local"
+- INTERNAL_DB_SERVER_URL="sql.wavesnake.local"
+- INTERNAL_MQTT_SERVER_URL="mqt.wavesnake.local"
+- INTERNAL_SKETCH_SERVER_URL="sketch.wavesnake.local"
 
 ### WiFi properties
-COUNTRY_CODE="DK"
-WIFI_SSID="Your WiFi ssid"
-WIFI_PASSWD="Your WiFi password"
+- COUNTRY_CODE="DK"
+- WIFI_SSID="Your WiFi ssid"
+- WIFI_PASSWD="Your WiFi password"
 
 ### Swarm Node ETH0 properties
-ETH0_LAN="192.168.230.0/24"
-ETH0_IP_ADDRESS="192.168.230.1"
-ETH0_STATIC_ROUTERS="192.168.230.1"
-ETH0_DNS_SERVERS="8.8.8.8 8.8.4.4"
+- ETH0_LAN="192.168.230.0/24"
+- ETH0_IP_ADDRESS="192.168.230.1"
+- ETH0_STATIC_ROUTERS="192.168.230.1"
+- ETH0_DNS_SERVERS="8.8.8.8 8.8.4.4"
 
 ### Node names
-#WS01_NODE_NAME="ws01"
-#WS02_NODE_NAME="ws02"
-#WS03_NODE_NAME="ws03"
-#WS04_NODE_NAME="ws04"
+- #WS01_NODE_NAME="ws01"
+- #WS02_NODE_NAME="ws02"
+- #WS03_NODE_NAME="ws03"
+- #WS04_NODE_NAME="ws04"
 
 ### Swarm Node IP Address
-WS01_IP_ADDRESS="192.168.230.1"
-WS02_IP_ADDRESS="192.168.230.2"
-WS03_IP_ADDRESS="192.168.230.3"
-WS04_IP_ADDRESS="192.168.230.4"
+- WS01_IP_ADDRESS="192.168.230.1"
+- WS02_IP_ADDRESS="192.168.230.2"
+- WS03_IP_ADDRESS="192.168.230.3"
+- WS04_IP_ADDRESS="192.168.230.4"
 
 ### Manager Node WLAN0 properties
-WLAN0_LAN="192.168.1.0/24"
-WLAN0_IP_ADDRESS="192.168.1.220"
-WLAN0_STATIC_ROUTERS="192.168.1.1"
-WLAN0_DNS_SERVERS="8.8.8.8 8.8.4.4"
+- WLAN0_LAN="192.168.1.0/24"
+- WLAN0_IP_ADDRESS="192.168.1.220"
+- WLAN0_STATIC_ROUTERS="192.168.1.1"
+- WLAN0_DNS_SERVERS="8.8.8.8 8.8.4.4"
 
 ### Domain properties
 INTERNAL_DOMAIN_NAME="wavesnake.local"

@@ -13,11 +13,6 @@ NODENAME_PREFIX="sn"
 # Number of node's in the Swarm, max 4.
 NODENAME_COUNT="4"
 
-# Change the WLAN0 address here. The script auto detects the current lan
-# address, so you just set the last byte of the IP address. Preferrably
-# a value > 200, so we don't interfere with DHCP leases.
-WLAN0_IP_ADDRESS_LAST_BYTE="230"
-
 # Set the internal Swarm IP net.
 INTERNAL_SWARM_IP_NET="192.168.230.0"
 
@@ -84,6 +79,10 @@ WS03_IP_ADDRESS="192.168.230.3"
 WS04_IP_ADDRESS="192.168.230.4"
 
 # Manager Node WLAN0 properties
+# Change the WLAN0 address here. The script auto detects the current lan
+# address, so you just set the last byte of the IP address. Preferrably
+# a value > 200, so we don't interfere with DHCP leases.
+WLAN0_IP_ADDRESS_LAST_BYTE="230"
 WLAN0_LAN_ADDRESS="192.168.1.0"
 WLAN0_LAN_NETMASK="255.255.255.0"
 WLAN0_LAN="192.168.1.0/24"
