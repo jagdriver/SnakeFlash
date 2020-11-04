@@ -1,0 +1,715 @@
+#cloud-config
+# vim: syntax=yaml
+#
+
+# This file is the !! SWARM MANAGER NODE !! Default Flash config.
+# Version: 1.12.3 
+# The version are paired with Hypriot OS version 1.12.13.
+# You can change the configuration directly in the file or
+# run ./flash-config.zsh in the flash directory to be guided
+# thru the setup.
+
+# Cloud_Init Documentation: http://cloudinit.readthedocs.io/en/0.7.9/index.html
+
+# TODO: Remove sudo from all commands
+# TODO: Docker label must be set
+# TODO: Docker port must be set
+# TODO: Keep 2.4G radio
+
+# Set your hostname here, the manage_etc_hosts will update the hosts file entries as well
+hostname: NODE-NAME
+manage_etc_hosts: false
+
+# You could modify this for your own user information
+users:
+  - name: manager
+    gecos: "Wavesnake Manager"
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+    groups: users,docker,video,input
+    plain_text_passwd: wavesnake
+    #passwd: 54348lkFOYhhCGZiVmaOiZxSrpcvun.YOgyWuin0l0/aHRkep9sHrMTVp4uzHsAkTIJ.q3c8RuTA.NUNE8yqrh72O5/
+    lock_passwd: false
+    ssh_authorized_keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCdpRpqR6pSdoXVLH7pIFkVXY9KIZJVA0wfKlqvpeHD/iKl+0dVU0xRoZYO/+Bot2i0rTJdfTPjcGpgMm4rpqkLfUT6ryyGFRSMF/yObUf9vCCPlz/nRh//PQfAN+JPK61z104EeatHbQhSHuHhJPzVDBNYLhsi7O1wsOkTTtSMs1Xos28HXdB+gpKup1Uddb4lq+GkB110IN3mjHYo4Tckl5VNH9cmWBTYvyVSgzv3hIG2ur/jrQMB2dLzqkchjrKpV1VLjW4dpxNlSTRt/1eo+KCjRraBYALL8t5xiLZHSx/6mA91eQU2zBDufJKWzy93vdzd6r3DJcqDIAzQ2PFP nielsjorgennielsen@snakemacpro.local
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC6YYuWDPd8CxKYZlQ6oQiXVqvM0HXBARbl/MtokxmxIySH94liiGUn+1+lBC9qSMo5a6DcNekULSvHp4a5cj6WoOx0veJlFu+Gx5Xzu/oWcq3yIkTkI/x9sgZiLAwQgGmxfEEzY++tDHwhPzrpQsB4Xzjf8YFJ+1t25eAhBLarpsM/A9XtZ/8E7zbaCKJ81Utajp/kODyWwdK3Q4NoetUfjE6M8b8yWcjUUhQqHPpBKGghS2sG78OgazjwJSDSy7vMZ+vqs6ZsRjUIxjg9/d5iymR3qM8xR1AnXcYsjUZR7s5y3DW1boYv6f5gcPFLCJ2aYzgKQahzcL0ajJecdd33 manager@ws06
+    ssh_pwauth: true
+    chpasswd: { expire: false }
+
+# # Set the locale of the system
+locale: "en_US.UTF-8"
+
+# # Set the timezone
+# # Value of 'timezone' must exist in /usr/share/zoneinfo
+timezone: "Europe/Copenhagen"
+
+# # Update apt packages on first boot
+package_update: false
+package_reboot_if_required: true
+package_upgrade: false
+
+# # Install any additional apt packages you need here
+# # OBS! This is done in RUNCMD section caused by an
+# # error in debian Buster NTP time.
+# packages:
+#   - sshfs
+#   - acl
+#   - dnsmasq
+#   - dnsutils
+
+# # WiFi connect to HotSpot
+# # - use `wpa_passphrase SSID PASSWORD` to encrypt the psk
+write_files:
+  #
+  # Redis.prop (Must be tested)
+  # This must be a valid json file 
+  - content: |
+      {
+        "REDIS_MASTER_SERVER_ADDRESS":"192.168.230.1",
+        "REDIS_MASTER_SERVER_PORT":"8376",
+        "REDIS_REPLICA_SERVER_ADDRESS":"192.168.230.4",
+        "REDIS_REPLICA_SERVER_PORT":"8376"
+      }
+    path:  /opt/containers/configuration/redis.prop
+  #
+  # Global.prop (Must be tested)
+  #
+  - content: |
+      {
+      "LOG_PATH":"LOG-PATH",
+      "API_SERVER_ADDRESS":"192.168.1.220",
+      "API_SERVER_PORT":"80",
+      "MQTT_SERVER_ADDRESS":"192.168.1.220",
+      "MQTT_SERVER_PORT":"6379",
+      "SKETCH_SERVER_ADDRESS":"192.168.1.220",
+      "SKETCH_SERVER_PORT":"80",
+      "REDIS_MASTER_SERVER_ADDRESS":"192.168.230.1",
+      "REDIS_MASTER_SERVER_PORT":"8376",
+      "REDIS_REPLICA_SERVER_ADDRESS":"192.168.230.4",
+      "REDIS_REPLICA_SERVER_PORT":"8376",
+      "MANAGER_PASSWORD":"wavesnake",
+      "MANAGER_NAME":"manager"
+      }
+    path:  /opt/containers/configuration/global.prop
+  #
+  # SnakeApi.prop (Must be tested)
+  #
+  - content: |
+      {
+      "DEFAULT_SQL_TEMPLATE":"DEFAULT-SQL-TEMPLATE",
+      "CREATE_USER_TEMPLATE":"CREATE-USER-TEMPLATE",
+      "DELETE_USER_TEMPLATE":"DELETE-USER-TEMPLATE"
+      }
+    path:  /opt/containers/configuration/snakeapi.prop
+  #
+  # SnakeConfig.prop (Must be tested)
+  #
+  - content: |
+      {
+      "APPLICATION_LIST":"SnakeApi,SnakeHistory,SnakeUtil,SnakeConfig,SnakeTimer,SnakeConsole",
+      "ENVIRONMENT_LIST":"Development,Test,Production"
+      }
+    path:  /opt/containers/configuration/snakeconfig.prop
+  #
+  # SnakeUtil.prop (Must be tested)
+  #
+  - content: |
+      {
+      "DNS_PROVIDER_LIST":"DNS-PROVIDER-LIST",
+      "DNS_PROVIDER_ID":"DNS-PROVIDER-ID",
+      "DNS_PROVIDER_URL":"DNS-PROVIDER-URL",
+      "DNS_PROVIDER_USER":"Your GratisDNS user",
+      "DNS_PROVIDER_PASSWORD":"DYNAMIC-DNS-PASSWORD"
+      }
+    path:  /opt/containers/configuration/snakeutil.prop
+  #
+  # SnakeHistory.prop (Must be tested)
+  #
+  - content: |
+      {
+      "HISTORY_DB_NAME":"HISTORY-DB-NAME"
+      }
+    path:  /opt/containers/configuration/snakehistory.prop
+  #
+  # NodeName.env ( Should this be a json file?)
+  #
+  - content: |
+      NODE_NAME=NODE-NAME
+    path:  /opt/containers/environment/nodename.env
+  #
+  # ETH0 interface setup
+  #
+  - content: |
+      auto wlan0
+      iface eth0 inet static
+      address 192.168.230.1
+      network 192.168.230.0-ADDRESS
+      netmask 192.168.230.0-NETMASK
+      gateway 192.168.230.1
+      dns-nameservers 8.8.8.8 8.8.4.4
+    path: /etc/network/interfaces.d/eth0
+  #
+  # WiFi interface setup
+  # allow-hotplug wlan0
+  # iface wlan0 inet dhcp
+  - content: |
+      auto wlan0
+      iface wlan0 inet static
+      address 192.168.1.230
+      network 192.168.1.0/24-ADDRESS
+      netmask 192.168.1.0/24-NETMASK
+      gateway 192.168.1.1
+      dns-nameservers 8.8.8.8 8.8.4.4
+      wpa-conf /etc/wpa_supplicant/wpa_supplicant.conf
+    path: /etc/network/interfaces.d/wlan0
+  #
+  # WiFi properties setup
+  #
+  - content: |
+      country=DK
+      ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+      update_config=1
+      network={
+        ssid="Toften8_2.4G"
+        psk="Jaguarxk120"
+      }
+    path: /etc/wpa_supplicant/wpa_supplicant.conf
+  #
+  # Disable cloud-init DHCP
+  # The DHCP Service will be masked 
+  # So if you need  DHCP, unmask and start the service
+  #
+  - content: |
+      network: {config: disabled}
+    path: /etc/cloud/cloud.cfg.d/95-debian-network-config.cfg
+
+  #
+  # !!! OLD dhcpcd.conf static network setup
+  #
+
+  # - content: |
+  #     persistent
+  #     # Generate Stable Private IPv6 Addresses instead of hardware based ones
+  #     slaac private
+  #     # static IP configuration:
+  #     interface eth0
+  #     static ip_address=192.168.230.1/24
+  #     # No eth0 static routes on manager node
+  #     # static routers=192.168.230.1
+  #     static domain_name_servers=8.8.8.8 8.8.4.4
+  #     interface wlan0
+  #     static ip_address=192.168.1.230/24
+  #     static routers=192.168.1.1
+  #     static domain_name_servers=8.8.8.8 8.8.4.4
+  #   path: /etc/dhcpcd.conf
+
+  #
+  # !!! New dhcpcd.conf static network setup
+  #
+  - content: |
+      # Please note that this file is written to be used with dhcpcd
+      # For static IP, consult /etc/dhcpcd.conf and 'man dhcpcd.conf'
+
+      # Include files from /etc/network/interfaces.d:
+      source-directory /etc/network/interfaces.d
+
+      auto lo
+      iface lo inet loopback
+
+      iface eth0 inet manual
+
+      allow-hotplug wlan0
+      iface wlan0 inet manual
+          wpa-conf /etc/wpa_supplicant/wpa_supplicant.conf
+
+      # Custom static IP address for eth0.
+      interface eth0
+      static ip_address=192.168.230.1/24
+      static routers=192.168.230.1
+      static domain_name_servers=8.8.8.8 8.8.4.4
+
+      # Custom static IP address for wlan0.
+      interface wlan0
+      static ip_address=192.168.1.230/24
+      static routers=192.168.1.1
+      static domain_name_servers=8.8.8.8 8.8.4.4
+    path: /etc/dhcpcd.conf
+  #
+  # Hosts
+  #
+  - content: |
+      127.0.1.1 NODE-NAME NODE-NAME.wavesnake.local
+      127.0.0.1 localhost
+      192.168.230.2 sn02 sn02.wavesnake.local
+      192.168.230.4 sn04 sn04.wavesnake.local
+      192.168.230.4 sn04 sn04.wavesnake.local
+
+      # The following lines are desirable for IPv6 capable hosts
+      ::1 ip6-localhost ip6-loopback
+      fe00::0 ip6-localnet
+      ff00::0 ip6-mcastprefix
+      ff02::1 ip6-allnodes
+      ff02::2 ip6-allrouters
+      ff02::3 ip6-allhosts
+    path: /etc/hosts   
+  #
+  # Portainer Docker Compose (Version 2.0)
+  #
+  - content: |
+      version: '3.7'
+
+      services:
+        agent:
+          image: portainer/agent
+          volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+            - /var/lib/docker/volumes:/var/lib/docker/volumes
+          networks:
+            - traefik-public
+          deploy:
+            mode: global
+            restart_policy:
+              condition: any
+              delay: 5s
+              max_attempts: 3
+              window: 120s
+            placement:
+              constraints: [node.platform.os == linux]
+
+        portainer:
+          image: portainer/portainer-ce
+          command: -H tcp://tasks.agent:9001 --tlsskipverify --admin-password "$$2y$$05$$/.uo0TOISIA0iObDNskHkuGHlb/74AhYeDSccTs1V.mzRC8iAYUbm"
+          ports:
+            - "9000:9000"
+            - "8000:8000"
+
+          volumes:
+            - /etc/localtime:/etc/localtime:ro
+            - /opt/containers/portainer/data:/data
+
+
+          networks:
+            - traefik-public
+
+          deploy:
+            mode: replicated
+            replicas: 1
+            restart_policy:
+              condition: any
+              delay: 5s
+              max_attempts: 3
+              window: 120s
+            placement:
+              constraints: [node.role == manager]
+
+            labels:
+              - "traefik.enable=true"
+    
+              # This section is for local http access ( at this moment this does not work )
+              - "traefik.http.routers.portainer-local.entrypoints=web"
+              - "traefik.http.routers.portainer-local.rule=Host(`portainer.wavesnake.local`)"
+              - "traefik.http.routers.portainer-local.service=portainer-local"
+              - "traefik.http.services.portainer-local.loadbalancer.server.port=9000"
+
+              # This section is for external http access
+              - "traefik.http.routers.portainer-external.entrypoints=web"
+              - "traefik.http.routers.portainer-external.rule=Host(`adm.wavesnake.dk`)"
+              - "traefik.http.routers.portainer-external.service=portainer-external"
+              - "traefik.http.services.portainer-external.loadbalancer.server.port=9000"
+              - "traefik.http.middlewares.portainer-https-redirect.redirectscheme.scheme=https"
+              - "traefik.http.middlewares.portainer-https-redirect.redirectscheme.permanent=true"
+              - "traefik.http.routers.portainer-external.middlewares=portainer-https-redirect"
+
+              # This section is for external https access
+              - "traefik.http.routers.portainer-secure.entrypoints=secure"
+              - "traefik.http.routers.portainer-secure.rule=Host(`adm.wavesnake.dk`)"
+              - "traefik.http.routers.portainer-secure.tls=true"
+              - "traefik.http.routers.portainer-secure.tls.certresolver=http"
+              - "traefik.http.routers.portainer-secure.service=portainer-secure"
+              - "traefik.http.services.portainer-secure.loadbalancer.server.port=9000"
+
+      networks:
+        traefik-public:
+          external: true
+          attachable: true
+    path: /opt/containers/portainer/docker-compose.yml
+
+  #
+  # Traefik docker-compose.yml
+  #
+  - content: |
+      version: '3.7'
+
+      services:
+        traefik:
+          image: traefik:v2.2.0
+
+          ports:
+            - 80:80
+            - 443:443
+            - 8210:8210
+            - 8211:8211
+            - 8213:8213
+            - 8214:8214
+            - 2202:2202
+            - 2203:2203
+            - 2204:2204
+
+          volumes:
+            - /opt/containers/traefik/data/traefik.yml:/traefik.yml:ro
+            - /opt/containers/traefik/data/ssh.yml:/ssh.yml:ro
+            - /opt/containers/traefik/data/acme.json:/acme.json
+            - /var/log/traefik:/log
+            - /var/run/docker.sock:/var/run/docker.sock:ro
+
+          networks:
+            - traefik-public
+
+          deploy:
+            placement:
+              constraints:
+                - node.role == manager
+            restart_policy:
+              condition: any
+              delay: 5s
+              max_attempts: 3
+              window: 120s
+
+      networks:
+        traefik-public:
+          external: true
+    path: /opt/containers/traefik/docker-compose.yml
+  
+  #
+  # Traefik traefik.yml
+  #
+  - content: |
+
+      api:
+        dashboard: true
+
+      log:
+        filePath: "log/traefik.log"
+        level: DEBUG
+
+      accessLog:
+        filePath: "log/access.log"
+
+      entryPoints:
+        ssh2:
+          address: ":2202"
+        ssh3:
+          address: ":2203"
+        ssh4:
+          address: ":2204"          
+        web:
+          address: ":80"
+        secure:
+          address: ":443"
+        mosquitto:
+          address: ":8210"
+        mariadb:
+          address: ":8211"
+        mqtinternal:
+          address: ":8213"
+        redis:
+          address: ":8214"
+
+      providers:
+        docker:
+          endpoint: "unix:///var/run/docker.sock"
+          exposedByDefault: false
+          swarmMode: true
+        file:
+          filename: "ssh.yml"
+          watch: true
+
+      certificatesResolvers:
+        http:
+          acme:
+            email: jagdriver@hotmail.com
+            storage: acme.json
+            httpChallenge:
+              entryPoint: web
+    path: /opt/containers/traefik/data/traefik.yml
+
+  #
+  # Traefik Dynamic Configuration file ssh.yml 
+  # Setup Traefik API routes and proxy SSH thru Traefik
+  # 
+  - content: |
+      http:
+        routers:
+          local:
+            rule: "Host(`traefik.wavesnake.local`)"
+            entrypoints: web
+            service: api@internal
+            middleware: traefik-auth
+
+          external:
+            rule: "Host(`traefik.wavesnake.dk`)"
+            entrypoint: web
+            middleware: traefik-auth
+            middleware: traefik-redirect
+            service: api@internal
+
+          secure:
+            rule: "Host(`traefik.wavesnake.dk`)"
+            middleware: traefik-auth
+            entrypoint: secure
+            service: api@internal
+            certresolver: http
+
+        middlewares:
+          traefik-auth:
+            basicauth:
+              users:
+                - manager:$$apr1$$ktr40m5i$$IPyM/4bfex8WbfpmsNl.9.
+
+          traefik-redirect:
+            redirectScheme:
+              scheme: https
+              permanent: true
+
+      tcp:
+        services:
+          ssh-ws02:
+            loadBalancer:
+              servers:
+                - address: "192.168.230.2:22"
+          ssh-ws03:
+            loadBalancer:
+              servers:
+                - address: "192.168.230.3:22"
+          ssh-ws04:
+            loadBalancer:
+              servers:
+                - address: "192.168.230.4:22"
+        routers:
+          ssh-route-ws02:
+            entryPoints:
+              - "ssh2"
+            rule: "HostSNI(`*`)"
+            service: "ssh-ws02"
+      
+          ssh-route-ws03:
+            entryPoints:
+              - "ssh3"
+            rule: "HostSNI(`*`)"
+            service: "ssh-ws03"
+      
+          ssh-route-ws04:
+            entryPoints:
+              - "ssh4"
+            rule: "HostSNI(`*`)"
+            service: "ssh-ws04"
+    path: /opt/containers/traefik/data/ssh.yml
+
+  # 
+  # Bridge Script to be run after each reboot
+  #
+  - content: |
+      sudo iptables -t nat -A POSTROUTING -o wlan0 -j MASQUERADE
+      sudo iptables -A FORWARD -i wlan0 -o eth0 -m state --state RELATED,ESTABLISHED -j ACCEPT
+      sudo iptables -A FORWARD -i eth0 -o wlan0 -j ACCEPT
+    path: /home/manager/bridge.sh
+  # 
+  # NFS Crontab script, Mount & Export NFS file system
+  # I might mount the NFS drive in FSTAB instead
+  - content: |
+      sudo mount /dev/sda1 /mnt/nfs
+      sudo exportfs -r
+    path: /home/manager/nfs.sh
+  # 
+  # NFS Exports settings (not finished)
+  # How to get the right  ip addresses
+  - content: |
+      /mnt/nfs 192.168.230.2(rw,sync,no_subtree_check,root_squash)
+      /mnt/nfs 192.168.230.3(rw,sync,no_subtree_check,root_squash)
+      /mnt/nfs 192.168.230.4(rw,sync,no_subtree_check,root_squash)
+    path: /etc/exports
+#
+# These commands will be run once on first boot only
+#
+runcmd:
+  # Restart Avahi daemon
+  - 'logger !!! wavesnake !!! Restart avahi-deamon'  
+  - 'systemctl restart avahi-daemon'
+
+  # Set Fake HW Date, Restart NTP, workaround for Debian Buster time initialization
+  - 'logger !!! wavesnake !!! Workaround for Buster Fake Time error initializing date/time'
+  - 'sudo date --set 2020-11-03'
+  - 'sudo date --set 14:49:39'
+  - 'sudo service ntp --full-restart'
+  - 'sudo sleep 15'
+  - 'sudo date'
+  
+  # Create IP route between ETH0 & WLAN0
+  - 'logger !!! wavesnake !!! Create bidirectional Route between WLAN0 network and ETH0 network'
+  - 'sudo ip route delete default via 192.168.230.1'
+  - 'sudo ip route delete default via 192.168.1.1'
+  - 'sudo ip route add default via 192.168.1.1 dev wlan0 src 192.168.1.230 metric 100'
+  
+  # Start WLAN0 interface and wait 15 sec.
+  - 'logger !!! wavesnake !!! Start WiFi Interface' 
+  - 'sudo ifup wlan0'
+  - 'sudo sleep 15'
+
+  # Update packagee index
+  - 'logger !!! wavesnake !!! Update Package list'
+  - 'sudo apt-get update --allow-releaseinfo-change'
+
+  # Install packages
+  - 'logger !!! wavesnake !!! Install packages'
+  - 'sudo apt-get -y install acl'
+  - 'sudo apt-get -y install sshfs'
+  - 'sudo apt-get -y install nfs-kernel-server'
+  - 'sudo apt-get -y install nfs-common'
+  - 'sudo apt-get -y install cifs-utils'
+  
+  #- 'DYNAMIC-DNS'
+
+  #  Docker Swarm Initialization
+  - 'logger !!! wavesnake !!! Docker Swarm Init with listen and advertise interface'
+  - 'docker swarm init --listen-addr eth0:2377 --advertise-addr eth0:2377'
+
+  - 'logger !!! wavesnake !!! Docker Node Label'
+  - 'docker node update --label-add wsnode=NODE-NAME NODE-NAME'
+
+  # Setup manager
+  - 'logger !!! wavesnake !!! Set manager as owner and set rights on home directory'
+  - 'sudo chown manager:manager /home/manager'
+  - 'sudo chmod -R u+rwX,go+rX-w /home/manager'
+  - 'sudo usermod -aG docker $(whoami)'
+
+  # Create SSH keys
+  - 'logger !!! wavesnake !!! Create ssh private/public keys'
+  - 'sudo mkdir -p /home/manager/.ssh'
+  - 'sudo chown manager:manager /home/manager/.ssh'
+  - 'sudo touch /home/manager/.ssh/authorized_keys'
+  - 'sudo chmod 700 /home/manager/.ssh'
+  #- 'sudo cp -P /boot/keyfile.txt /home/manager/.ssh/authorized_keys'
+  - 'sudo chown manager:manager /home/manager/.ssh/authorized_keys'
+  - 'sudo chmod 600 /home/manager/.ssh/authorized_keys'
+
+  # Setup Bridging between eth0 and wlan0
+  - 'sudo sed -i -n "s/#net.ipv4.ip_forward=1/net.ipv4.ip_forward=1/" /etc/sysctl.conf'
+  - 'sudo iptables -t nat -A POSTROUTING -o wlan0 -j MASQUERADE'
+  - 'sudo iptables -A FORWARD -i wlan0 -o eth0 -m state --state RELATED,ESTABLISHED -j ACCEPT'
+  - 'sudo iptables -A FORWARD -i eth0 -o wlan0 -j ACCEPT'
+
+  # Setup cron job to add bridge rules to iptables after reboot
+  - 'sudo chmod +x /home/manager/bridge.sh'
+  - 'sudo sed  -i "$ a\@reboot	root /home/manager/bridge.sh" /etc/crontab'
+
+  # Setup cron job to startup NFS server on reboot
+  - 'sudo chmod +x /home/manager/nfs.sh'
+  - 'sudo sed  -i "$ a\@reboot	root /home/manager/nfs.sh" /etc/crontab'
+
+  # Prepare save of IPTables (Docker might do this already)
+  #- 'sudo touch /etc/rc.local'
+
+  # Skip Locale check on User Session Startup
+  - 'sudo touch /var/lib/cloud/instance/locale-check.skip'
+
+  # Setup & Start NFS Services ( Wait with this )
+  - 'logger !!! wavesnake !!! Setup and Start NFS Services'
+  - 'sudo mkdir -p /mnt/nfs'
+  - 'sudo chown -R manager:manager /mnt/nfs'
+  - 'sudo chmod ug+rwx /mnt/nfs'
+  #- 'sudo systemctl enable rpcbind.service'
+  #- 'sudo systemctl enable nfs-server.service'
+  #- 'sudo systemctl start rpcbind.service'
+  #- 'sudo systemctl start nfs-server.service'
+  #- 'sudo mount /dev/sda1 /mnt/nfs'
+  #- 'sudo exportfs -r'
+
+  # Create Container directory
+  - 'logger !!! wavesnake !!! Create container directory and files'
+  - 'sudo mkdir -p /opt/containers'
+
+  # Traefik
+  - 'sudo mkdir -p /opt/containers/traefik'
+  - 'sudo mkdir -p /opt/containers/traefik/data'
+  - 'sudo mkdir -p /opt/containers/traefik/config'
+  - 'sudo touch /opt/containers/traefik/data/acme.json'
+  # Portainer
+  - 'sudo mkdir -p /opt/containers/portainer'
+  - 'sudo mkdir -p /opt/containers/portainer/data'
+  # Apache
+  - 'sudo mkdir -p /opt/containers/apache'
+  - 'sudo mkdir -p /opt/containers/apache/data'
+  # Redis
+  - 'sudo mkdir -p /opt/containers/redis'
+  - 'sudo mkdir -p /opt/containers/redis/data'
+  # Mosquitto
+  - 'sudo mkdir -p /opt/containers/mosquitto'
+  - 'sudo mkdir -p /opt/containers/mosquitto/config'
+  - 'sudo mkdir -p /opt/containers/mosquitto/cconfig/conf.d'
+  - 'sudo mkdir -p /opt/containers/mosquitto/data'
+  # SnakeApi
+  - 'sudo mkdir -p /opt/containers/snakeapi'
+  - 'sudo mkdir -p /opt/containers/snakeapi/data'
+  # SnakeConfig
+  - 'sudo mkdir -p /opt/containers/swarmconfig'
+  - 'sudo mkdir -p /opt/containers/swarmconfig/data'
+  # MariaDB
+  - 'sudo mkdir -p /opt/containers/mariadb'
+  - 'sudo mkdir -p /opt/containers/mariadb/data'
+  # Environment
+  - 'sudo mkdir -p /opt/containers/environment'
+  # Synchronization
+  - 'sudo mkdir -p /opt/containers/synchronization'
+  # Set rights on container files
+  - 'sudo chgrp -R manager /opt/containers'
+  - 'chown -R manager /opt/containers'
+  - 'sudo chmod a+rw /opt/containers -R'
+
+  # set special rights on ACME file
+  - 'sudo chmod 600 /opt/containers/traefik/data/acme.json'
+  
+  # Create log directories
+  - 'logger !!! wavesnake !!! Create log files'
+  - 'sudo mkdir -p /var/log/traefik'
+  - 'sudo mkdir -p /var/log/snakelogs'
+  - 'sudo mkdir -p /var/log/mosquitto'
+  - 'sudo mkdir -p /var/log/redis'
+
+  # Set Owner and rights on log files
+  - 'sudo chown -R manager /var/log/snakelogs'
+  - 'sudo chown -R manager /var/log/traefik'
+  - 'sudo chown -R manager /var/log/mosquitto'
+  - 'sudo chown -R manager /var/log/redis'
+
+  # Create Docker network
+  - 'logger !!! wavesnake !!! Create Traefik network'
+  - 'docker network create --driver overlay --attachable traefik-public'
+
+  # Create Traefik Docker stack
+  - 'logger !!! wavesnake !!! Instantiate Traefik Container'
+  - [
+       docker, stack, deploy,
+       "--compose-file", "/opt/containers/traefik/docker-compose.yml",
+       "traefik"
+    ]
+  # Create Portainer Docker stack
+  - 'logger !!! wavesnake !!! Instantiate Portainer Container' 
+  - [
+       docker, stack, deploy,
+       "--compose-file", "/opt/containers/portainer/docker-compose.yml",
+       "portainer"
+    ]
+  # Create NFS File Sharing
+  - 'logger !!! wavesnake !!! Configure fstab entries for NFS'
+
+  - 'logger !!! wavesnake !!! End of RUNCMD'
+  
+  #
+  # Below command requires that we know the UUID of the mounted USB stick
+  # and then append a line for each USB stick
+  # Also this must be done on the DB Node
+  #- 'echo "/dev/disk/by-uuid/3433-3231 /media/data vfat auto,nofail,noatime,users,rw,uid=manager,gid=manager 0 0" >> /etc/fstab'
+  #- 'mount nfs disk !!!!' Must be done on the WS01 Node
+
+  # !!! There must be a newline after this line
+

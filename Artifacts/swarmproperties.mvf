@@ -1,4 +1,4 @@
-
+#  swarmproperties.mvf
 #
 # WaveSnake Swarm Properties
 #
@@ -8,6 +8,7 @@
 # You can change the Node name prefix here. Node names are generated
 # as NODENAME_PREFIX + "0" + NODENAME_COUNT, e.g. sn01, sn02 ...
 # The Swarm manager node will always be the first node.
+#
 NODENAME_PREFIX="sn"
 PROPERTY_FILE_NAME="swarmproperties"
 PROPERTY_FILE_EXT="mvf"
@@ -26,7 +27,7 @@ INTERNAL_SWARM_IP_NET="192.168.230.0"
 # MANAGER Properties
 MANAGER_NAME="manager"
 MANAGER_PASSWORD="your-manager-password"
-MANAGER_ENCRYPTED_PASSWORD="$6$$lkFOYhhCGZiVmaOiZxSrpcvun.YOgyWuin0l0/aHRkep9sHrMTVp4uzHsAkTIJ.q3c8RuTA.NUNE8yqrh72O5/"
+#MANAGER_ENCRYPTED_PASSWORD="$6$$lkFOYhhCGZiVmaOiZxSrpcvun.YOgyWuin0l0/aHRkep9sHrMTVp4uzHsAkTIJ.q3c8RuTA.NUNE8yqrh72O5/"
 
 # Node properties
 NODE_NAME="ws01"
@@ -37,8 +38,8 @@ TIME_ZONE="Europe/Copenhagen"
 SWARM_MANAGER_NODE="ws01"
 SWARM_PORT="2377"
 SWARM_INTERFACE="eth0"
-SWARM_WORKER_TOKEN="SWMTKN-1-6cyk7y11vbx3e8sc5b8iqiao7sb9iyr8b2lheybtyjqhb8mfho-5bracqtjvzt2zcn7m0qp5w27w"
-SWARM_MANAGER_TOKEN="SWMTKN-1-6cyk7y11vbx3e8sc5b8iqiao7sb9iyr8b2lheybtyjqhb8mfho-cgxcsuzfarwy7m3eypj542pi1"
+#SWARM_WORKER_TOKEN="SWMTKN-1-6cyk7y11vbx3e8sc5b8iqiao7sb9iyr8b2lheybtyjqhb8mfho-5bracqtjvzt2zcn7m0qp5w27w"
+#SWARM_MANAGER_TOKEN="SWMTKN-1-6cyk7y11vbx3e8sc5b8iqiao7sb9iyr8b2lheybtyjqhb8mfho-cgxcsuzfarwy7m3eypj542pi1"
 
 # Swarm Application DNS Prefix's
 API_PREFIX="api"
@@ -47,18 +48,18 @@ MQTT_PREFIX="mqt"
 SKETCH_PREFIX="sketch"
 
 # Swarm External Application URL's
-API_SERVER_URL="api.wavesnake.dk"
-DB_SERVER_URL="sql.wavesnake.dk"
-MQTT_SERVER_URL="mqt.wavesnake.dk"
-SKETCH_SERVER_URL="sketch.wavesnake.dk"
+#API_SERVER_URL="api.wavesnake.dk"
+#DB_SERVER_URL="sql.wavesnake.dk"
+#MQTT_SERVER_URL="mqt.wavesnake.dk"
+#SKETCH_SERVER_URL="sketch.wavesnake.dk"
 
 # Swarm Internal Application URL's
 # OBS! These have to be set in script, based on internal
 # and external domain name.
-INTERNAL_API_SERVER_URL="api.wavesnake.local"
-INTERNAL_DB_SERVER_URL="sql.wavesnake.local"
-INTERNAL_MQTT_SERVER_URL="mqt.wavesnake.local"
-INTERNAL_SKETCH_SERVER_URL="sketch.wavesnake.local"
+#INTERNAL_API_SERVER_URL="api.wavesnake.local"
+#INTERNAL_DB_SERVER_URL="sql.wavesnake.local"
+#INTERNAL_MQTT_SERVER_URL="mqt.wavesnake.local"
+#INTERNAL_SKETCH_SERVER_URL="sketch.wavesnake.local"
 
 # WiFi properties
 COUNTRY_CODE="DK"
@@ -94,7 +95,7 @@ WLAN0_IP_ADDRESS_LAST_BYTE="230"
 WLAN0_LAN_ADDRESS="192.168.1.0"
 WLAN0_LAN_NETMASK="255.255.255.0"
 WLAN0_LAN="192.168.1.0/24"
-WLAN0_IP_ADDRESS="192.168.1.220"
+WLAN0_IP_ADDRESS="192.168.1.230"
 WLAN0_STATIC_ROUTERS="192.168.1.1"
 WLAN0_DNS_SERVERS="8.8.8.8 8.8.4.4"
 
@@ -111,10 +112,10 @@ DYNAMIC_DNS_PASSWD="Your GratisDNS password"
 ACME_EMAIL_ADDRESS="yourmail@mailserver.com"
 
 # Traefik properties
-TRAEFIK_ENTRYPOINT_ADDRESS="192.168.1.220"
+TRAEFIK_ENTRYPOINT_ADDRESS="192.168.1.230"
 
 # SnakeApi properties
-API_SERVER_ADDRESS="192.168.1.220"
+API_SERVER_ADDRESS="192.168.1.230"
 API_SERVER_PORT="80"
 
 # SnakeConfig properties
@@ -128,11 +129,11 @@ REDIS_REPLICA_SERVER_ADDRESS="192.168.230.4"
 REDIS_REPLICA_SERVER_PORT="8376"
 
 # Sketch properties
-SKETCH_SERVER_ADDRESS="192.168.1.220"
+SKETCH_SERVER_ADDRESS="192.168.1.230"
 SKETCH_SERVER_PORT="80"
 
 # MQTT properties
-MQTT_SERVER_ADDRESS="192.168.1.220"
+MQTT_SERVER_ADDRESS="192.168.1.230"
 MQTT_SERVER_PORT="6379"
 
 # USB Drive mount Command (/dev/sda1: UUID="3FFB-6CC8")
@@ -140,4 +141,3 @@ USB_MOUNT_COMMAND="echo \"/dev/sda1/by-uuid/USB_UUID /media/data/mariadb vfat au
 
 # Redis Default SnakeConfig
 REDIS_DEFAULT_CONFIG="{'REDIS_MASTER_SERVER_ADDRESS':'192.168.1.220','REDIS_MASTER_SERVER_PORT':'8376'}"
-

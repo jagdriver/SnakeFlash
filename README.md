@@ -3,9 +3,10 @@
 # Table of contents
 1. [Introduction](#introduction)
 2. [Prerequisites](#prerequisites)
-    1. [Hardware](#hardware)
+    1. [ESP Hardware](#esphardware)
+    2. [RPI  Hardware](#rpihardware)
         1. [Hardware list](#hardwarelist)
-    2. [Software](#software)
+    3. [Software](#software)
         1. [Redis](#redis)
         2. [SnakeApi](#snakeapi)
         3. [SnakeTimer](#snaketimer)
@@ -29,12 +30,23 @@
 7. [Configuration documentation](#configdocumentation)
 
 ## SnakeHome <a name="introduction"></a>
-SnakeHome is the platform for hobbyist, who want the possibility to create their own IoT devices, but lack the background infrastructure, to integrate these devices into a manageable platform. I've put together some of the best tools available, written som apps, services, sketches and scripts, tested a lot, out came the SnakeHome management system, and it's free.
+SnakeHome is the platform for hobbyist, who want the possibility to create their own IoT devices, but lack the background infrastructure, to integrate these devices into a manageable platform. I've put together some of the best tools available, written som apps, services, sketches and scripts, tested a lot, out came the SnakeHome management system, and it's free. 
+
+The system consists of:
+- Sketches for booting/initializing ESP8266/ESP32.
+- Bash script for configuring and flashing MicroSD cards for a RaspBerry PI Docker Swarm Cluster.   
+- Docker images for Swarm applications.
+- Web application for managing/monitoring Swarm applications.
+- Web application for User setup/management of WaveSnake Home Management System.
+- IoS application for User setup/management of WaveSnake Home Management System.
+
 
 ## Prerequisites <a name="prerequisites"></a>
 prerequisites: Mac, Windows or Linux, Visual Studio Code with some extensions (free).  
 
-### RPI hardware <a name="hardware"></a>
+### ESP hardware <a name="esphardware"></a>
+
+### RPI hardware <a name="rpihardware"></a>
 
 #### List of hardware <a name="hardwarelist"></a>
 
@@ -90,14 +102,22 @@ Repository URL: https://github.com/jagdriver/Stacks.git
 
 Compose path: /SnakeConfig/docker-compose.yml
 
-### Setup guide  <a name="setupguide"></a>
-The initial setup and flashing of the SnakeHome Swarm includes downloading [this](https://github.com/jagdriver/SnakeFlash "this link") project from GitHub. Copy the project content into a folder called Flashing.
+### Flashing Setup guide  <a name="setupguide"></a>
+The initial setup and flashing of the SnakeHome Swarm includes below steps.
 
-Next, read the documentation on Swarm Configuration before going into actual setup steps.
+- Download [this](https://github.com/jagdriver/SnakeFlash "this link") project from GitHub. Copy the project content into a folder called Flashing.
 
-Download the latest HypriotOS from this url https://blog.hypriot.com/downloads/
+- Next, read the documentation on Swarm Configuration before going into actual setup steps.
 
-Edit swarmconfig.txt and nodeconfig.txt but be carefull not to jeopardise these files. Or run flash-config.zsh to be prompted for property values.
+- Download the latest HypriotOS from this url https://blog.hypriot.com/downloads/
+
+- Format an MicroSD card, preferrably 16GB, and give it the name HyprriotOS. Se the format description here.
+
+- Edit swarmproperties.txt and nodeproperties.txt but be carefull not to jeopardise these files. Or run  flash-config.zsh to be prompted for property values.
+
+- CD into Flashing directory
+
+- Execute ./flash-config.zsh. Read the flash config instruction here.
 
 ### Flashing to SD cards <a name="flash"></a>
 Run flash-swarm.zsh to flash the node images to micro SD cards, please have the cards ready an properly marked, 1 to 4. You can flash all at once, or one at a time.

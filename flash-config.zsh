@@ -38,10 +38,15 @@ WH=$'\e[97m'
 BC=$'\e[4m'
 EC=$'\e[0m'
 BO=$'\e[1m'
-CHECK_DONE="\xE2\x9C\x94"
-CHECK_UNDONE="\xE2\x9D\x8C"
+
+# Configuration input file
+INPUT_FILE="./Artifacts/swarmproperties.mvf"
+PROPERTY_FILE_NAME="swarmproperties"
+PROPERTY_FILE_EXT="mvf"
 
 # Config Check Menu
+CHECK_DONE="\xE2\x9C\x94"
+CHECK_UNDONE="\xE2\x9D\x8C"
 WLAN0_DONE=$CHECK_UNDONE
 ETH0_DONE=$CHECK_UNDONE
 MANAGER_DONE=$CHECK_UNDONE
@@ -50,22 +55,41 @@ EDIT_DONE=$CHECK_UNDONE
 MANAGER_DONE=$CHECK_UNDONE
 WORKER_DONE=$CHECK_UNDONE
 
+# Noded names
 SWARM_NODES=()
+# Node directory names (not used anymore)
 NODE_DIRS=()
+# Current network address bytes
 ETH0_ADDRESS_BYTES=()
+# Node local DNS  URL's
+DNS_URLS=()
+# Node local IP addresses
+IP_ADDRESSES=()
+
 function quit() {
    echo -e "${WHITE}"
    echo "\nLeaving Swarm Configuration"
    exit
 }
 
+function EditManagerNode() {
+   # Change to WS01 dir
+   #  Copy default-meta-data to  new-meta-data
+   # copyselected template to new-user-data
+   # Edit...
+   # rename new-user-data to user-data
+   cd $1
+}
+
 function EditProperties() {
    cd $1
-   cp ../Artifacts/default-meta-data new-meta-data
+   cp ../Artifacts/metadata.yaml new-meta-data
 
    case $1 in
-   "ws01")
-      cp ../Artifacts/default-manager-user-data new-user-data
+   "${SWARM_NODES[0]}")
+      NODE_NAME="${SWARM_NODES[0]}"
+      cp ../Artifacts/$MANAGER_TEMPLATE_FILE_NAME.$TEMPLATE_FILE_EXT new-user-data
+
       # Docker
       sed -i -n "s/SWARM-INTERFACE/$SWARM_INTERFACE/g" new-user-data
       sed -i -n "s/SWARM-PORT/$SWARM_PORT/g" new-user-data
@@ -90,51 +114,81 @@ function EditProperties() {
       sed -i -n "s#WLAN0-LAN#$WLAN0_LAN#" new-user-data
 
       # Setup DNS A records
-      sed -i -n "s#DNS-STRING1#$WS02_DNS_STRING#" new-user-data
-      sed -i -n "s#DNS-STRING2#$WS03_DNS_STRING#" new-user-data
-      sed -i -n "s#DNS-STRING3#$WS04_DNS_STRING#" new-user-data
+      # sed -i -n "s#DNS-STRING1#$WS02_DNS_STRING#" new-user-data
+      # sed -i -n "s#DNS-STRING2#$WS03_DNS_STRING#" new-user-data
+      # sed -i -n "s#DNS-STRING3#$WS04_DNS_STRING#" new-user-data
+      sed -i -n "s#DNS-STRING1#${DNS_URLS[1]}#" new-user-data
+      sed -i -n "s#DNS-STRING2#${DNS_URLS[3]}#" new-user-data
+      sed -i -n "s#DNS-STRING3#${DNS_URLS[3]}#" new-user-data
 
       # Setup Traefik SSH Rules
-      sed -i -n "s#WS01-IP-ADDRESS#$WS01_IP_ADDRESS#" new-user-data
-      sed -i -n "s#WS02-IP-ADDRESS#$WS02_IP_ADDRESS#" new-user-data
-      sed -i -n "s#WS03-IP-ADDRESS#$WS03_IP_ADDRESS#" new-user-data
-      sed -i -n "s#WS04-IP-ADDRESS#$WS04_IP_ADDRESS#" new-user-data
+      # sed -i -n "s#WS01-IP-ADDRESS#$WS01_IP_ADDRESS#" new-user-data
+      # sed -i -n "s#WS02-IP-ADDRESS#$WS02_IP_ADDRESS#" new-user-data
+      # sed -i -n "s#WS03-IP-ADDRESS#$WS03_IP_ADDRESS#" new-user-data
+      # sed -i -n "s#WS04-IP-ADDRESS#$WS04_IP_ADDRESS#" new-user-data
+      sed -i -n "s#WS01-IP-ADDRESS#${IP_ADDRESSES[0]}#" new-user-data
+      sed -i -n "s#WS02-IP-ADDRESS#${IP_ADDRESSES[1]}#" new-user-data
+      sed -i -n "s#WS03-IP-ADDRESS#${IP_ADDRESSES[2]}#" new-user-data
+      sed -i -n "s#WS04-IP-ADDRESS#${IP_ADDRESSES[3]}#" new-user-data
+
+      # Global application properties, only manager node
+      sed -i -n "s#REDIS-MASTER-SERVER-ADDRESS#$REDIS_MASTER_SERVER_ADDRESS#" new-user-data
+      sed -i -n "s#REDIS-MASTER-SERVER-PORT#$REDIS_MASTER_SERVER_PORT#" new-user-data
+      sed -i -n "s#REDIS-REPLICA-SERVER-ADDRESS#$REDIS_REPLICA_SERVER_ADDRESS#" new-user-data
+      sed -i -n "s#REDIS-REPLICA-SERVER-PORT#$REDIS_REPLICA_SERVER_PORT#" new-user-data
+      sed -i -n "s#SKETCH-SERVER-ADDRESS#$SKETCH_SERVER_ADDRESS#" new-user-data
+      sed -i -n "s#SKETCH-SERVER-PORT#$SKETCH_SERVER_PORT#" new-user-data
+      sed -i -n "s#API-SERVER-ADDRESS#$API_SERVER_ADDRESS#" new-user-data
+      sed -i -n "s#API-SERVER-PORT#$API_SERVER_PORT#" new-user-data
+      sed -i -n "s#MQTT-SERVER-ADDRESS#$MQTT_SERVER_ADDRESS#" new-user-data
+      sed -i -n "s#MQTT-SERVER-PORT#$MQTT_SERVER_PORT#" new-user-data
+      sed -i -n "s#APPLICATION-LIST#$APPLICATION_LIST#" new-user-data
+      sed -i -n "s#ENVIRONMENT-LIST#$ENVIRONMENT_LIST#" new-user-data
       ;;
-   "ws02")
-      cp ../Artifacts/default-worker-user-data new-user-data
+   "${SWARM_NODES[1]}")
+      cp ../Artifacts/$WORKER_TEMPLATE_FILE_NAME.$TEMPLATE_FILE_EXT new-user-data
       # Worker node properties
       sed -i -n "s/SWARM-MANAGER-NODE/$SWARM_MANAGER_NODE/g" new-user-data
       sed -i -n "s/SWARM-PORT/$SWARM_PORT/g" new-user-data
       sed -i -n "s*SWARM-WORKER-TOKEN*$SWARM_WORKER_TOKEN*" new-user-data
       # Setup DNSMasq A records
-      sed -i -n "s#DNS-STRING1#$WS01_DNS_STRING#" new-user-data
-      sed -i -n "s#DNS-STRING2#$WS03_DNS_STRING#" new-user-data
-      sed -i -n "s#DNS-STRING3#$WS04_DNS_STRING#" new-user-data
+      # sed -i -n "s#DNS-STRING1#$WS01_DNS_STRING#" new-user-data
+      # sed -i -n "s#DNS-STRING2#$WS03_DNS_STRING#" new-user-data
+      # sed -i -n "s#DNS-STRING3#$WS04_DNS_STRING#" new-user-data
+      sed -i -n "s#DNS-STRING1#${DNS_URLS[0]}#" new-user-data
+      sed -i -n "s#DNS-STRING2#${DNS_URLS[2]}#" new-user-data
+      sed -i -n "s#DNS-STRING3#${DNS_URLS[3]}#" new-user-data
 
       ;;
-   "ws03")
-      cp ../Artifacts/default-worker-user-data new-user-data
+   "${SWARM_NODES[2]}")
+      cp ../Artifacts/$WORKER_TEMPLATE_FILE_NAME.$TEMPLATE_FILE_EXT new-user-data
       # Worker node properties
       sed -i -n "s/SWARM-MANAGER-NODE/$SWARM_MANAGER_NODE/g" new-user-data
       sed -i -n "s/SWARM-PORT/$SWARM_PORT/g" new-user-data
       sed -i -n "s*SWARM-WORKER-TOKEN*$SWARM_WORKER_TOKEN*" new-user-data
 
       # Setup DNSMasq A records
-      sed -i -n "s#DNS-STRING1#$WS01_DNS_STRING#" new-user-data
-      sed -i -n "s#DNS-STRING2#$WS02_DNS_STRING#" new-user-data
-      sed -i -n "s#DNS-STRING3#$WS04_DNS_STRING#" new-user-data
+      # sed -i -n "s#DNS-STRING1#$WS01_DNS_STRING#" new-user-data
+      # sed -i -n "s#DNS-STRING2#$WS02_DNS_STRING#" new-user-data
+      # sed -i -n "s#DNS-STRING3#$WS04_DNS_STRING#" new-user-data
+      sed -i -n "s#DNS-STRING1#${DNS_URLS[0]}#" new-user-data
+      sed -i -n "s#DNS-STRING2#${DNS_URLS[1]}#" new-user-data
+      sed -i -n "s#DNS-STRING3#${DNS_URLS[3]}#" new-user-data
       ;;
-   "ws04")
-      cp ../Artifacts/default-worker-user-data new-user-data
+   "${SWARM_NODES[3]}")
+      cp ../Artifacts/$WORKER_TEMPLATE_FILE_NAME.$TEMPLATE_FILE_EXT new-user-data
       # Worker node properties
       sed -i -n "s/SWARM-MANAGER-NODE/$SWARM_MANAGER_NODE/g" new-user-data
       sed -i -n "s/SWARM-PORT/$SWARM_PORT/g" new-user-data
       sed -i -n "s*SWARM-WORKER-TOKEN*$SWARM_WORKER_TOKEN*" new-user-data
 
       # Setup DNSMasq A records
-      sed -i -n "s#DNS-STRING1#$WS01_DNS_STRING#" new-user-data
-      sed -i -n "s#DNS-STRING2#$WS02_DNS_STRING#" new-user-data
-      sed -i -n "s#DNS-STRING3#$WS03_DNS_STRING#" new-user-data
+      # sed -i -n "s#DNS-STRING1#$WS01_DNS_STRING#" new-user-data
+      # sed -i -n "s#DNS-STRING2#$WS02_DNS_STRING#" new-user-data
+      # sed -i -n "s#DNS-STRING3#$WS03_DNS_STRING#" new-user-data
+      sed -i -n "s#DNS-STRING1#${DNS_URLS[0]}#" new-user-data
+      sed -i -n "s#DNS-STRING2#${DNS_URLS[1]}#" new-user-data
+      sed -i -n "s#DNS-STRING3#${DNS_URLS[2]}#" new-user-data
 
       # USB Drive mount command
       sed -i -n "s#USB-MOUNT-COMMAND#$USB_MOUNT_COMMAND#" new-user-data
@@ -150,20 +204,6 @@ function EditProperties() {
 
    # Redis properties
    #sed -i -n "s#REDIS-DEFAULT-CONFIG#$REDIS_DEFAULT_CONFIG#" new-user-data
-
-   # Global application properties
-   sed -i -n "s#REDIS-MASTER-SERVER-ADDRESS#$REDIS_MASTER_SERVER_ADDRESS#" new-user-data
-   sed -i -n "s#REDIS-MASTER-SERVER-PORT#$REDIS_MASTER_SERVER_PORT#" new-user-data
-   sed -i -n "s#REDIS-REPLICA-SERVER-ADDRESS#$REDIS_REPLICA_SERVER_ADDRESS#" new-user-data
-   sed -i -n "s#REDIS-REPLICA-SERVER-PORT#$REDIS_REPLICA_SERVER_PORT#" new-user-data
-   sed -i -n "s#SKETCH-SERVER-ADDRESS#$SKETCH_SERVER_ADDRESS#" new-user-data
-   sed -i -n "s#SKETCH-SERVER-PORT#$SKETCH_SERVER_PORT#" new-user-data
-   sed -i -n "s#API-SERVER-ADDRESS#$API_SERVER_ADDRESS#" new-user-data
-   sed -i -n "s#API-SERVER-PORT#$API_SERVER_PORT#" new-user-data
-   sed -i -n "s#MQTT-SERVER-ADDRESS#$MQTT_SERVER_ADDRESS#" new-user-data
-   sed -i -n "s#MQTT-SERVER-PORT#$MQTT_SERVER_PORT#" new-user-data
-   sed -i -n "s#APPLICATION-LIST#$APPLICATION_LIST#" new-user-data
-   sed -i -n "s#ENVIRONMENT-LIST#$ENVIRONMENT_LIST#" new-user-data
 
    # ETH0
    sed -i -n "s/ETH0-DNS-SERVERS/$ETH0_DNS_SERVERS/" new-user-data
@@ -200,61 +240,65 @@ function EditProperties() {
 }
 
 function PromptForInput() {
+   # If we change IP properties, then SetNetAddress have to be called
+   # If we change DNS properties, then SetDnsStrings have to be called 
+   # Net prompts commented out 
    case $1 in
-   "ws01")
-      # # Configure External domain name (Manager)
-      echo -e "\n"
-      GETDOM=true
-      while $GETDOM; do
-         read -p "${GR}Type External domain name ${WH}> "
-         if [[ -z "$REPLY" ]]; then
-            echo -e -n "You must supply external domain name"
-         else
-            EXTERNAL_DOMAIN_NAME=$REPLY
-            echo -e -n "${EXTERNAL_DOMAIN_NAME}"
-            GETDOM=FALSE
-         fi
-      done
+   "${SWARM_NODES[0]}")
 
-      #  # Configure WLAN0 LAN (Manager)
-      echo -e "\n"
-      read -p "${GR}Type WLAN0 Lan${RD}${BO} default=[${WLAN0_LAN}] ${WH}> "
-      if [[ -z "$REPLY" ]]; then
-         echo -e -n "${WLAN0_LAN}"
-      else
-         WLAN0_LAN=$REPLY
-         echo -e -n "${WLAN0_LAN}"
-      fi
+      # # # Configure External domain name (Manager)
+      # echo -e "\n"
+      # GETDOM=true
+      # while $GETDOM; do
+      #    read -p "${GR}Type External domain name ${WH}> "
+      #    if [[ -z "$REPLY" ]]; then
+      #       echo -e -n "You must supply external domain name"
+      #    else
+      #       EXTERNAL_DOMAIN_NAME=$REPLY
+      #       echo -e -n "${EXTERNAL_DOMAIN_NAME}"
+      #       GETDOM=FALSE
+      #    fi
+      # done
 
-      #  # Configure WLAN0 IP Address (Manager)
-      echo -e "\n"
-      read -p "${GR}Type WLAN0 IP address${RD}${BO} default=[${WLAN0_IP_ADDRESS}] ${WH}> "
-      if [[ -z "$REPLY" ]]; then
-         echo -e -n "${WLAN0_IP_ADDRESS}"
-      else
-         WLAN0_IP_ADDRESS=$REPLY
-         echo -e -n "${WLAN0_IP_ADDRESS}"
-      fi
+      # #  # Configure WLAN0 LAN (Manager)
+      # echo -e "\n"
+      # read -p "${GR}Type WLAN0 Lan${RD}${BO} default=[${WLAN0_LAN}] ${WH}> "
+      # if [[ -z "$REPLY" ]]; then
+      #    echo -e -n "${WLAN0_LAN}"
+      # else
+      #    WLAN0_LAN=$REPLY
+      #    echo -e -n "${WLAN0_LAN}"
+      # fi
 
-      #  # Configure WLAN0 Static Routers (Manager)
-      echo -e "\n"
-      read -p "${GR}Type WLAN0 Static Routers${RD}${BO} default=[${WLAN0_STATIC_ROUTERS}] ${WH}> "
-      if [[ -z "$REPLY" ]]; then
-         echo -e -n "${WLAN0_STATIC_ROUTERS}"
-      else
-         WLAN0_STATIC_ROUTERS=$REPLY
-         echo -e -n "${WLAN0_STATIC_ROUTERS}"
-      fi
+      # #  # Configure WLAN0 IP Address (Manager)
+      # echo -e "\n"
+      # read -p "${GR}Type WLAN0 IP address${RD}${BO} default=[${WLAN0_IP_ADDRESS}] ${WH}> "
+      # if [[ -z "$REPLY" ]]; then
+      #    echo -e -n "${WLAN0_IP_ADDRESS}"
+      # else
+      #    WLAN0_IP_ADDRESS=$REPLY
+      #    echo -e -n "${WLAN0_IP_ADDRESS}"
+      # fi
 
-      #  # Configure WLAN0 DNS Servers (Manager)
-      echo -e "\n"
-      read -p "${GR}Type WLAN0 DNS Servers${RD}${BO} default=[${WLAN0_DNS_SERVERS}] ${WH}> "
-      if [[ -z "$REPLY" ]]; then
-         echo -e -n "${WLAN0_DNS_SERVERS}"
-      else
-         WLAN0_DNS_SERVERS=$REPLY
-         echo -e -n "${WLAN0_DNS_SERVERS}"
-      fi
+      # #  # Configure WLAN0 Static Routers (Manager)
+      # echo -e "\n"
+      # read -p "${GR}Type WLAN0 Static Routers${RD}${BO} default=[${WLAN0_STATIC_ROUTERS}] ${WH}> "
+      # if [[ -z "$REPLY" ]]; then
+      #    echo -e -n "${WLAN0_STATIC_ROUTERS}"
+      # else
+      #    WLAN0_STATIC_ROUTERS=$REPLY
+      #    echo -e -n "${WLAN0_STATIC_ROUTERS}"
+      # fi
+
+      # #  # Configure WLAN0 DNS Servers (Manager)
+      # echo -e "\n"
+      # read -p "${GR}Type WLAN0 DNS Servers${RD}${BO} default=[${WLAN0_DNS_SERVERS}] ${WH}> "
+      # if [[ -z "$REPLY" ]]; then
+      #    echo -e -n "${WLAN0_DNS_SERVERS}"
+      # else
+      #    WLAN0_DNS_SERVERS=$REPLY
+      #    echo -e -n "${WLAN0_DNS_SERVERS}"
+      # fi
 
       #  # Configure WiFi Country Code (Manager)
       echo -e "\n"
@@ -370,7 +414,7 @@ function PromptForInput() {
       fi
 
       ;;
-   "ws02" | "ws03" | "ws04")
+   "${SWARM_NODES[1]}" | "${SWARM_NODES[2]}" | "${SWARM_NODES[3]}")
       #  # Configure Swarm Port (worker)
       echo -e "\n"
       read -p "${GR}Type Swarm TCP Port number ${RD}${BO}default=[${SWARM_PORT}] ${WH}> "
@@ -501,8 +545,16 @@ function ListProperties() {
    echo -e "MANAGER_ENCRYPTED_PASSWORD: " $MANAGER_ENCRYPTED_PASSWORD
 
    echo -e "\n--- Swarm properties ---"
-   echo -e "SWARM_NODES: " $NODENAME_COUNT
+   echo -e "NODENAME_COUNT: " $NODENAME_COUNT
    echo -e "NODE_NAME_PREFIX: " $NODENAME_PREFIX
+
+   # TODO: Make node count repeat
+
+   echo -e "SWARM_NODES[0]: " ${SWARM_NODES[0]}
+   echo -e "SWARM_NODES[1]: " ${SWARM_NODES[1]}
+   echo -e "SWARM_NODES[2]: " ${SWARM_NODES[2]}
+   echo -e "SWARM_NODES[3]: " ${SWARM_NODES[3]}
+
    echo -e "SWARM_INTERFACE: " $SWARM_PORT
    echo -e "SWARM_PORT: " $SWARM_PORT
    echo -e "SWARM_LOCALE: " $SWARM_LOCALE
@@ -563,6 +615,16 @@ function ListProperties() {
    echo -e "SKETCH_SERVER_PORT: " $SKETCH_SERVER_PORT
    echo -e "APPLICATION_LIST: " $APPLICATION_LIST
    echo -e "ENVIRONMENT_LIST: " $ENVIRONMENT_LIST
+   
+   echo -e "Internal API Url: " $INTERNAL_API_SERVER_URL
+   echo -e "Internal DB Url: " $INTERNAL_DB_SERVER_URL
+   echo -e "Internal MQTT Url: " $INTERNAL_MQTT_SERVER_URL
+   echo -e "Internal SKETCH Url: " $INTERNAL_SKETCH_SERVER_URL
+
+   echo -e "External API Url: " $API_SERVER_URL
+   echo -e "External DB Url: " $DB_SERVER_URL
+   echo -e "External MQTT Url: " $MQTT_SERVER_URL
+   echo -e "External SKETCH Url: " $SKETCH_SERVER_URL
 
    # Test of json string
    echo -e "REDIS_DEFAULT_CONFIG: " $REDIS_DEFAULT_CONFIG
@@ -577,12 +639,13 @@ function SaveProperties() {
    #  # Ask for new file name
    echo -e "\n"
    read -p "${GR}Type new file name${WH}> "
-   if [ $REPLY 1= "" ]; then
+   if [ $REPLY != "" ]; then
       echo -e -n "${PROPERTY_FILE_NAME}"
    else
       PROPERTY_FILE_NAME="$REPLY_"
       echo -e -n "${PROPERTY_FILE_NAME}"
    fi
+
 }
 
 function SaveTemplate() {
@@ -617,9 +680,10 @@ function ReadProperties() {
    #
    # Read all properties from swarmconfig.txt
    # source ./Artifacts/swarmconfig.txt
-   source "$INPUT_FILE"
-   echo -e "Input File: $INPUT_FILE"
-   # Node properties
+   source "./Artifacts/$PROPERTY_FILE_NAME.$PROPERTY_FILE_EXT"
+   echo -e "Input File: ./Artifacts/$PROPERTY_FILE_NAME.$PROPERTY_FILE_EXT"
+
+   # Script properties
    NODENAME_PREFIX=$NODENAME_PREFIX
    NODENAME_COUNT=$NODENAME_COUNT
    PROPERTY_FILE_NAME=$PROPERTY_FILE_NAME
@@ -631,8 +695,8 @@ function ReadProperties() {
    # MANAGER Properties
    MANAGER_NAME=$MANAGER_NAME
    MANAGER_PASSWORD=$MANAGER_PASSWORD
-   MANAGER_PASSWORD=$MANAGER_PASSWORD
-   MANAGER_ENCRYPTED_PASSWORD=$MANAGER_ENCRYPTED_PASSWORD
+   #MANAGER_PASSWORD=$MANAGER_PASSWORD
+   #MANAGER_ENCRYPTED_PASSWORD=$MANAGER_ENCRYPTED_PASSWORD
 
    # NODE Properties
    NODE_NAME=$NODE_NAME
@@ -643,14 +707,14 @@ function ReadProperties() {
    #SWARM_MANAGER_NODE=$SWARM_MANAGER_NODE
    SWARM_PORT=$SWARM_PORT
    #SWARM_INTERFACE=$SWARM_INTERFACE
-   SWARM_WORKER_TOKEN=$SWARM_WORKER_TOKEN
-   SWARM_MANAGER_TOKEN=$SWARM_MANAGER_TOKEN
+   #SWARM_WORKER_TOKEN=$SWARM_WORKER_TOKEN
+   #SWARM_MANAGER_TOKEN=$SWARM_MANAGER_TOKEN
 
    # Swarm External Application URL's
-   API_SERVER_URL=$API_SERVER_URL
-   DB_SERVER_URL=$DB_SERVER_URL
-   MQTT_SERVER_URL=$MQTT_SERVER_URL
-   SKETCH_SERVER_URL=$INTERNAL_SKETCH_SERVER_URL
+   #API_SERVER_URL=$API_SERVER_URL
+   #DB_SERVER_URL=$DB_SERVER_URL
+   #MQTT_SERVER_URL=$MQTT_SERVER_URL
+   #SKETCH_SERVER_URL=$INTERNAL_SKETCH_SERVER_URL
 
    # Swarm Application DNS Prefix's
    API_PREFIX=$API_PREFIX
@@ -659,10 +723,10 @@ function ReadProperties() {
    SKETCH_PREFIX=$SKETCH_PREFIX
 
    # Swarm Internal Application URL's
-   INTERNAL_API_SERVER_URL=$INTERNAL_API_SERVER_URL
-   INTERNAL_DB_SERVER_URL=$INTERNAL_DB_SERVER_URL
-   INTERNAL_MQTT_SERVER_URL=$INTERNAL_MQTT_SERVER_URL
-   INTERNAL_SKETCH_SERVER_URL=$INTERNAL_SKETCH_SERVER_URL
+   #INTERNAL_API_SERVER_URL=$INTERNAL_API_SERVER_URL
+   #INTERNAL_DB_SERVER_URL=$INTERNAL_DB_SERVER_URL
+   #INTERNAL_MQTT_SERVER_URL=$INTERNAL_MQTT_SERVER_URL
+   #INTERNAL_SKETCH_SERVER_URL=$INTERNAL_SKETCH_SERVER_URL
 
    # WiFi properties
    COUNTRY_CODE=$COUNTRY_CODE
@@ -676,10 +740,10 @@ function ReadProperties() {
    ETH0_DNS_SERVERS=$ETH0_DNS_SERVERS
 
    # Swarm Node IP Address
-   WS01_DNS_ADDRESS=$WS01_DNS_ADDRESS
-   WS02_DNS_ADDRESS=$WS02_DNS_ADDRESS
-   WS03_DNS_ADDRESS=$WS03_DNS_ADDRESS
-   WS04_DNS_ADDRESS=$WS04_DNS_ADDRESS
+   # WS01_DNS_ADDRESS=$WS01_DNS_ADDRESS
+   # WS02_DNS_ADDRESS=$WS02_DNS_ADDRESS
+   # WS03_DNS_ADDRESS=$WS03_DNS_ADDRESS
+   # WS04_DNS_ADDRESS=$WS04_DNS_ADDRESS
 
    # Manager Node WLAN0 properties
    WLAN0_LAN=$WLAN0_LAN
@@ -728,72 +792,139 @@ function ReadProperties() {
    USB_MOUNT_COMMAND=$USB_MOUNT_COMMAND
 
    REDIS_DEFAULT_CONFIG=$REDIS_DEFAULT_CONFIG
+
 }
 
 function SetNetAddress() {
    # Lookup current Lan address, and set the Swarm public IP address
    # by setting the last byte "WLAN0_IP_ADDRESS_LAST_BYTE"
-   LAN_STR=$(ifconfig | grep 'inet ' | grep -v 127.0.0.1 | cut -d\  -f2)
-   IFS='.'                                  # Dot is set as delimiter
-   read -ra LANADDR <<<"$LAN_STR"           # LAN_STR is read into an array as tokens separated by IFS
+   # All IP adresses will default be set from the current LAN_NET and ETH0_LAN string.
+   # You can change WLAN0_LAN an ETH0_LAN prroperties in the ConfigureInternalNetwork Menu, and then this
+   # function will be run again based on the new property values.
+   IFS='.'  # Dot is set as delimiter  
+   if [ $1 == "AUTO" ]; then
+      LAN_STR=$(ifconfig | grep 'inet ' | grep -v 127.0.0.1 | cut -d\  -f2)                         
+      read -ra LANADDR <<<"$LAN_STR"  # LAN_STR is read into an array as tokens separated by IFS
+   else
+      LAN_STR=$WLAN0_LAN_ADDRESS                   
+      read -ra LANADDR <<<"$LAN_STR"  # LAN_STR is read into an array as tokens separated by IFS
+   fi
    read -ra ETH0ADDR <<<"$ETH0_LAN_ADDRESS" # ETH0_IP_ADDRESS is read into an array as tokens separated by IFS
    WLAN0_LAN="${LANADDR[0]}.${LANADDR[1]}.${LANADDR[2]}.0/24"
    WLAN0_IP_ADDRESS="${LANADDR[0]}.${LANADDR[1]}.${LANADDR[2]}.${WLAN0_IP_ADDRESS_LAST_BYTE}"
    ETH0_LAN_NET="${ETH0ADDR[0]}.${ETH0ADDR[1]}.${ETH0ADDR[2]}"
-   WS01_IP_ADDRESS="${ETH0_LAN_NET}.1"
-   WS02_IP_ADDRESS="${ETH0_LAN_NET}.2"
-   WS03_IP_ADDRESS="${ETH0_LAN_NET}.3"
-   WS04_IP_ADDRESS="${ETH0_LAN_NET}.4"
+   ETH0_LAN="${ETH0ADDR[0]}.${ETH0ADDR[1]}.${ETH0ADDR[2]}.0"
+
+   # Can be deleted  but must be changes in editconfig
+   # WS01_IP_ADDRESS="${ETH0_LAN_NET}.1"
+   # WS02_IP_ADDRESS="${ETH0_LAN_NET}.2"
+   # WS03_IP_ADDRESS="${ETH0_LAN_NET}.3"
+   # WS04_IP_ADDRESS="${ETH0_LAN_NET}.4"
+   #
+   # Set Swarm Node internal IP Address
+   IP_ADDRESSES[0]="${ETH0_LAN_NET}.1"
+   IP_ADDRESSES[1]="${ETH0_LAN_NET}.2"
+   IP_ADDRESSES[2]="${ETH0_LAN_NET}.3"
+   IP_ADDRESSES[3]="${ETH0_LAN_NET}.4"
+
+   # Set Swarm Node internal DNS Url
+   DNS_URLS[0]="${ETH0ADDR[0]}.${ETH0ADDR[1]}.${ETH0ADDR[2]}.1 ${SWARM_NODES[0]} ${SWARM_NODES[0]}.${INTERNAL_DOMAIN_NAME}"
+   DNS_URLS[1]="${ETH0ADDR[0]}.${ETH0ADDR[1]}.${ETH0ADDR[2]}.2 ${SWARM_NODES[1]} ${SWARM_NODES[1]}.${INTERNAL_DOMAIN_NAME}"
+   DNS_URLS[2]="${ETH0ADDR[0]}.${ETH0ADDR[1]}.${ETH0ADDR[2]}.3 ${SWARM_NODES[2]} ${SWARM_NODES[2]}.${INTERNAL_DOMAIN_NAME}"
+   DNS_URLS[3]="${ETH0ADDR[0]}.${ETH0ADDR[1]}.${ETH0ADDR[2]}.4 ${SWARM_NODES[3]} ${SWARM_NODES[3]}.${INTERNAL_DOMAIN_NAME}"
+   
+   # Set Traefik entrypoint address
+   TRAEFIK_ENTRYPOINT_ADDRESS="$WLAN0_IP_ADDRESS"
+   
+   # Set Application IP Adresses and possibly Node placement
+   API_SERVER_ADDRESS="$WLAN0_IP_ADDRESS"
+   SKETCH_SERVER_ADDRESS="$WLAN0_IP_ADDRESS"
+   MQTT_SERVER_ADDRESS="$WLAN0_IP_ADDRESS"
+
+   # Set Redis Master and Replica server IP addresses
+   REDIS_MASTER_SERVER_ADDRESS="${ETH0_LAN_NET}.1"
+   REDIS_REPLICA_SERVER_ADDRESS="${ETH0_LAN_NET}.4"
+
    IFS=' '
 }
 
 function SetNodeNames() {
    #  # Configure Node Name Count
-   echo -e "\n"
-   read -p "${GR}Type Node Count${RD}${BO} default=[${NODENAME_COUNT}] ${WH}> "
-   if [[ -z "$REPLY" ]]; then
-      echo -e -n "${NODENAME_COUNT}"
-   else
-      NODENAME_COUNT=$REPLY
-      echo -e -n "${NODENAME_COUNT}"
-   fi
+   if [$1 == "PROMPT"]; then
+      echo -e "\n"
+      read -p "${GR}Type Node Count${RD}${BO} default=[${NODENAME_COUNT}] ${WH}> "
+      if [[ -z "$REPLY" ]]; then
+         echo -e -n "${NODENAME_COUNT}"
+      else
+         NODENAME_COUNT=$REPLY
+         echo -e -n "${NODENAME_COUNT}"
+      fi
 
-   #  # Configure Node Name Prefix
-   echo -e "\n"
-   read -p "${GR}Type Node Name Prefix${RD}${BO} default=[${NODENAME_PREFIX}] ${WH}> "
-   if [[ -z "$REPLY" ]]; then
-      echo -e -n "${NODENAME_PREFIX}"
-   else
-      NODENAME_PREFIX=$REPLY
-      echo -e -n "${NODENAME_PREFIX}"
+      #  # Configure Node Name Prefix
+      echo -e "\n"
+      read -p "${GR}Type Node Name Prefix${RD}${BO} default=[${NODENAME_PREFIX}] ${WH}> "
+      if [[ -z "$REPLY" ]]; then
+         echo -e "${NODENAME_PREFIX}"
+      else
+         NODENAME_PREFIX=$REPLY
+         echo -e "${NODENAME_PREFIX}"
+      fi
    fi
-
    # Set node names from NODENAME_PREFIX and NODENAME_COUNT
    local nodeCount=1
    while [ $nodeCount -le $(($NODENAME_COUNT)) ]; do
-      echo "Nodename $NODENAME_PREFIX"0"$nodeCount"
+      #echo "Nodename $NODENAME_PREFIX"0"$nodeCount"
       SWARM_NODES[$nodeCount - 1]=$"$NODENAME_PREFIX"0"$nodeCount"
-      NODE_DIRS[$nodeCount - 1]=$""ws0"$nodeCount"
-      echo "Nodedir ${NODE_DIRS[$nodeCount - 1]}"
+      echo "Nodename ${SWARM_NODES[$nodeCount - 1]}"
+      # No Node Dirs
+      #NODE_DIRS[$nodeCount - 1]=$""ws0"$nodeCount"
+      #echo "Nodedir ${NODE_DIRS[$nodeCount - 1]}"
       nodeCount=$(($nodeCount + 1))
    done
    SWARM_MANAGER_NODE=${SWARM_NODES[1]}
-}
 
-function SetDnsStrings() {
-   IFS='.'                      # Dot is set as delimiter
-   read -ra ADDR <<<"$ETH0_LAN" # str is read into an array as tokens separated by IFS
-   WS01_DNS_STRING="${ADDR[0]}.${ADDR[1]}.${ADDR[2]}.1 ws01 ws01.${INTERNAL_DOMAIN_NAME}"
-   WS02_DNS_STRING="${ADDR[0]}.${ADDR[1]}.${ADDR[2]}.2 ws02 ws02.${INTERNAL_DOMAIN_NAME}"
-   WS03_DNS_STRING="${ADDR[0]}.${ADDR[1]}.${ADDR[2]}.3 ws03 ws03.${INTERNAL_DOMAIN_NAME}"
-   WS04_DNS_STRING="${ADDR[0]}.${ADDR[1]}.${ADDR[2]}.4 ws04 ws04.${INTERNAL_DOMAIN_NAME}"
+   # Create a subdir for each node
+   for ((i = 0; i < $NODENAME_COUNT; i++)); do
+      #echo "$CURRENT_DIR/${SWARM_NODES[i]}"
+      if [ ! -d "$CURRENT_DIR/${SWARM_NODES[i]}" ]; then
+         mkdir "$CURRENT_DIR/${SWARM_NODES[i]}"
+      fi
+   done
 
-   WS01_IP_ADDRESS="${ADDR[0]}.${ADDR[1]}.${ADDR[2]}.1"
-   WS02_IP_ADDRESS="${ADDR[0]}.${ADDR[1]}.${ADDR[2]}.2"
-   WS03_IP_ADDRESS="${ADDR[0]}.${ADDR[1]}.${ADDR[2]}.3"
-   WS04_IP_ADDRESS="${ADDR[0]}.${ADDR[1]}.${ADDR[2]}.4"
-   IFS=' '
 }
+function SetDnsStrings()
+{
+   # Internal Application Url's
+   INTERNAL_API_SERVER_URL="$API_PREFIX.$INTERNAL_DOMAIN_NAME"
+   INTERNAL_DB_SERVER_URL="$DB_PREFIX.$INTERNAL_DOMAIN_NAME"
+   INTERNAL_MQTT_SERVER_URL="$MQTT_PREFIX.$INTERNAL_DOMAIN_NAME"
+   INTERNAL_SKETCH_SERVER_URL="$SKETCH_PREFIX.$INTERNAL_DOMAIN_NAME"
+
+   # External application Url's
+   API_SERVER_URL="$API_PREFIX.$EXTERNAL_DOMAIN_NAME"
+   DB_SERVER_URL="$DB_PREFIX.$EXTERNAL_DOMAIN_NAME"
+   MQTT_SERVER_URL="$MQTT_PREFIX.$EXTERNAL_DOMAIN_NAME"
+   SKETCH_SERVER_URL="$SKETCH_PREFIX.$EXTERNAL_DOMAIN_NAME"
+}
+# function SetDnsStrings() {
+#    IFS='.'                      # Dot is set as delimiter
+#    read -ra ADDR <<<"$ETH0_LAN" # str is read into an array as tokens separated by IFS
+#    # WS01_DNS_STRING="${ADDR[0]}.${ADDR[1]}.${ADDR[2]}.1 ws01 ws01.${INTERNAL_DOMAIN_NAME}"
+#    # WS02_DNS_STRING="${ADDR[0]}.${ADDR[1]}.${ADDR[2]}.2 ws02 ws02.${INTERNAL_DOMAIN_NAME}"
+#    # WS03_DNS_STRING="${ADDR[0]}.${ADDR[1]}.${ADDR[2]}.3 ws03 ws03.${INTERNAL_DOMAIN_NAME}"
+#    # WS04_DNS_STRING="${ADDR[0]}.${ADDR[1]}.${ADDR[2]}.4 ws04 ws04.${INTERNAL_DOMAIN_NAME}"
+
+#    DNS_URLS[0]="${ADDR[0]}.${ADDR[1]}.${ADDR[2]}.1 ${SWARM_NODES[0]} ${SWARM_NODES[0]}.${INTERNAL_DOMAIN_NAME}"
+#    DNS_URLS[1]="${ADDR[0]}.${ADDR[1]}.${ADDR[2]}.2 ${SWARM_NODES[1]} ${SWARM_NODES[1]}.${INTERNAL_DOMAIN_NAME}"
+#    DNS_URLS[2]="${ADDR[0]}.${ADDR[1]}.${ADDR[2]}.3 ${SWARM_NODES[2]} ${SWARM_NODES[2]}.${INTERNAL_DOMAIN_NAME}"
+#    DNS_URLS[3]="${ADDR[0]}.${ADDR[1]}.${ADDR[2]}.4 ${SWARM_NODES[3]} ${SWARM_NODES[3]}.${INTERNAL_DOMAIN_NAME}"
+
+#    # WS01_IP_ADDRESS="${ADDR[0]}.${ADDR[1]}.${ADDR[2]}.1"
+#    # WS02_IP_ADDRESS="${ADDR[0]}.${ADDR[1]}.${ADDR[2]}.2"
+#    # WS03_IP_ADDRESS="${ADDR[0]}.${ADDR[1]}.${ADDR[2]}.3"
+#    # WS04_IP_ADDRESS="${ADDR[0]}.${ADDR[1]}.${ADDR[2]}.4"
+#    IFS=' '
+# }
 
 function SetDateTime() {
    DATE_ISO=$(date "+DATE: %Y-%m-%d")
@@ -815,6 +946,8 @@ function ShowPassword() {
 }
 
 function SelectInputConfig() {
+   # Reads and presents all *.mvf files
+   # so user kan choose properties file.
    INPUT_CONFIG_FILES=()
    j=0
    for i in ./Artifacts/*.mvf; do
@@ -822,19 +955,28 @@ function SelectInputConfig() {
       INPUT_CONFIG_FILES[j]="$i"
       j+=1
    done
-}
 
-function SelectInputFile() {
    echo -e "\n${GR}Select Input file with predefined properties${WH}"
    select fav in "${INPUT_CONFIG_FILES[@]}"; do
-      # Read and parse input file
       INPUT_FILE=$fav
       #echo -e "SelectInputFile $fav"
       break
    done
 }
 
+# function SelectInputFile() {
+#    echo -e "\n${GR}Select Input file with predefined properties${WH}"
+#    select fav in "${INPUT_CONFIG_FILES[@]}"; do
+#       # Read and parse input file
+#       INPUT_FILE=$fav
+#       #echo -e "SelectInputFile $fav"
+#       break
+#    done
+# }
+
 function SelectNodeTemplate() {
+   # Reads and presents all *.yaml files
+   # so user can choose template file.
    INPUT_TEMPLATE_FILES=()
    j=0
    for i in ./Artifacts/*.yaml; do
@@ -973,13 +1115,24 @@ function ConfigureInternalNetwork() {
 
 function ConfigureWiFiNetwork() {
    #  # Configure WLAN0 LAN (Manager)
+   # echo -e "\n"
+   # read -p "${GR}Type WLAN0 Lan${RD}${BO} default=[${WLAN0_LAN}] ${WH}> "
+   # if [[ -z "$REPLY" ]]; then
+   #    echo -e -n "${WLAN0_LAN}"
+   # else
+   #    WLAN0_LAN=$REPLY
+   #    echo -e -n "${WLAN0_LAN}"
+   # fi
+
+   # WLAN0 Lan Address
    echo -e "\n"
-   read -p "${GR}Type WLAN0 Lan${RD}${BO} default=[${WLAN0_LAN}] ${WH}> "
+   read -p "${GR}Type WLAN0 Lan address${RD}${BO} default=[${WLAN0_LAN_ADDRESS}] ${WH}> "
    if [[ -z "$REPLY" ]]; then
-      echo -e -n "${WLAN0_LAN}"
+      echo -e -n "${WLAN0_LAN_ADDRESS}"
    else
-      WLAN0_LAN=$REPLY
-      echo -e -n "${WLAN0_LAN}"
+      WLAN0_LAN_ADDRESS=$REPLY
+      WLAN0_LAN="$REPLY/24"
+      echo -e -n "${WLAN0_LAN_ADDRESS}"
    fi
 
    #  # Configure WLAN0 IP Address (Manager)
@@ -1150,12 +1303,20 @@ function ConfigureDNS() {
    fi
 }
 
+function GetNodeName() {
+   echo -e "\n"
+   #read -p "${GR}Select node by typing ${RD}${BO}ws02, ws03 ${GR}or ${RD}ws04 ${EC}${WH}> " -n 4 -r
+   read -p "${GR}Select node by typing ${RD}${BO}${SWARM_NODES[1]}, ${SWARM_NODES[2]} ${GR}or ${RD}${SWARM_NODES[3]} ${EC}${WH}> " -n 4 -r
+   NODE_NAME=$REPLY
+   echo -e "\n$NODE_NAME"
+}
+
 function DetailMenu() {
    #
    # Detail menu
    #
-   QUIT_MENU="---"
-   while [ "$QUIT_MENU" == "---" ]; do
+   DETAIL_QUIT_MENU=""
+   while [ "$DETAIL_QUIT_MENU" != "QUIT" ]; do
       ConfigCheckMenu
       echo -e "\n${GR}Detail Menu${WH}"
       DETAIL_MENU=("Configure_USB_Drives"
@@ -1176,12 +1337,11 @@ function DetailMenu() {
             ;;
          "Change_Node_Names")
             echo "$fav"
-            SetNodedNames
+            SetNodeNames "PROMPT"
             break
             ;;
          "Change_IP_Addresses")
             echo "$fav"
-            SetNetAddress
             break
             ;;
          "List_Properties")
@@ -1201,7 +1361,7 @@ function DetailMenu() {
             ;;
          "Quit")
             echo "$fav"
-            QUIT_MENU="QUIT"
+            DETAIL_QUIT_MENU="QUIT"
             break
             ;;
          esac
@@ -1225,22 +1385,22 @@ echo -e "single swarm node, by prompting for configuration parameters."
 echo -e "You must choose between Manager or Worker Node\n"
 echo -e "${WHITE}"
 
-#ReadProperties
-#SetNetAddress
-#SetNodeNames
-#SetDateTime
-#SelectInputConfig
+ReadProperties
+SetNodeNames "NOPROMPT"
+SetNetAddress "AUTO"
+SetDnsStrings
+SetDateTime
 
 #
 # Main menu
 #
-QUIT_MENU="---"
-while [ "$QUIT_MENU" == "---" ]; do
+QUIT_MENU=""
+while [ "$QUIT_MENU" != "QUIT" ]; do
    ConfigCheckMenu
    echo -e "\n${GR}Main Menu${WH}"
 
-   SCRIPT_MENU=("Select_Configuration_File"
-      "Select_Node_Template"
+   SCRIPT_MENU=("Change_Configuration_File"
+      "Change_Node_Template"
       "Configure_Manager_Node"
       "Configure_Worker_Node"
       "Configure_WiFi_Network"
@@ -1252,38 +1412,50 @@ while [ "$QUIT_MENU" == "---" ]; do
 
    select fav in "${SCRIPT_MENU[@]}"; do
       case $fav in
-      "Select_Configuration_File")
+      "Change_Configuration_File")
          echo "$fav"
          # Select both Config Input and template(Manager or Worker)
          SelectInputConfig
-         SelectInputFile
          ReadProperties
          SetDateTime
+         SetNodeNames "PROMPT"
+         SetNetAddress "AUTO"
          break
          ;;
       "Configure_Manager_Node")
          echo "$fav"
-         ConfigureManagerNode
+         PromptForInput "${SWARM_NODES[0]}"
+         EditProperties "${SWARM_NODES[0]}"
+
          break
          ;;
       "Configure_Worker_Node")
          echo "$fav"
-         ConfigureWorkerNode
+         GetNodeName
+         EditProperties $NODE_NAME
          break
          ;;
       "Configure_WiFi_Network")
          echo "$fav"
          ConfigureWiFiNetwork
+         SetNodeNames "PROMPT"
+         SetNetAddress "MANUEL"
          break
          ;;
       "Configure_Internal_Network")
          echo "$fav"
          ConfigureInternalNetwork
+         SetNodeNames "PROMPT"
+         SetNetAddress "AUTO"
          break
          ;;
       "Configure_DNS")
          echo "$fav"
          ConfigureDNS
+         #ConfigureInternalNetwork
+         #SetNodeNames "PROMPT"
+         #SetNetAddress "AUTO"
+         SetDnsStrings
          break
          ;;
       "Save_Config_File")
@@ -1291,7 +1463,7 @@ while [ "$QUIT_MENU" == "---" ]; do
          echo "$fav"
          break
          ;;
-      "Select_Node_Template")
+      "Change_Node_Template")
          echo "$fav"
          SelectNodeTemplate
          break
