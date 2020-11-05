@@ -30,12 +30,12 @@ MANAGER_PASSWORD="your-manager-password"
 #MANAGER_ENCRYPTED_PASSWORD="$6$$lkFOYhhCGZiVmaOiZxSrpcvun.YOgyWuin0l0/aHRkep9sHrMTVp4uzHsAkTIJ.q3c8RuTA.NUNE8yqrh72O5/"
 
 # Node properties
-NODE_NAME="ws01"
+#NODE_NAME="sn01"
 SWARM_LOCALE="en_US.UTF-8"
 TIME_ZONE="Europe/Copenhagen"
 
 # Docker Swarm properties
-SWARM_MANAGER_NODE="ws01"
+SWARM_MANAGER_NODE="sn01"
 SWARM_PORT="2377"
 SWARM_INTERFACE="eth0"
 #SWARM_WORKER_TOKEN="SWMTKN-1-6cyk7y11vbx3e8sc5b8iqiao7sb9iyr8b2lheybtyjqhb8mfho-5bracqtjvzt2zcn7m0qp5w27w"
@@ -100,11 +100,13 @@ WLAN0_STATIC_ROUTERS="192.168.1.1"
 WLAN0_DNS_SERVERS="8.8.8.8 8.8.4.4"
 
 # Domain properties
-INTERNAL_DOMAIN_NAME="wavesnake.local"
+#INTERNAL_DOMAIN_NAME="Your internal domain name"
 EXTERNAL_DOMAIN_NAME="Your external domain name"
 
 # Dynamic DNS properties
-DYNAMIC_DNS_PROVIDER="1"
+DNS_PROVIDER_LIST="GratisDNS CloudFlare OneCom"
+DNS_PROVIDER_URL_LIST="https://admin.gratisdns.com/ddns.php https://xx.yy https://xx.yy"
+DYNAMIC_DNS_PROVIDER=""
 DYNAMIC_DNS_USER="Your GratisDNS user"
 DYNAMIC_DNS_PASSWD="Your GratisDNS password"
 

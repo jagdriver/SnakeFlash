@@ -18,9 +18,9 @@
 # 8 User must type ACME email address and it must be checked for validity
 # 9 User must paste in the Swarm Worker token, on Worker node config
 # 10 Rearrange menu system OK
-# 11 Make it possible to change node names
-# 12 Make it possible to change internal IP addresses
-# 13 Make it possible to change Manager WiFi IP address
+# 11 Make it possible to change node names OK
+# 12 Make it possible to change internal IP addresses OK
+# 13 Make it possible to change Manager WiFi IP address OK
 # 14 Obfuscate passwords in files OK
 
 RED='\033[0;31m'
@@ -38,6 +38,7 @@ WH=$'\e[97m'
 BC=$'\e[4m'
 EC=$'\e[0m'
 BO=$'\e[1m'
+BL=$'\e[34m'
 
 # Configuration input file
 INPUT_FILE="./Artifacts/swarmproperties.mvf"
@@ -45,9 +46,13 @@ PROPERTY_FILE_NAME="swarmproperties"
 PROPERTY_FILE_EXT="mvf"
 
 # Config Check Menu
-CHECK_DONE="\xE2\x9C\x94"
+CHECK_DONE_DEFAULT="\xE2\x9C\x94"
+CHECK_DONE="$GR\xE2\x9C\x94$WH"
 CHECK_UNDONE="\xE2\x9D\x8C"
+
 WLAN0_DONE=$CHECK_UNDONE
+NODENAME_DONE=$CHECK_UNDONE
+DNS_DONE=$CHECK_UNDONE
 ETH0_DONE=$CHECK_UNDONE
 MANAGER_DONE=$CHECK_UNDONE
 USB_DONE=$CHECK_UNDONE
@@ -58,7 +63,7 @@ WORKER_DONE=$CHECK_UNDONE
 # Noded names
 SWARM_NODES=()
 # Node directory names (not used anymore)
-NODE_DIRS=()
+#NODE_DIRS=()
 # Current network address bytes
 ETH0_ADDRESS_BYTES=()
 # Node local DNS  URL's
@@ -66,19 +71,10 @@ DNS_URLS=()
 # Node local IP addresses
 IP_ADDRESSES=()
 
-function quit() {
+function Quit() {
    echo -e "${WHITE}"
    echo "\nLeaving Swarm Configuration"
    exit
-}
-
-function EditManagerNode() {
-   # Change to WS01 dir
-   #  Copy default-meta-data to  new-meta-data
-   # copyselected template to new-user-data
-   # Edit...
-   # rename new-user-data to user-data
-   cd $1
 }
 
 function EditProperties() {
@@ -118,7 +114,7 @@ function EditProperties() {
       # sed -i -n "s#DNS-STRING2#$WS03_DNS_STRING#" new-user-data
       # sed -i -n "s#DNS-STRING3#$WS04_DNS_STRING#" new-user-data
       sed -i -n "s#DNS-STRING1#${DNS_URLS[1]}#" new-user-data
-      sed -i -n "s#DNS-STRING2#${DNS_URLS[3]}#" new-user-data
+      sed -i -n "s#DNS-STRING2#${DNS_URLS[2]}#" new-user-data
       sed -i -n "s#DNS-STRING3#${DNS_URLS[3]}#" new-user-data
 
       # Setup Traefik SSH Rules
@@ -217,7 +213,7 @@ function EditProperties() {
    # TimeZone
    sed -i -n "s#TIME-ZONE#$TIME_ZONE#" new-user-data
    sed -i -n "s#ISO-DATE#$ISO_DATE#" new-user-data
-   sed -i -n "s#ISO-TIME#$ISO_TIME#" new-user-data
+   #sed -i -n "s#ISO-TIME#$ISO_TIME#" new-user-data
 
    # Domains
    sed -i -n "s/INTERNAL-DOMAIN-NAME/$INTERNAL_DOMAIN_NAME/" new-user-data
@@ -241,8 +237,8 @@ function EditProperties() {
 
 function PromptForInput() {
    # If we change IP properties, then SetNetAddress have to be called
-   # If we change DNS properties, then SetDnsStrings have to be called 
-   # Net prompts commented out 
+   # If we change DNS properties, then SetDnsStrings have to be called
+   # Net prompts commented out
    case $1 in
    "${SWARM_NODES[0]}")
 
@@ -537,7 +533,7 @@ function ListProperties() {
    echo -e "NODE_NAME: " $NODE_NAME
    echo -e "TIME_ZONE: " $TIME_ZONE
    echo -e "ISO_DATE: " $ISO_DATE
-   echo -e "ISO_TIME: " $ISO_TIME
+   #echo -e "ISO_TIME: " $ISO_TIME
 
    echo -e "\n--- User properties ---"
    echo -e "MANAGER_NAME: " $MANAGER_NAME
@@ -615,7 +611,7 @@ function ListProperties() {
    echo -e "SKETCH_SERVER_PORT: " $SKETCH_SERVER_PORT
    echo -e "APPLICATION_LIST: " $APPLICATION_LIST
    echo -e "ENVIRONMENT_LIST: " $ENVIRONMENT_LIST
-   
+
    echo -e "Internal API Url: " $INTERNAL_API_SERVER_URL
    echo -e "Internal DB Url: " $INTERNAL_DB_SERVER_URL
    echo -e "Internal MQTT Url: " $INTERNAL_MQTT_SERVER_URL
@@ -756,6 +752,9 @@ function ReadProperties() {
    EXTERNAL_DOMAIN_NAME=$EXTERNAL_DOMAIN_NAME
 
    # Dynamic DNS properties
+   DNS_PROVIDER_LIST=($DNS_PROVIDER_LIST)
+   DNS_PROVIDER_NAMES=$DNS_PROVIDER_LIST
+   DNS_PROVIDER_URL_LIST=($DNS_PROVIDER_URL_LIST)
    DYNAMIC_DNS_PROVIDER=$DYNAMIC_DNS_PROVIDER
    DYNAMIC_DNS_USER=$DYNAMIC_DNS_USER
    DYNAMIC_DNS_PASSWD=$DYNAMIC_DNS_PASSWD
@@ -801,17 +800,19 @@ function SetNetAddress() {
    # All IP adresses will default be set from the current LAN_NET and ETH0_LAN string.
    # You can change WLAN0_LAN an ETH0_LAN prroperties in the ConfigureInternalNetwork Menu, and then this
    # function will be run again based on the new property values.
-   IFS='.'  # Dot is set as delimiter  
+   IFS='.' # Dot is set as delimiter
    if [ $1 == "AUTO" ]; then
-      LAN_STR=$(ifconfig | grep 'inet ' | grep -v 127.0.0.1 | cut -d\  -f2)                         
-      read -ra LANADDR <<<"$LAN_STR"  # LAN_STR is read into an array as tokens separated by IFS
+      LAN_STR=$(ifconfig | grep 'inet ' | grep -v 127.0.0.1 | cut -d\  -f2)
+      read -ra LANADDR <<<"$LAN_STR" # LAN_STR is read into an array as tokens separated by IFS
    else
-      LAN_STR=$WLAN0_LAN_ADDRESS                   
-      read -ra LANADDR <<<"$LAN_STR"  # LAN_STR is read into an array as tokens separated by IFS
+      LAN_STR=$WLAN0_LAN_ADDRESS
+      read -ra LANADDR <<<"$LAN_STR" # LAN_STR is read into an array as tokens separated by IFS
    fi
    read -ra ETH0ADDR <<<"$ETH0_LAN_ADDRESS" # ETH0_IP_ADDRESS is read into an array as tokens separated by IFS
    WLAN0_LAN="${LANADDR[0]}.${LANADDR[1]}.${LANADDR[2]}.0/24"
-   WLAN0_IP_ADDRESS="${LANADDR[0]}.${LANADDR[1]}.${LANADDR[2]}.${WLAN0_IP_ADDRESS_LAST_BYTE}"
+   read -ra WLANIPTMP <<<"$WLAN0_IP_ADDRESS"
+   #WLAN0_IP_ADDRESS="${LANADDR[0]}.${LANADDR[1]}.${LANADDR[2]}.${WLAN0_IP_ADDRESS_LAST_BYTE}"
+   WLAN0_IP_ADDRESS="${LANADDR[0]}.${LANADDR[1]}.${LANADDR[2]}.${WLANIPTMP[3]}"
    ETH0_LAN_NET="${ETH0ADDR[0]}.${ETH0ADDR[1]}.${ETH0ADDR[2]}"
    ETH0_LAN="${ETH0ADDR[0]}.${ETH0ADDR[1]}.${ETH0ADDR[2]}.0"
 
@@ -832,10 +833,10 @@ function SetNetAddress() {
    DNS_URLS[1]="${ETH0ADDR[0]}.${ETH0ADDR[1]}.${ETH0ADDR[2]}.2 ${SWARM_NODES[1]} ${SWARM_NODES[1]}.${INTERNAL_DOMAIN_NAME}"
    DNS_URLS[2]="${ETH0ADDR[0]}.${ETH0ADDR[1]}.${ETH0ADDR[2]}.3 ${SWARM_NODES[2]} ${SWARM_NODES[2]}.${INTERNAL_DOMAIN_NAME}"
    DNS_URLS[3]="${ETH0ADDR[0]}.${ETH0ADDR[1]}.${ETH0ADDR[2]}.4 ${SWARM_NODES[3]} ${SWARM_NODES[3]}.${INTERNAL_DOMAIN_NAME}"
-   
+
    # Set Traefik entrypoint address
    TRAEFIK_ENTRYPOINT_ADDRESS="$WLAN0_IP_ADDRESS"
-   
+
    # Set Application IP Adresses and possibly Node placement
    API_SERVER_ADDRESS="$WLAN0_IP_ADDRESS"
    SKETCH_SERVER_ADDRESS="$WLAN0_IP_ADDRESS"
@@ -844,13 +845,12 @@ function SetNetAddress() {
    # Set Redis Master and Replica server IP addresses
    REDIS_MASTER_SERVER_ADDRESS="${ETH0_LAN_NET}.1"
    REDIS_REPLICA_SERVER_ADDRESS="${ETH0_LAN_NET}.4"
-
    IFS=' '
 }
 
 function SetNodeNames() {
    #  # Configure Node Name Count
-   if [$1 == "PROMPT"]; then
+   if [ $1 == "PROMPT" ]; then
       echo -e "\n"
       read -p "${GR}Type Node Count${RD}${BO} default=[${NODENAME_COUNT}] ${WH}> "
       if [[ -z "$REPLY" ]]; then
@@ -890,10 +890,9 @@ function SetNodeNames() {
          mkdir "$CURRENT_DIR/${SWARM_NODES[i]}"
       fi
    done
-
 }
-function SetDnsStrings()
-{
+
+function SetDnsStrings() {
    # Internal Application Url's
    INTERNAL_API_SERVER_URL="$API_PREFIX.$INTERNAL_DOMAIN_NAME"
    INTERNAL_DB_SERVER_URL="$DB_PREFIX.$INTERNAL_DOMAIN_NAME"
@@ -906,31 +905,13 @@ function SetDnsStrings()
    MQTT_SERVER_URL="$MQTT_PREFIX.$EXTERNAL_DOMAIN_NAME"
    SKETCH_SERVER_URL="$SKETCH_PREFIX.$EXTERNAL_DOMAIN_NAME"
 }
-# function SetDnsStrings() {
-#    IFS='.'                      # Dot is set as delimiter
-#    read -ra ADDR <<<"$ETH0_LAN" # str is read into an array as tokens separated by IFS
-#    # WS01_DNS_STRING="${ADDR[0]}.${ADDR[1]}.${ADDR[2]}.1 ws01 ws01.${INTERNAL_DOMAIN_NAME}"
-#    # WS02_DNS_STRING="${ADDR[0]}.${ADDR[1]}.${ADDR[2]}.2 ws02 ws02.${INTERNAL_DOMAIN_NAME}"
-#    # WS03_DNS_STRING="${ADDR[0]}.${ADDR[1]}.${ADDR[2]}.3 ws03 ws03.${INTERNAL_DOMAIN_NAME}"
-#    # WS04_DNS_STRING="${ADDR[0]}.${ADDR[1]}.${ADDR[2]}.4 ws04 ws04.${INTERNAL_DOMAIN_NAME}"
-
-#    DNS_URLS[0]="${ADDR[0]}.${ADDR[1]}.${ADDR[2]}.1 ${SWARM_NODES[0]} ${SWARM_NODES[0]}.${INTERNAL_DOMAIN_NAME}"
-#    DNS_URLS[1]="${ADDR[0]}.${ADDR[1]}.${ADDR[2]}.2 ${SWARM_NODES[1]} ${SWARM_NODES[1]}.${INTERNAL_DOMAIN_NAME}"
-#    DNS_URLS[2]="${ADDR[0]}.${ADDR[1]}.${ADDR[2]}.3 ${SWARM_NODES[2]} ${SWARM_NODES[2]}.${INTERNAL_DOMAIN_NAME}"
-#    DNS_URLS[3]="${ADDR[0]}.${ADDR[1]}.${ADDR[2]}.4 ${SWARM_NODES[3]} ${SWARM_NODES[3]}.${INTERNAL_DOMAIN_NAME}"
-
-#    # WS01_IP_ADDRESS="${ADDR[0]}.${ADDR[1]}.${ADDR[2]}.1"
-#    # WS02_IP_ADDRESS="${ADDR[0]}.${ADDR[1]}.${ADDR[2]}.2"
-#    # WS03_IP_ADDRESS="${ADDR[0]}.${ADDR[1]}.${ADDR[2]}.3"
-#    # WS04_IP_ADDRESS="${ADDR[0]}.${ADDR[1]}.${ADDR[2]}.4"
-#    IFS=' '
-# }
 
 function SetDateTime() {
-   DATE_ISO=$(date "+DATE: %Y-%m-%d")
-   ISO_DATE=${DATE_ISO:6:10}
-   TIME_ISO=$(date "+TIME: %H:%M:%S")
-   ISO_TIME=${TIME_ISO:6:10}
+   ISO_DATE=$(date "+%d %b %Y  %H:%M")
+   # DATE_ISO=$(date "+DATE: %Y-%m-%d")
+   # ISO_DATE=${DATE_ISO:6:10}
+   # TIME_ISO=$(date "+TIME: %H:%M:%S")
+   # ISO_TIME=${TIME_ISO:6:10}
 }
 
 function HidePassword() {
@@ -963,16 +944,6 @@ function SelectInputConfig() {
       break
    done
 }
-
-# function SelectInputFile() {
-#    echo -e "\n${GR}Select Input file with predefined properties${WH}"
-#    select fav in "${INPUT_CONFIG_FILES[@]}"; do
-#       # Read and parse input file
-#       INPUT_FILE=$fav
-#       #echo -e "SelectInputFile $fav"
-#       break
-#    done
-# }
 
 function SelectNodeTemplate() {
    # Reads and presents all *.yaml files
@@ -1233,13 +1204,18 @@ function ConfigureDNS() {
          echo -e -n "${EXTERNAL_DOMAIN_NAME}"
          GETDOM=FALSE
       fi
+      # Now set internal domain name
+      IFS='.'
+      read -ra DOM <<<$EXTERNAL_DOMAIN_NAME
+      INTERNAL_DOMAIN_NAME="${DOM[0]}.local"
+      IFS=' '
    done
 
    #  # Configure LetsEncrype Certificate ACME Email Address (Manager)
    # This E-mail adddress must be registere by LetsEncrype together with
-   # the external domain name
+   # the external domain name. Must be a valid mail address.
    echo -e "\n"
-   read -p "${GR}Type ACME Email Address${RD}${BO} default=[${ACME_EMAIL_ADDRESS}] ${WH}> "
+   read -p "${GR}Type LetsEncrypt ACME Email Address${RD}${BO} default=[${ACME_EMAIL_ADDRESS}] ${WH}> "
    if [[ -z "$REPLY" ]]; then
       echo -e -n "${ACME_EMAIL_ADDRESS}"
    else
@@ -1251,31 +1227,49 @@ function ConfigureDNS() {
    echo -e "\n"
    read -p "${GR}Use Dynamic DNS ? ${WH}y | n > " -n 1 -r
    if [[ $REPLY =~ ^[Yy]$ ]]; then
-      echo -e "\n$REPLY\n"
-      read -p "${GR}Type Dynamic DNS Provider ${RD}${BO} GratisDNS=1, CloudFlare=2 ${GR}or${RD} OneCom=3 ${WH}> " -n 1 -r
-      case $REPLY in
-      "1")
-         DYNAMIC_DNS_PROVIDER="GRATISDNS"
-         echo -e -n "\n${DYNAMIC_DNS_PROVIDER}"
-         ;;
-      "2")
-         DYNAMIC_DNS_PROVIDER="CLOUDFLARE"
-         echo -e -n "\n${DYNAMIC_DNS_PROVIDER}"
-         ;;
-      "3")
-         DYNAMIC_DNS_PROVIDER="ONECOM"
-         echo -e -n "\n${DYNAMIC_DNS_PROVIDER}"
-         ;;
-      *)
-         echo -e -n "\nDNS Provider not supported"
-         ;;
-      esac
+      echo -e "\n"
+      DYNCOUNT=${#DNS_PROVIDER_LIST[@]} # Get length of array
+      DYN_MENU=("${DNS_PROVIDER_LIST[@]}") # Convert list to array
+      select fav in "${DYN_MENU[@]}"; do
+         case $fav in
+         *)
+            for ((i = 0; i < $DYNCOUNT; i++)); do
+               if [ $fav == ${DNS_PROVIDER_LIST[i]} ]; then
+                  DYNAMIC_DNS_PROVIDER=${DNS_PROVIDER_LIST[i]^^}
+                  DYNAMIC_DNS_URL=${DNS_PROVIDER_URL_LIST[i]}
+                  echo -e "Provider: $DYNAMIC_DNS_PROVIDER"
+               fi
+            done
+            break
+            ;;
+         esac
+      done
+
+      # echo -e "\n$REPLY\n"
+      # read -p "${GR}Type Dynamic DNS Provider ${RD}${BO} GratisDNS=1, CloudFlare=2 ${GR}or${RD} OneCom=3 ${WH}> " -n 1 -r
+      # case $REPLY in
+      # "1")
+      #    DYNAMIC_DNS_PROVIDER="GRATISDNS"
+      #    echo -e -n "\n${DYNAMIC_DNS_PROVIDER}"
+      #    ;;
+      # "2")
+      #    DYNAMIC_DNS_PROVIDER="CLOUDFLARE"
+      #    echo -e -n "\n${DYNAMIC_DNS_PROVIDER}"
+      #    ;;
+      # "3")
+      #    DYNAMIC_DNS_PROVIDER="ONECOM"
+      #    echo -e -n "\n${DYNAMIC_DNS_PROVIDER}"
+      #    ;;
+      # *)
+      #    echo -e -n "\nDNS Provider not supported"
+      #    ;;
+      # esac
 
       #  # Configure Dynamic DNS User Name (Manager)
       echo -e "\n"
       GETUSR=true
       while $GETUSR; do
-         read -p "${GR}Type ${DYNAMIC_DNS_PROVIDER} DNS User Name ${WH}> "
+         read -p "${GR}Type ${DYNAMIC_DNS_PROVIDER} User Name ${WH}> "
          if [[ -z "$REPLY" ]]; then
             echo -e -n "You must provide DNS user name"
          else
@@ -1289,7 +1283,7 @@ function ConfigureDNS() {
       echo -e "\n"
       GETPW=true
       while $GETPW; do
-         read -p "${GR}Type ${DYNAMIC_DNS_PROVIDER} Dynamic DNS User Password${RD}${BO} default=[${DYNAMIC_DNS_PASSWD}] ${WH}> "
+         read -p "${GR}Type ${DYNAMIC_DNS_PROVIDER} User Password${RD}${BO} default=[${DYNAMIC_DNS_PASSWD}] ${WH}> "
          if [[ -z "$REPLY" ]]; then
             echo -e -n "You must provide Dynamic DNS user password"
          else
@@ -1311,6 +1305,84 @@ function GetNodeName() {
    echo -e "\n$NODE_NAME"
 }
 
+function MainMenu() {
+   #
+   # Main menu
+   #
+   QUIT_MENU=""
+   while [ "$QUIT_MENU" != "QUIT" ]; do
+      ConfigCheckMenu
+      echo -e "\n${GR}Main Menu${BLACK}"
+
+      SCRIPT_MENU=("Configure_Manager_Node"
+         "Configure_Worker_Node"
+         "Flash_to_SDCard"
+         "Select_Configuration_File"
+         "Select_Node_Template"
+         "Save_Configuration_File"
+         "Detail_Menu"
+         "Quit")
+
+      select fav in "${SCRIPT_MENU[@]}"; do
+         case $fav in
+         "Select_Configuration_File")
+            echo "$fav"
+            # Select both Config Input and template(Manager or Worker)
+            SelectInputConfig
+            ReadProperties
+            SetDateTime
+            SetNodeNames "PROMPT"
+            NODENAME_DONE=$CHECK_DONE_DEFAULT
+            SetNetAddress "AUTO"
+            ETH0_DONE=$CHECK_DONE_DEFAULT
+            break
+            ;;
+         "Configure_Manager_Node")
+            echo "$fav"
+            NODE_NAME="${SWARM_NODES[0]}"
+            PromptForInput "${SWARM_NODES[0]}"
+            EditProperties "${SWARM_NODES[0]}"
+            EDIT_DONE=$CHECK_DONE
+            MANAGER_DONE=$CHECK_DONE
+            break
+            ;;
+         "Configure_Worker_Node")
+            echo "$fav"
+            GetNodeName
+            EditProperties $NODE_NAME
+            EDIT_DONE=$CHECK_DONE
+            WORKER_DONE=$CHECK_DONE
+            break
+            ;;
+         "Flash_to_SDCard")
+            FlashSD
+            break
+            ;;
+         "Save_Config_File")
+            # And then take input from this template
+            echo "$fav"
+            break
+            ;;
+         "Select_Node_Template")
+            echo "$fav"
+            SelectNodeTemplate
+            break
+            ;;
+         "Detail_Menu")
+            DetailMenu
+            break
+            ;;
+         "Quit")
+            echo "$fav"
+            QUIT_MENU="QUIT"
+            Quit
+            break
+            ;;
+         esac
+      done
+   done
+}
+
 function DetailMenu() {
    #
    # Detail menu
@@ -1318,10 +1390,12 @@ function DetailMenu() {
    DETAIL_QUIT_MENU=""
    while [ "$DETAIL_QUIT_MENU" != "QUIT" ]; do
       ConfigCheckMenu
-      echo -e "\n${GR}Detail Menu${WH}"
-      DETAIL_MENU=("Configure_USB_Drives"
+      echo -e "\n${GR}Detail Menu${BLACK}"
+      DETAIL_MENU=("Configure_WiFi_Network"
+         "Configure_Internal_Network"
+         "Configure_DNS"
          "Change_Node_Names"
-         "Change_IP_Addresses"
+         "Configure_USB_Drives"
          "List_Properties"
          "Hide_Password"
          "Show_Password"
@@ -1330,6 +1404,29 @@ function DetailMenu() {
 
       select fav in "${DETAIL_MENU[@]}"; do
          case $fav in
+         "Configure_WiFi_Network")
+            echo "$fav"
+            ConfigureWiFiNetwork
+            #SetNodeNames "PROMPT"
+            SetNetAddress "MANUEL"
+            WLAN0_DONE=$CHECK_DONE
+            break
+            ;;
+         "Configure_Internal_Network")
+            echo "$fav"
+            ConfigureInternalNetwork
+            #SetNodeNames "PROMPT"
+            SetNetAddress "AUTO"
+            ETH0_DONE=$CHECK_DONE
+            break
+            ;;
+         "Configure_DNS")
+            echo "$fav"
+            ConfigureDNS
+            SetDnsStrings
+            DNS_DONE=$CHECK_DONE
+            break
+            ;;
          "Configure_USB_Drives")
             echo "$fav"
             ConfigureUSBDrives
@@ -1338,10 +1435,7 @@ function DetailMenu() {
          "Change_Node_Names")
             echo "$fav"
             SetNodeNames "PROMPT"
-            break
-            ;;
-         "Change_IP_Addresses")
-            echo "$fav"
+            NODENAME_DONE=$CHECK_DONE
             break
             ;;
          "List_Properties")
@@ -1370,12 +1464,41 @@ function DetailMenu() {
 }
 
 function ConfigCheckMenu() {
-   echo -e "_____________________________________ Visited Menu's ______________________________________\n"
+   echo -e "\n"
+   echo -e "_____________________________________ Visited Menu's _______________________________________________________________________\n"
    echo -e "WLan0[$WLAN0_DONE] | Eth0 [$ETH0_DONE] | Manager[$MANAGER_DONE] | USB[$USB_DONE] | EDIT[$EDIT_DONE]\
- | ManagerNode[$MANAGER_DONE] | WorkerNode[$WORKER_DONE]"
-   echo -e "___________________________________________________________________________________________\n"
+ | ManagerNode[$MANAGER_DONE] | WorkerNode[$WORKER_DONE] | DNS Strings[$DNS_DONE] | NodeNames[$NODENAME_DONE]"
+   echo -e "____________________________________________________________________________________________________________________________\n"
 }
 
+function FlashSD() {
+   # WaveSnake Technologies 2020-03-06
+   # This utility flashes Micro SD cards
+   # for Raspberry Pi's, based on images from
+   # Hypriot.
+   #
+   diskutil list
+   echo -e "\n"
+   read -p "Look at the Disk list, and type the Disk to flash the image to > "
+
+   echo -e "You have choosen" $REPLY "which will be overridden!!!!"
+   echo -e "\n"
+   DISK=$REPLY
+
+   read -p "Select Node to flash, ws01, ws02, ws03 or ws04 > "
+   echo -e "You have choosen $REPLY"
+   echo -e "\n"
+   NODE=$REPLY
+
+   read -p "Are you ready for Flashing $NODE? y/n " -n 1 -r
+   if [[ $REPLY =~ ^[Yy]$ ]]; then
+      cd $NODE
+      flash --force --userdata user-data-test-1.12.3 --metadata meta-data -d $DISK https://github.com/hypriot/image-builder-rpi/releases/download/v1.12.3/hypriotos-rpi-v1.12.3.img.zip
+      cd ..
+      echo -e "\n"
+   fi
+   echo -e "\nLeaving Flash...\n"
+}
 # Start Script execution
 printf "\033c"
 echo -e "\n"
@@ -1383,137 +1506,52 @@ echo -e "${RED}${BOLD}WaveSnake Flash Configuration Utility v1.0.3\n"
 echo -e "This utility will prepare a Flash configuration file for a"
 echo -e "single swarm node, by prompting for configuration parameters."
 echo -e "You must choose between Manager or Worker Node\n"
-echo -e "${WHITE}"
+echo -e "${BLACK}"
 
 ReadProperties
 SetNodeNames "NOPROMPT"
+NODENAME_DONE=$CHECK_DONE_DEFAULT
 SetNetAddress "AUTO"
+ETH0_DONE=$CHECK_DONE_DEFAULT
 SetDnsStrings
+DNS_DONE=$CHECK_DONE_DEFAULT
 SetDateTime
+MainMenu
 
-#
-# Main menu
-#
-QUIT_MENU=""
-while [ "$QUIT_MENU" != "QUIT" ]; do
-   ConfigCheckMenu
-   echo -e "\n${GR}Main Menu${WH}"
+# #
+# # Ask for Manager or Worker node
+# #
+# #read -p "${GR}Flash configuration for Swarm ${RD}${BO}Manager Node ${GR}or${RD} Worker Node${GR} ? m | w ${EC}${WH}> " -n 1 -r
+# read -p "${GR}Flash configuration for Swarm ${RD}${BO}Manager Node ${GR}or${RD} Worker Node${GR} ? m | w ${EC}${WH}> " -n 1 -r
+# if [[ $REPLY =~ ^[Mm]$ ]]; then
+#    echo -e "\n"
+#    #echo -e "$NODE_NAME"
+#    NODE_NAME=${SWARM_NODES[0]}
+#    echo -e "\n$NODE_NAME"
+#    echo -e "\n$SWARM_MANAGER_NODE"
+#    #echo -e "${SWARM_NODES[0]}"
+# elif [[ $REPLY =~ ^[Ww]$ ]]; then
+#    echo -e "\n"
+#    #read -p "${GR}Select node by typing ${RD}${BO}ws02, ws03 ${GR}or ${RD}ws04 ${EC}${WH}> " -n 4 -r
+#    read -p "${GR}Select node by typing ${RD}${BO}${SWARM_NODES[1]}, ${SWARM_NODES[2]} ${GR}or ${RD}${SWARM_NODES[3]} ${EC}${WH}> " -n 4 -r
+#    NODE_NAME=$REPLY
+#    echo -e "\n$NODE_NAME"
+# else
+#    quit
+# fi
 
-   SCRIPT_MENU=("Change_Configuration_File"
-      "Change_Node_Template"
-      "Configure_Manager_Node"
-      "Configure_Worker_Node"
-      "Configure_WiFi_Network"
-      "Configure_Internal_Network"
-      "Configure_DNS"
-      "Save_Configuration_File"
-      "Detail_Menu"
-      "Quit")
-
-   select fav in "${SCRIPT_MENU[@]}"; do
-      case $fav in
-      "Change_Configuration_File")
-         echo "$fav"
-         # Select both Config Input and template(Manager or Worker)
-         SelectInputConfig
-         ReadProperties
-         SetDateTime
-         SetNodeNames "PROMPT"
-         SetNetAddress "AUTO"
-         break
-         ;;
-      "Configure_Manager_Node")
-         echo "$fav"
-         PromptForInput "${SWARM_NODES[0]}"
-         EditProperties "${SWARM_NODES[0]}"
-
-         break
-         ;;
-      "Configure_Worker_Node")
-         echo "$fav"
-         GetNodeName
-         EditProperties $NODE_NAME
-         break
-         ;;
-      "Configure_WiFi_Network")
-         echo "$fav"
-         ConfigureWiFiNetwork
-         SetNodeNames "PROMPT"
-         SetNetAddress "MANUEL"
-         break
-         ;;
-      "Configure_Internal_Network")
-         echo "$fav"
-         ConfigureInternalNetwork
-         SetNodeNames "PROMPT"
-         SetNetAddress "AUTO"
-         break
-         ;;
-      "Configure_DNS")
-         echo "$fav"
-         ConfigureDNS
-         #ConfigureInternalNetwork
-         #SetNodeNames "PROMPT"
-         #SetNetAddress "AUTO"
-         SetDnsStrings
-         break
-         ;;
-      "Save_Config_File")
-         # And then take input from this template
-         echo "$fav"
-         break
-         ;;
-      "Change_Node_Template")
-         echo "$fav"
-         SelectNodeTemplate
-         break
-         ;;
-      "Detail_Menu")
-         DetailMenu
-         break
-         ;;
-      "Quit")
-         echo "$fav"
-         QUIT_MENU="QUIT"
-         break
-         ;;
-      esac
-   done
-done
-#
-# Ask for Manager or Worker node
-#
-#read -p "${GR}Flash configuration for Swarm ${RD}${BO}Manager Node ${GR}or${RD} Worker Node${GR} ? m | w ${EC}${WH}> " -n 1 -r
-read -p "${GR}Flash configuration for Swarm ${RD}${BO}Manager Node ${GR}or${RD} Worker Node${GR} ? m | w ${EC}${WH}> " -n 1 -r
-if [[ $REPLY =~ ^[Mm]$ ]]; then
-   echo -e "\n"
-   #echo -e "$NODE_NAME"
-   NODE_NAME=${SWARM_NODES[0]}
-   echo -e "\n$NODE_NAME"
-   echo -e "\n$SWARM_MANAGER_NODE"
-   #echo -e "${SWARM_NODES[0]}"
-elif [[ $REPLY =~ ^[Ww]$ ]]; then
-   echo -e "\n"
-   #read -p "${GR}Select node by typing ${RD}${BO}ws02, ws03 ${GR}or ${RD}ws04 ${EC}${WH}> " -n 4 -r
-   read -p "${GR}Select node by typing ${RD}${BO}${SWARM_NODES[1]}, ${SWARM_NODES[2]} ${GR}or ${RD}${SWARM_NODES[3]} ${EC}${WH}> " -n 4 -r
-   NODE_NAME=$REPLY
-   echo -e "\n$NODE_NAME"
-else
-   quit
-fi
-
-# Ready for Editing properties
-echo -e "\n"
-read -p "${GR}Are you ready for Configuring ${RD}${BO}${NODE_NAME}${GR}${EC}? ${WH}y | n >" -n 1 -r
-if [[ $REPLY =~ ^[Yy]$ ]]; then
-   ListProperties $NODE_NAME "Properties before editing"
-   PromptForInput $NODE_NAME
-   SetDnsStrings
-   #GetPWHash
-   ListProperties $NODE_NAME "Properties after editing"
-   EditProperties $NODE_NAME
-fi
-echo "\nFlashConfig finish"
+# # Ready for Editing properties
+# echo -e "\n"
+# read -p "${GR}Are you ready for Configuring ${RD}${BO}${NODE_NAME}${GR}${EC}? ${WH}y | n >" -n 1 -r
+# if [[ $REPLY =~ ^[Yy]$ ]]; then
+#    ListProperties $NODE_NAME "Properties before editing"
+#    PromptForInput $NODE_NAME
+#    SetDnsStrings
+#    #GetPWHash
+#    ListProperties $NODE_NAME "Properties after editing"
+#    EditProperties $NODE_NAME
+# fi
+# echo "\nFlashConfig finish"
 
 # OLD CODE
 #function GetPWHash() {
@@ -1541,4 +1579,34 @@ echo "\nFlashConfig finish"
 # password
 
 # END
+# }
+
+# function SetDnsStrings() {
+#    IFS='.'                      # Dot is set as delimiter
+#    read -ra ADDR <<<"$ETH0_LAN" # str is read into an array as tokens separated by IFS
+#    # WS01_DNS_STRING="${ADDR[0]}.${ADDR[1]}.${ADDR[2]}.1 ws01 ws01.${INTERNAL_DOMAIN_NAME}"
+#    # WS02_DNS_STRING="${ADDR[0]}.${ADDR[1]}.${ADDR[2]}.2 ws02 ws02.${INTERNAL_DOMAIN_NAME}"
+#    # WS03_DNS_STRING="${ADDR[0]}.${ADDR[1]}.${ADDR[2]}.3 ws03 ws03.${INTERNAL_DOMAIN_NAME}"
+#    # WS04_DNS_STRING="${ADDR[0]}.${ADDR[1]}.${ADDR[2]}.4 ws04 ws04.${INTERNAL_DOMAIN_NAME}"
+
+#    DNS_URLS[0]="${ADDR[0]}.${ADDR[1]}.${ADDR[2]}.1 ${SWARM_NODES[0]} ${SWARM_NODES[0]}.${INTERNAL_DOMAIN_NAME}"
+#    DNS_URLS[1]="${ADDR[0]}.${ADDR[1]}.${ADDR[2]}.2 ${SWARM_NODES[1]} ${SWARM_NODES[1]}.${INTERNAL_DOMAIN_NAME}"
+#    DNS_URLS[2]="${ADDR[0]}.${ADDR[1]}.${ADDR[2]}.3 ${SWARM_NODES[2]} ${SWARM_NODES[2]}.${INTERNAL_DOMAIN_NAME}"
+#    DNS_URLS[3]="${ADDR[0]}.${ADDR[1]}.${ADDR[2]}.4 ${SWARM_NODES[3]} ${SWARM_NODES[3]}.${INTERNAL_DOMAIN_NAME}"
+
+#    # WS01_IP_ADDRESS="${ADDR[0]}.${ADDR[1]}.${ADDR[2]}.1"
+#    # WS02_IP_ADDRESS="${ADDR[0]}.${ADDR[1]}.${ADDR[2]}.2"
+#    # WS03_IP_ADDRESS="${ADDR[0]}.${ADDR[1]}.${ADDR[2]}.3"
+#    # WS04_IP_ADDRESS="${ADDR[0]}.${ADDR[1]}.${ADDR[2]}.4"
+#    IFS=' '
+# }
+
+# function SelectInputFile() {
+#    echo -e "\n${GR}Select Input file with predefined properties${WH}"
+#    select fav in "${INPUT_CONFIG_FILES[@]}"; do
+#       # Read and parse input file
+#       INPUT_FILE=$fav
+#       #echo -e "SelectInputFile $fav"
+#       break
+#    done
 # }

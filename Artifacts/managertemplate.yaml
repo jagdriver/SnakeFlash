@@ -136,32 +136,32 @@ write_files:
   - content: |
       NODE_NAME=NODE-NAME
     path:  /opt/containers/environment/nodename.env
-  #
-  # ETH0 interface setup
-  #
-  - content: |
-      auto wlan0
-      iface eth0 inet static
-      address ETH0-IP-ADDRESS
-      network ETH0-LAN-ADDRESS
-      netmask ETH0-LAN-NETMASK
-      gateway ETH0-STATIC-ROUTERS
-      dns-nameservers ETH0-DNS-SERVERS
-    path: /etc/network/interfaces.d/eth0
-  #
-  # WiFi interface setup
-  # allow-hotplug wlan0
-  # iface wlan0 inet dhcp
-  - content: |
-      auto wlan0
-      iface wlan0 inet static
-      address WLAN0-IP-ADDRESS
-      network WLAN0-LAN-ADDRESS
-      netmask WLAN0-LAN-NETMASK
-      gateway WLAN0-STATIC-ROUTERS
-      dns-nameservers WLAN0-DNS-SERVERS
-      wpa-conf /etc/wpa_supplicant/wpa_supplicant.conf
-    path: /etc/network/interfaces.d/wlan0
+  # #
+  # # ETH0 interface setup
+  # #
+  # - content: |
+  #     auto wlan0
+  #     iface eth0 inet static
+  #     address ETH0-IP-ADDRESS
+  #     network ETH0-LAN-ADDRESS
+  #     netmask ETH0-LAN-NETMASK
+  #     gateway ETH0-STATIC-ROUTERS
+  #     dns-nameservers ETH0-DNS-SERVERS
+  #   path: /etc/network/interfaces.d/eth0
+  # #
+  # # WiFi interface setup
+  # # allow-hotplug wlan0
+  # # iface wlan0 inet dhcp
+  # - content: |
+  #     auto wlan0
+  #     iface wlan0 inet static
+  #     address WLAN0-IP-ADDRESS
+  #     network WLAN0-LAN-ADDRESS
+  #     netmask WLAN0-LAN-NETMASK
+  #     gateway WLAN0-STATIC-ROUTERS
+  #     dns-nameservers WLAN0-DNS-SERVERS
+  #     wpa-conf /etc/wpa_supplicant/wpa_supplicant.conf
+  #   path: /etc/network/interfaces.d/wlan0
   #
   # WiFi properties setup
   #
@@ -175,13 +175,13 @@ write_files:
       }
     path: /etc/wpa_supplicant/wpa_supplicant.conf
   #
-  # Disable cloud-init DHCP
-  # The DHCP Service will be masked 
-  # So if you need  DHCP, unmask and start the service
-  #
-  - content: |
-      network: {config: disabled}
-    path: /etc/cloud/cloud.cfg.d/95-debian-network-config.cfg
+  # # Disable cloud-init DHCP
+  # # The DHCP Service will be masked 
+  # # So if you need  DHCP, unmask and start the service
+  # #
+  # - content: |
+  #     network: {config: disabled}
+  #   path: /etc/cloud/cloud.cfg.d/95-debian-network-config.cfg
 
   #
   # !!! OLD dhcpcd.conf static network setup
@@ -533,34 +533,45 @@ write_files:
 #
 runcmd:
   # Restart Avahi daemon
-  - 'logger !!! wavesnake !!! Restart avahi-deamon'  
+  - 'logger !!! wavesnake !!!'
+  - 'logger !!! wavesnake !!! Restart avahi-deamon'
+  - 'logger !!! wavesnake !!!'
   - 'systemctl restart avahi-daemon'
 
   # Set Fake HW Date, Restart NTP, workaround for Debian Buster time initialization
+  - 'logger !!! wavesnake !!!'
   - 'logger !!! wavesnake !!! Workaround for Buster Fake Time error initializing date/time'
+  - 'logger !!! wavesnake !!!'
   - 'sudo date --set ISO-DATE'
-  - 'sudo date --set ISO-TIME'
   - 'sudo service ntp --full-restart'
   - 'sudo sleep 15'
   - 'sudo date'
   
   # Create IP route between ETH0 & WLAN0
+  - 'logger !!! wavesnake !!!'
   - 'logger !!! wavesnake !!! Create bidirectional Route between WLAN0 network and ETH0 network'
+  - 'logger !!! wavesnake !!!'
   - 'sudo ip route delete default via ETH0-IP-ADDRESS'
   - 'sudo ip route delete default via WLAN0-STATIC-ROUTERS'
   - 'sudo ip route add default via WLAN0-STATIC-ROUTERS dev wlan0 src WLAN0-IP-ADDRESS metric 100'
   
   # Start WLAN0 interface and wait 15 sec.
+  - 'logger !!! wavesnake !!!'
   - 'logger !!! wavesnake !!! Start WiFi Interface' 
+  - 'logger !!! wavesnake !!!'
   - 'sudo ifup wlan0'
   - 'sudo sleep 15'
 
   # Update packagee index
+  - 'logger !!! wavesnake !!!'
   - 'logger !!! wavesnake !!! Update Package list'
+  - 'logger !!! wavesnake !!!'
   - 'sudo apt-get update --allow-releaseinfo-change'
 
   # Install packages
+  - 'logger !!! wavesnake !!!'
   - 'logger !!! wavesnake !!! Install packages'
+  - 'logger !!! wavesnake !!!'
   - 'sudo apt-get -y install acl'
   - 'sudo apt-get -y install sshfs'
   - 'sudo apt-get -y install nfs-kernel-server'
@@ -570,20 +581,29 @@ runcmd:
   #- 'DYNAMIC-DNS'
 
   #  Docker Swarm Initialization
+  - 'logger !!! wavesnake !!!'
   - 'logger !!! wavesnake !!! Docker Swarm Init with listen and advertise interface'
+  - 'logger !!! wavesnake !!!'
   - 'docker swarm init --listen-addr SWARM-INTERFACE:SWARM-PORT --advertise-addr SWARM-INTERFACE:SWARM-PORT'
-
+  
+  #  Docker Node label
+  - 'logger !!! wavesnake !!!'
   - 'logger !!! wavesnake !!! Docker Node Label'
+  - 'logger !!! wavesnake !!!'
   - 'docker node update --label-add wsnode=NODE-NAME NODE-NAME'
 
   # Setup manager
+  - 'logger !!! wavesnake !!!'
   - 'logger !!! wavesnake !!! Set manager as owner and set rights on home directory'
+  - 'logger !!! wavesnake !!!'
   - 'sudo chown manager:manager /home/manager'
   - 'sudo chmod -R u+rwX,go+rX-w /home/manager'
   - 'sudo usermod -aG docker $(whoami)'
 
   # Create SSH keys
+  - 'logger !!! wavesnake !!!'
   - 'logger !!! wavesnake !!! Create ssh private/public keys'
+  - 'logger !!! wavesnake !!!'
   - 'sudo mkdir -p /home/manager/.ssh'
   - 'sudo chown manager:manager /home/manager/.ssh'
   - 'sudo touch /home/manager/.ssh/authorized_keys'
@@ -593,16 +613,25 @@ runcmd:
   - 'sudo chmod 600 /home/manager/.ssh/authorized_keys'
 
   # Setup Bridging between eth0 and wlan0
+  - 'logger !!! wavesnake !!!'
+  - 'logger !!! wavesnake !!! Setup Routing table'
+  - 'logger !!! wavesnake !!!'
   - 'sudo sed -i -n "s/#net.ipv4.ip_forward=1/net.ipv4.ip_forward=1/" /etc/sysctl.conf'
   - 'sudo iptables -t nat -A POSTROUTING -o wlan0 -j MASQUERADE'
   - 'sudo iptables -A FORWARD -i wlan0 -o eth0 -m state --state RELATED,ESTABLISHED -j ACCEPT'
   - 'sudo iptables -A FORWARD -i eth0 -o wlan0 -j ACCEPT'
 
   # Setup cron job to add bridge rules to iptables after reboot
+  - 'logger !!! wavesnake !!!'
+  - 'logger !!! wavesnake !!! Setup Cron job to start Bridging after reboot'
+  - 'logger !!! wavesnake !!!'
   - 'sudo chmod +x /home/manager/bridge.sh'
   - 'sudo sed  -i "$ a\@reboot	root /home/manager/bridge.sh" /etc/crontab'
 
   # Setup cron job to startup NFS server on reboot
+  - 'logger !!! wavesnake !!!'
+  - 'logger !!! wavesnake !!! Setup Cron job to start NFS after reboot'
+  - 'logger !!! wavesnake !!!'
   - 'sudo chmod +x /home/manager/nfs.sh'
   - 'sudo sed  -i "$ a\@reboot	root /home/manager/nfs.sh" /etc/crontab'
 
@@ -610,10 +639,15 @@ runcmd:
   #- 'sudo touch /etc/rc.local'
 
   # Skip Locale check on User Session Startup
+  - 'logger !!! wavesnake !!!'
+  - 'logger !!! wavesnake !!! Skip Locale check'
+  - 'logger !!! wavesnake !!!'
   - 'sudo touch /var/lib/cloud/instance/locale-check.skip'
 
   # Setup & Start NFS Services ( Wait with this )
-  - 'logger !!! wavesnake !!! Setup and Start NFS Services'
+  - 'logger !!! wavesnake !!!'
+  - 'logger !!! wavesnake !!! Setup and start NFS service'
+  - 'logger !!! wavesnake !!!'
   - 'sudo mkdir -p /mnt/nfs'
   - 'sudo chown -R manager:manager /mnt/nfs'
   - 'sudo chmod ug+rwx /mnt/nfs'
@@ -624,8 +658,10 @@ runcmd:
   #- 'sudo mount /dev/sda1 /mnt/nfs'
   #- 'sudo exportfs -r'
 
-  # Create Container directory
-  - 'logger !!! wavesnake !!! Create container directory and files'
+  # Create Container directories
+  - 'logger !!! wavesnake !!!'
+  - 'logger !!! wavesnake !!! Create container directories and files'
+  - 'logger !!! wavesnake !!!'
   - 'sudo mkdir -p /opt/containers'
 
   # Traefik
@@ -660,40 +696,59 @@ runcmd:
   - 'sudo mkdir -p /opt/containers/environment'
   # Synchronization
   - 'sudo mkdir -p /opt/containers/synchronization'
+  
   # Set rights on container files
+  - 'logger !!! wavesnake !!!'
+  - 'logger !!! wavesnake !!! Set rights on Container files'
+  - 'logger !!! wavesnake !!!'
   - 'sudo chgrp -R manager /opt/containers'
   - 'chown -R manager /opt/containers'
   - 'sudo chmod a+rw /opt/containers -R'
 
+
   # set special rights on ACME file
+  - 'logger !!! wavesnake !!!'
+  - 'logger !!! wavesnake !!! Set rights on ACME file'
+  - 'logger !!! wavesnake !!!'
   - 'sudo chmod 600 /opt/containers/traefik/data/acme.json'
   
   # Create log directories
+  - 'logger !!! wavesnake !!!'
   - 'logger !!! wavesnake !!! Create log files'
+  - 'logger !!! wavesnake !!!'
   - 'sudo mkdir -p /var/log/traefik'
   - 'sudo mkdir -p /var/log/snakelogs'
   - 'sudo mkdir -p /var/log/mosquitto'
   - 'sudo mkdir -p /var/log/redis'
 
   # Set Owner and rights on log files
+  - 'logger !!! wavesnake !!!'
+  - 'logger !!! wavesnake !!! Set rights on log files'
+  - 'logger !!! wavesnake !!!'
   - 'sudo chown -R manager /var/log/snakelogs'
   - 'sudo chown -R manager /var/log/traefik'
   - 'sudo chown -R manager /var/log/mosquitto'
   - 'sudo chown -R manager /var/log/redis'
 
   # Create Docker network
+  - 'logger !!! wavesnake !!!'
   - 'logger !!! wavesnake !!! Create Traefik network'
+  - 'logger !!! wavesnake !!!'
   - 'docker network create --driver overlay --attachable traefik-public'
 
   # Create Traefik Docker stack
+  - 'logger !!! wavesnake !!!'
   - 'logger !!! wavesnake !!! Instantiate Traefik Container'
+  - 'logger !!! wavesnake !!!'
   - [
        docker, stack, deploy,
        "--compose-file", "/opt/containers/traefik/docker-compose.yml",
        "traefik"
     ]
   # Create Portainer Docker stack
-  - 'logger !!! wavesnake !!! Instantiate Portainer Container' 
+  - 'logger !!! wavesnake !!!'
+  - 'logger !!! wavesnake !!! Instantiate Portainer Container'
+  - 'logger !!! wavesnake !!!'
   - [
        docker, stack, deploy,
        "--compose-file", "/opt/containers/portainer/docker-compose.yml",
