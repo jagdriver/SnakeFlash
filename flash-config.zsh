@@ -143,7 +143,8 @@ function EditProperties() {
       sed -i -n "s#REDIS-MASTER-SERVER-PORT#$REDIS_MASTER_SERVER_PORT#" new-user-data
       sed -i -n "s#REDIS-REPLICA-SERVER-ADDRESS#$REDIS_REPLICA_SERVER_ADDRESS#" new-user-data
       sed -i -n "s#REDIS-REPLICA-SERVER-PORT#$REDIS_REPLICA_SERVER_PORT#" new-user-data
-      
+      sed -i -n "s#LOG-PATH#$APPLICATION_LOG_PATH#" new-user-data
+
       # Sketch Server
       sed -i -n "s#SKETCH-SERVER-ADDRESS#$SKETCH_SERVER_ADDRESS#" new-user-data
       sed -i -n "s#SKETCH-SERVER-PORT#$SKETCH_SERVER_PORT#" new-user-data
@@ -162,6 +163,9 @@ function EditProperties() {
       # SnakeConfig
       sed -i -n "s#APPLICATION-LIST#$APPLICATION_LIST#" new-user-data
       sed -i -n "s#ENVIRONMENT-LIST#$ENVIRONMENT_LIST#" new-user-data
+      
+      # SnakeUtil
+      sed -i -n "s#DNS-PROVIDER-LIST#$DNS_PROVIDER_LIST#" new-user-data
 
       ;;
    "${SWARM_NODES[1]}")
@@ -780,11 +784,15 @@ function ReadProperties() {
    DNS_PROVIDER_NAMES=$DNS_PROVIDER_LIST
    DNS_PROVIDER_URL_LIST=($DNS_PROVIDER_URL_LIST)
    DYNAMIC_DNS_PROVIDER=$DYNAMIC_DNS_PROVIDER
+   # Must also be lists
    DYNAMIC_DNS_USER=$DYNAMIC_DNS_USER
    DYNAMIC_DNS_PASSWD=$DYNAMIC_DNS_PASSWD
 
    # ACME properties
    ACME_EMAIL_ADDRESS=$ACME_EMAIL_ADDRESS
+
+   # Global application properties
+   APPLICATION_LOG_PATH=$APPLICATION_LOG_PATH
 
    # Traefik properties
    TRAEFIK_ENTRYPOINT_ADDRESS=$TRAEFIK_ENTRYPOINT_ADDRESS

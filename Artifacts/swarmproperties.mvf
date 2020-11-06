@@ -90,6 +90,9 @@ DYNAMIC_DNS_PASSWD="Your GratisDNS password"
 # ACME properties
 ACME_EMAIL_ADDRESS="yourmail@mailserver.com"
 
+# Global Application properties
+APPLICATION_LOG_PATH="/var/log/snakelogs"
+
 # Traefik properties
 TRAEFIK_ENTRYPOINT_ADDRESS="192.168.1.230"
 

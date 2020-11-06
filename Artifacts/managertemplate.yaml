@@ -475,11 +475,12 @@ write_files:
   # 
   # NFS Exports settings (not finished)
   # How to get the right  ip addresses
-  - content: |
-      /mnt/nfs WS02-IP-ADDRESS(rw,sync,no_subtree_check,root_squash)
-      /mnt/nfs WS03-IP-ADDRESS(rw,sync,no_subtree_check,root_squash)
-      /mnt/nfs WS04-IP-ADDRESS(rw,sync,no_subtree_check,root_squash)
-    path: /etc/exports
+  # Commentwd out, NFS cannot start on boot if this file are there
+  # - content: |
+  #     /mnt/nfs WS02-IP-ADDRESS(rw,sync,no_subtree_check,root_squash)
+  #     /mnt/nfs WS03-IP-ADDRESS(rw,sync,no_subtree_check,root_squash)
+  #     /mnt/nfs WS04-IP-ADDRESS(rw,sync,no_subtree_check,root_squash)
+  #   path: /etc/exports
 #
 # These commands will be run once on first boot only
 #
@@ -527,15 +528,18 @@ runcmd:
   - 'logger !!! wavesnake !!!'
   - 'sudo apt-get update --allow-releaseinfo-change'
 
+  # Mount for NFS
+  - 'sudo mkdir -p /mnt/nfs'
+  - 'sudo chown -R manager:manager /mnt/nfs'
+  - 'sudo chmod ug+rwx /mnt/nfs'
+
   # Install packages
   - 'logger !!! wavesnake !!!'
   - 'logger !!! wavesnake !!! Install packages'
   - 'logger !!! wavesnake !!!'
   - 'sudo apt-get -y install acl'
   - 'sudo apt-get -y install sshfs'
-  #- 'sudo apt-get -y install nfs-kernel-server'
-  #- 'sudo apt-get -y install nfs-common'
-  #- 'sudo apt-get -y install cifs-utils'
+  - 'sudo apt-get -y install nfs-kernel-server'
   
   #- 'DYNAMIC-DNS'
 
@@ -607,9 +611,6 @@ runcmd:
   - 'logger !!! wavesnake !!!'
   - 'logger !!! wavesnake !!! Setup and start NFS service'
   - 'logger !!! wavesnake !!!'
-  - 'sudo mkdir -p /mnt/nfs'
-  - 'sudo chown -R manager:manager /mnt/nfs'
-  - 'sudo chmod ug+rwx /mnt/nfs'
   #- 'sudo systemctl enable rpcbind.service'
   #- 'sudo systemctl enable nfs-server.service'
   #- 'sudo systemctl start rpcbind.service'
