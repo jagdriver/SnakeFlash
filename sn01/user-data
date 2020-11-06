@@ -28,7 +28,7 @@ users:
     shell: /bin/bash
     groups: users,docker,video,input
     plain_text_passwd: wavesnake
-    #passwd: 
+    #passwd: MANAGER-ENCRYPTED-PASSWORD
     lock_passwd: false
     #ssh_authorized_keys:
     #  - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCdpRpqR6pSdoXVLH7pIFkVXY9KIZJVA0wfKlqvpeHD/iKl+0dVU0xRoZYO/+Bot2i0rTJdfTPjcGpgMm4rpqkLfUT6ryyGFRSMF/yObUf9vCCPlz/nRh//PQfAN+JPK61z104EeatHbQhSHuHhJPzVDBNYLhsi7O1wsOkTTtSMs1Xos28HXdB+gpKup1Uddb4lq+GkB110IN3mjHYo4Tckl5VNH9cmWBTYvyVSgzv3hIG2ur/jrQMB2dLzqkchjrKpV1VLjW4dpxNlSTRt/1eo+KCjRraBYALL8t5xiLZHSx/6mA91eQU2zBDufJKWzy93vdzd6r3DJcqDIAzQ2PFP nielsjorgennielsen@snakemacpro.local
@@ -77,11 +77,11 @@ write_files:
   - content: |
       {
       "LOG_PATH":"LOG-PATH",
-      "API_SERVER_ADDRESS":"192.168.1.220",
+      "API_SERVER_ADDRESS":"192.168.1.230",
       "API_SERVER_PORT":"80",
-      "MQTT_SERVER_ADDRESS":"192.168.1.220",
+      "MQTT_SERVER_ADDRESS":"192.168.1.230",
       "MQTT_SERVER_PORT":"6379",
-      "SKETCH_SERVER_ADDRESS":"192.168.1.220",
+      "SKETCH_SERVER_ADDRESS":"192.168.1.230",
       "SKETCH_SERVER_PORT":"80",
       "REDIS_MASTER_SERVER_ADDRESS":"192.168.230.1",
       "REDIS_MASTER_SERVER_PORT":"8376",
@@ -116,8 +116,10 @@ write_files:
   - content: |
       {
       "DNS_PROVIDER_LIST":"DNS-PROVIDER-LIST",
+      "DNS_PROVIDER_NAME":"",
+      "EXTERNAL_DOMAIN_NAME":"wavesnake.dk",
       "DNS_PROVIDER_ID":"DNS-PROVIDER-ID",
-      "DNS_PROVIDER_URL":"DNS-PROVIDER-URL",
+      "DNS_PROVIDER_URL":"",
       "DNS_PROVIDER_USER":"Your GratisDNS user",
       "DNS_PROVIDER_PASSWORD":"DYNAMIC-DNS-PASSWORD"
       }
@@ -139,29 +141,27 @@ write_files:
   # #
   # # ETH0 interface setup
   # #
-  # - content: |
-  #     auto wlan0
-  #     iface eth0 inet static
-  #     address 192.168.230.1
-  #     network 192.168.230.0-ADDRESS
-  #     netmask 192.168.230.0-NETMASK
-  #     gateway 192.168.230.1
-  #     dns-nameservers 8.8.8.8 8.8.4.4
-  #   path: /etc/network/interfaces.d/eth0
+  - content: |
+      auto eth0
+      iface eth0 inet static
+      address 192.168.230.1
+      network 192.168.230.0
+      netmask 255.255.255.0
+      dns-nameservers 8.8.8.8 8.8.4.4
+    path: /etc/network/interfaces.d/eth0
   # #
   # # WiFi interface setup
   # # allow-hotplug wlan0
   # # iface wlan0 inet dhcp
-  # - content: |
-  #     auto wlan0
-  #     iface wlan0 inet static
-  #     address 192.168.1.220
-  #     network 192.168.1.0/24-ADDRESS
-  #     netmask 192.168.1.0/24-NETMASK
-  #     gateway 192.168.1.1
-  #     dns-nameservers 8.8.8.8 8.8.4.4
-  #     wpa-conf /etc/wpa_supplicant/wpa_supplicant.conf
-  #   path: /etc/network/interfaces.d/wlan0
+  - content: |
+      iface wlan0 inet static
+      address 192.168.1.230
+      network 192.168.1.0
+      netmask 255.255.255.0
+      gateway 192.168.1.1
+      dns-nameservers 8.8.8.8 8.8.4.4
+      wpa-conf /etc/wpa_supplicant/wpa_supplicant.conf
+    path: /etc/network/interfaces.d/wlan0
   #
   # WiFi properties setup
   #
@@ -175,36 +175,7 @@ write_files:
       }
     path: /etc/wpa_supplicant/wpa_supplicant.conf
   #
-  # # Disable cloud-init DHCP
-  # # The DHCP Service will be masked 
-  # # So if you need  DHCP, unmask and start the service
-  # #
-  # - content: |
-  #     network: {config: disabled}
-  #   path: /etc/cloud/cloud.cfg.d/95-debian-network-config.cfg
-
-  #
-  # !!! OLD dhcpcd.conf static network setup
-  #
-
-  # - content: |
-  #     persistent
-  #     # Generate Stable Private IPv6 Addresses instead of hardware based ones
-  #     slaac private
-  #     # static IP configuration:
-  #     interface eth0
-  #     static ip_address=192.168.230.1/24
-  #     # No eth0 static routes on manager node
-  #     # static routers=192.168.230.1
-  #     static domain_name_servers=8.8.8.8 8.8.4.4
-  #     interface wlan0
-  #     static ip_address=192.168.1.220/24
-  #     static routers=192.168.1.1
-  #     static domain_name_servers=8.8.8.8 8.8.4.4
-  #   path: /etc/dhcpcd.conf
-
-  #
-  # !!! New dhcpcd.conf static network setup
+  # Interfaces (Recommended content)
   #
   - content: |
       # Please note that this file is written to be used with dhcpcd
@@ -212,23 +183,12 @@ write_files:
 
       # Include files from /etc/network/interfaces.d:
       source-directory /etc/network/interfaces.d
-
-      auto lo
-      iface lo inet loopback
-
-      iface eth0 inet manual
-
-      allow-hotplug wlan0
-      iface wlan0 inet manual
-          wpa-conf /etc/wpa_supplicant/wpa_supplicant.conf
-
-      # Custom static IP address for eth0.
-      interface eth0
-      static ip_address=192.168.230.1/24
-      static routers=192.168.230.1
-      static domain_name_servers=8.8.8.8 8.8.4.4
-
-      # Custom static IP address for wlan0.
+    path: /etc/network/interfaces
+ 
+  #
+  # DHCPCD dhcpcd.conf static network setup
+  #
+  - content: |
       interface wlan0
       static ip_address=192.168.1.220/24
       static routers=192.168.1.1
@@ -240,17 +200,9 @@ write_files:
   - content: |
       127.0.1.1 sn01 sn01.wavesnake dk.local
       127.0.0.1 localhost
-      192.168.230.2 sn02 sn02.
-      192.168.230.3 sn03 sn03.
-      192.168.230.4 sn04 sn04.
-
-      # The following lines are desirable for IPv6 capable hosts
-      ::1 ip6-localhost ip6-loopback
-      fe00::0 ip6-localnet
-      ff00::0 ip6-mcastprefix
-      ff02::1 ip6-allnodes
-      ff02::2 ip6-allrouters
-      ff02::3 ip6-allhosts
+      192.168.230.2 sn02 sn02.wavesnake dk.local
+      192.168.230.3 sn03 sn03.wavesnake dk.local
+      192.168.230.4 sn04 sn04.wavesnake dk.local
     path: /etc/hosts   
   #
   # Portainer Docker Compose (Version 2.0)
@@ -427,7 +379,7 @@ write_files:
       certificatesResolvers:
         http:
           acme:
-            email: jagdriver@hotmail.dk
+            email: jagdriver@hotmail.com
             storage: acme.json
             httpChallenge:
               entryPoint: web
@@ -516,10 +468,10 @@ write_files:
   # 
   # NFS Crontab script, Mount & Export NFS file system
   # I might mount the NFS drive in FSTAB instead
-  - content: |
-      sudo mount /dev/sda1 /mnt/nfs
-      sudo exportfs -r
-    path: /home/manager/nfs.sh
+  # - content: |
+  #     sudo mount /dev/sda1 /mnt/nfs
+  #     sudo exportfs -r
+  #   path: /home/manager/nfs.sh
   # 
   # NFS Exports settings (not finished)
   # How to get the right  ip addresses
@@ -542,26 +494,33 @@ runcmd:
   - 'logger !!! wavesnake !!!'
   - 'logger !!! wavesnake !!! Workaround for Buster Fake Time error initializing date/time'
   - 'logger !!! wavesnake !!!'
-  - 'sudo date --set 04 Nov 2020  20:17'
+  - sudo date -s '06 Nov 2020  20:01'
   - 'sudo service ntp --full-restart'
   - 'sudo sleep 15'
   - 'sudo date'
-  
-  # Create IP route between ETH0 & WLAN0
-  - 'logger !!! wavesnake !!!'
-  - 'logger !!! wavesnake !!! Create bidirectional Route between WLAN0 network and ETH0 network'
-  - 'logger !!! wavesnake !!!'
-  - 'sudo ip route delete default via 192.168.230.1'
-  - 'sudo ip route delete default via 192.168.1.1'
-  - 'sudo ip route add default via 192.168.1.1 dev wlan0 src 192.168.1.220 metric 100'
   
   # Start WLAN0 interface and wait 15 sec.
   - 'logger !!! wavesnake !!!'
   - 'logger !!! wavesnake !!! Start WiFi Interface' 
   - 'logger !!! wavesnake !!!'
   - 'sudo ifup wlan0'
+  - 'sudo ifup eth0'
   - 'sudo sleep 15'
 
+# Start ETH0 interface
+  - 'sudo ip addr flush dev eth0'
+  - 'sudo ifdown eth0'
+  - 'sudo ifup eth0'
+  - 'sudo sleep 15'
+
+  # Create IP route between ETH0 & WLAN0
+  - 'logger !!! wavesnake !!!'
+  - 'logger !!! wavesnake !!! Create bidirectional Route between WLAN0 network and ETH0 network'
+  - 'logger !!! wavesnake !!!'
+  - 'sudo ip route delete default via 192.168.230.1'
+  - 'sudo ip route delete default via 192.168.1.1'
+  - 'sudo ip route add default via 192.168.1.1 dev wlan0 src 192.168.1.230 metric 100'
+  
   # Update packagee index
   - 'logger !!! wavesnake !!!'
   - 'logger !!! wavesnake !!! Update Package list'
@@ -574,9 +533,9 @@ runcmd:
   - 'logger !!! wavesnake !!!'
   - 'sudo apt-get -y install acl'
   - 'sudo apt-get -y install sshfs'
-  - 'sudo apt-get -y install nfs-kernel-server'
-  - 'sudo apt-get -y install nfs-common'
-  - 'sudo apt-get -y install cifs-utils'
+  #- 'sudo apt-get -y install nfs-kernel-server'
+  #- 'sudo apt-get -y install nfs-common'
+  #- 'sudo apt-get -y install cifs-utils'
   
   #- 'DYNAMIC-DNS'
 
@@ -633,7 +592,7 @@ runcmd:
   - 'logger !!! wavesnake !!! Setup Cron job to start NFS after reboot'
   - 'logger !!! wavesnake !!!'
   - 'sudo chmod +x /home/manager/nfs.sh'
-  - 'sudo sed  -i "$ a\@reboot	root /home/manager/nfs.sh" /etc/crontab'
+  # - 'sudo sed  -i "$ a\@reboot	root /home/manager/nfs.sh" /etc/crontab'
 
   # Prepare save of IPTables (Docker might do this already)
   #- 'sudo touch /etc/rc.local'

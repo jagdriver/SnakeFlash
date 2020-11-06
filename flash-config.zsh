@@ -91,6 +91,10 @@ function EditProperties() {
       sed -i -n "s/SWARM-PORT/$SWARM_PORT/g" new-user-data
 
       # Dynamic DNS
+      sed -i -n "s/EXTERNAL-DOMAIN-NAME/$EXTERNAL_DOMAIN_NAME/" new-user-data
+      sed -i -n "s/DNS-PROVIDER-LIST/${DNS_PROVIDER_LIST[@]}/" new-user-data
+      sed -i -n "s/DNS-PROVIDER-URL/$DYNAMIC_DNS_URL/" new-user-data
+      sed -i -n "s/DNS-PROVIDER-NAME/$DYNAMIC_DNS_PROVIDER/" new-user-data
       sed -i -n "s/DYNAMIC-DNS-USER/$DYNAMIC_DNS_USER/" new-user-data
       sed -i -n "s/DYNAMIC-DNS-PASSWD/$DYNAMIC_DNS_PASSWD/" new-user-data
 
@@ -101,13 +105,19 @@ function EditProperties() {
       sed -i -n "s/TRAEFIK-ENTRYPOINT-ADDRESS/$TRAEFIK_ENTRYPOINT_ADDRESS/" new-user-data
 
       # WLAN0
+      sed -i -n "s#WLAN0-NETWORK-ADDRESS#$WLAN0_NETWORK_ADDRESS#" new-user-data
+      sed -i -n "s#WLAN0-NETWORK-NETMASK#$WLAN0_NETWORK_NETMASK#" new-user-data
+      sed -i -n "s#WLAN0-NETWORK-BITS#$WLAN0_NETWORK_BITS#" new-user-data
       sed -i -n "s/WLAN0-DNS-SERVERS/$WLAN0_DNS_SERVERS/" new-user-data
       sed -i -n "s/WLAN0-STATIC-ROUTERS/$WLAN0_STATIC_ROUTERS/" new-user-data
       sed -i -n "s/WLAN0-IP-ADDRESS/$WLAN0_IP_ADDRESS/" new-user-data
+
+      #sed -i -n "s#WLAN0-LAN#$WLAN0_LAN#" new-user-data
+
+      # WiFi
       sed -i -n "s/WIFI-PASSWD/$WIFI_PASSWD/" new-user-data
       sed -i -n "s/WIFI-SSID/$WIFI_SSID/" new-user-data
       sed -i -n "s/COUNTRY-CODE/$COUNTRY_CODE/" new-user-data
-      sed -i -n "s#WLAN0-LAN#$WLAN0_LAN#" new-user-data
 
       # Setup DNS A records
       # sed -i -n "s#DNS-STRING1#$WS02_DNS_STRING#" new-user-data
@@ -128,18 +138,31 @@ function EditProperties() {
       sed -i -n "s#WS04-IP-ADDRESS#${IP_ADDRESSES[3]}#" new-user-data
 
       # Global application properties, only manager node
+      # Redis Master and Replica Server
       sed -i -n "s#REDIS-MASTER-SERVER-ADDRESS#$REDIS_MASTER_SERVER_ADDRESS#" new-user-data
       sed -i -n "s#REDIS-MASTER-SERVER-PORT#$REDIS_MASTER_SERVER_PORT#" new-user-data
       sed -i -n "s#REDIS-REPLICA-SERVER-ADDRESS#$REDIS_REPLICA_SERVER_ADDRESS#" new-user-data
       sed -i -n "s#REDIS-REPLICA-SERVER-PORT#$REDIS_REPLICA_SERVER_PORT#" new-user-data
+      
+      # Sketch Server
       sed -i -n "s#SKETCH-SERVER-ADDRESS#$SKETCH_SERVER_ADDRESS#" new-user-data
       sed -i -n "s#SKETCH-SERVER-PORT#$SKETCH_SERVER_PORT#" new-user-data
+      
+      # SnakeApi
       sed -i -n "s#API-SERVER-ADDRESS#$API_SERVER_ADDRESS#" new-user-data
       sed -i -n "s#API-SERVER-PORT#$API_SERVER_PORT#" new-user-data
+      
+      # MQTT Server
       sed -i -n "s#MQTT-SERVER-ADDRESS#$MQTT_SERVER_ADDRESS#" new-user-data
       sed -i -n "s#MQTT-SERVER-PORT#$MQTT_SERVER_PORT#" new-user-data
+
+      # SnakeHistory
+      sed -i -n "s#HISTORY-DB-NAME#$HISTORY_DB_NAME#" new-user-data
+
+      # SnakeConfig
       sed -i -n "s#APPLICATION-LIST#$APPLICATION_LIST#" new-user-data
       sed -i -n "s#ENVIRONMENT-LIST#$ENVIRONMENT_LIST#" new-user-data
+
       ;;
    "${SWARM_NODES[1]}")
       cp ../Artifacts/$WORKER_TEMPLATE_FILE_NAME.$TEMPLATE_FILE_EXT new-user-data
@@ -202,10 +225,13 @@ function EditProperties() {
    #sed -i -n "s#REDIS-DEFAULT-CONFIG#$REDIS_DEFAULT_CONFIG#" new-user-data
 
    # ETH0
+   sed -i -n "s#ETH0-NETWORK-ADDRESS#$ETH0_NETWORK_ADDRESS#" new-user-data
+   sed -i -n "s#ETH0-NETWORK-NETMASK#$ETH0_NETWORK_NETMASK#" new-user-data
+   sed -i -n "s#ETH0-NETWORK-BITS#$ETH0_NETWORK_BITS#" new-user-data
    sed -i -n "s/ETH0-DNS-SERVERS/$ETH0_DNS_SERVERS/" new-user-data
    sed -i -n "s/ETH0-STATIC-ROUTERS/$ETH0_STATIC_ROUTERS/" new-user-data
    sed -i -n "s/ETH0-IP-ADDRESS/$ETH0_IP_ADDRESS/" new-user-data
-   sed -i -n "s#ETH0-LAN#$ETH0_LAN#" new-user-data
+   #sed -i -n "s#ETH0-LAN#$ETH0_LAN#" new-user-data
 
    # Locale
    sed -i -n "s#SWARM-LOCALE#$SWARM_LOCALE#" new-user-data
@@ -222,7 +248,7 @@ function EditProperties() {
    # Swarm Manager
    sed -i -n "s/MANAGER-PASSWORD/$MANAGER_PASSWORD/" new-user-data
    sed -i -n "s/MANAGER-NAME/$MANAGER_NAME/" new-user-data
-   sed -i -n "s*MANAGER-ENCRYPTED-PASSWORD*$MANAGER_ENCRYPTED_PASSWORD*" new-user-data
+   #sed -i -n "s*MANAGER-ENCRYPTED-PASSWORD*$MANAGER_ENCRYPTED_PASSWORD*" new-user-data
 
    # Swarm Node
    sed -i -n "s/NODE-NAME/$NODE_NAME/g" new-user-data
@@ -297,107 +323,107 @@ function PromptForInput() {
       # fi
 
       #  # Configure WiFi Country Code (Manager)
-      echo -e "\n"
-      read -p "${GR}Type WiFi Country Code${RD}${BO} default=[${COUNTRY_CODE}] ${WH}> "
-      if [[ -z "$REPLY" ]]; then
-         echo -e -n "${COUNTRY_CODE}"
-      else
-         COUNTRY_CODE=$REPLY
-         echo -e -n "${COUNTRY_CODE}"
-      fi
+      # echo -e "\n"
+      # read -p "${GR}Type WiFi Country Code${RD}${BO} default=[${COUNTRY_CODE}] ${WH}> "
+      # if [[ -z "$REPLY" ]]; then
+      #    echo -e -n "${COUNTRY_CODE}"
+      # else
+      #    COUNTRY_CODE=$REPLY
+      #    echo -e -n "${COUNTRY_CODE}"
+      # fi
 
       #  # Configure WiFi SSID (Manager)
-      echo -e "\n"
-      GETSSID=true
-      while $GETSSID; do
-         read -p "${GR}Type WiFi SSID ${WH}> "
-         if [[ -z "$REPLY" ]]; then
-            echo -e -n "You must provide WiFi SSID"
-         else
-            WIFI_SSID=$REPLY
-            echo -e -n "${WIFI_SSID}"
-            GETSSID=FALSE
-         fi
-      done
+      # echo -e "\n"
+      # GETSSID=true
+      # while $GETSSID; do
+      #    read -p "${GR}Type WiFi SSID ${WH}> "
+      #    if [[ -z "$REPLY" ]]; then
+      #       echo -e -n "You must provide WiFi SSID"
+      #    else
+      #       WIFI_SSID=$REPLY
+      #       echo -e -n "${WIFI_SSID}"
+      #       GETSSID=FALSE
+      #    fi
+      # done
 
       #  # Configure WiFi Password (Manager)
-      echo -e "\n"
-      GETPW=true
-      while $GETPW; do
-         read -p "${GR}Type WiFi Password ${WH}> "
-         if [[ -z "$REPLY" ]]; then
-            echo -e -n "You must provide WiFi SSID"
-         else
-            WIFI_PASSWD=$REPLY
-            echo -e -n "${WIFI_PASSWD}"
-            GETPW=FALSE
-         fi
-      done
+      # echo -e "\n"
+      # GETPW=true
+      # while $GETPW; do
+      #    read -p "${GR}Type WiFi Password ${WH}> "
+      #    if [[ -z "$REPLY" ]]; then
+      #       echo -e -n "You must provide WiFi SSID"
+      #    else
+      #       WIFI_PASSWD=$REPLY
+      #       echo -e -n "${WIFI_PASSWD}"
+      #       GETPW=FALSE
+      #    fi
+      # done
 
       #  # Configure Dynamic DNS (Manager)
-      echo -e "\n"
-      read -p "${GR}Use Dynamic DNS ? ${WH}y | n > " -n 1 -r
-      if [[ $REPLY =~ ^[Yy]$ ]]; then
-         echo -e "\n$REPLY\n"
-         read -p "${GR}Type Dynamic DNS Provider ${RD}${BO} GratisDNS=1, CloudFlare=2 ${GR}or${RD} OneCom=3 ${WH}> " -n 1 -r
-         case $REPLY in
-         "1")
-            DYNAMIC_DNS_PROVIDER="GRATISDNS"
-            echo -e -n "\n${DYNAMIC_DNS_PROVIDER}"
-            ;;
-         "2")
-            DYNAMIC_DNS_PROVIDER="CLOUDFLARE"
-            echo -e -n "\n${DYNAMIC_DNS_PROVIDER}"
-            ;;
-         "3")
-            DYNAMIC_DNS_PROVIDER="ONECOM"
-            echo -e -n "\n${DYNAMIC_DNS_PROVIDER}"
-            ;;
-         *)
-            echo -e -n "\nDNS Provider not supported"
-            ;;
-         esac
+      # echo -e "\n"
+      # read -p "${GR}Use Dynamic DNS ? ${WH}y | n > " -n 1 -r
+      # if [[ $REPLY =~ ^[Yy]$ ]]; then
+      #    echo -e "\n$REPLY\n"
+      #    read -p "${GR}Type Dynamic DNS Provider ${RD}${BO} GratisDNS=1, CloudFlare=2 ${GR}or${RD} OneCom=3 ${WH}> " -n 1 -r
+      #    case $REPLY in
+      #    "1")
+      #       DYNAMIC_DNS_PROVIDER="GRATISDNS"
+      #       echo -e -n "\n${DYNAMIC_DNS_PROVIDER}"
+      #       ;;
+      #    "2")
+      #       DYNAMIC_DNS_PROVIDER="CLOUDFLARE"
+      #       echo -e -n "\n${DYNAMIC_DNS_PROVIDER}"
+      #       ;;
+      #    "3")
+      #       DYNAMIC_DNS_PROVIDER="ONECOM"
+      #       echo -e -n "\n${DYNAMIC_DNS_PROVIDER}"
+      #       ;;
+      #    *)
+      #       echo -e -n "\nDNS Provider not supported"
+      #       ;;
+      #    esac
 
-         #  # Configure Dynamic DNS User Name (Manager)
-         echo -e "\n"
-         GETUSR=true
-         while $GETUSR; do
-            read -p "${GR}Type ${DYNAMIC_DNS_PROVIDER} DNS User Name ${WH}> "
-            if [[ -z "$REPLY" ]]; then
-               echo -e -n "You must provide DNS user name"
-            else
-               DYNAMIC_DNS_USER=$REPLY
-               echo -e -n "${DYNAMIC_DNS_USER}"
-               GETUSR=false
-            fi
-         done
+      #  # Configure Dynamic DNS User Name (Manager)
+      # echo -e "\n"
+      # GETUSR=true
+      # while $GETUSR; do
+      #    read -p "${GR}Type ${DYNAMIC_DNS_PROVIDER} DNS User Name ${WH}> "
+      #    if [[ -z "$REPLY" ]]; then
+      #       echo -e -n "You must provide DNS user name"
+      #    else
+      #       DYNAMIC_DNS_USER=$REPLY
+      #       echo -e -n "${DYNAMIC_DNS_USER}"
+      #       GETUSR=false
+      #    fi
+      # done
 
-         #  # Configure Dynamic DNS User Password (Manager)
-         echo -e "\n"
-         GETPW=true
-         while $GETPW; do
-            read -p "${GR}Type ${DYNAMIC_DNS_PROVIDER} Dynamic DNS User Password${RD}${BO} default=[${DYNAMIC_DNS_PASSWD}] ${WH}> "
-            if [[ -z "$REPLY" ]]; then
-               echo -e -n "You must provide Dynamic DNS user password"
-            else
-               DYNAMIC_DNS_PASSWD=$REPLY
-               echo -e -n "${DYNAMIC_DNS_PASSWD}"
-               GETPW=false
-            fi
-         done
-      else
-         echo -e -n "No Dynamic DNS"
-      fi
+      #  # Configure Dynamic DNS User Password (Manager)
+      #    echo -e "\n"
+      #    GETPW=true
+      #    while $GETPW; do
+      #       read -p "${GR}Type ${DYNAMIC_DNS_PROVIDER} Dynamic DNS User Password${RD}${BO} default=[${DYNAMIC_DNS_PASSWD}] ${WH}> "
+      #       if [[ -z "$REPLY" ]]; then
+      #          echo -e -n "You must provide Dynamic DNS user password"
+      #       else
+      #          DYNAMIC_DNS_PASSWD=$REPLY
+      #          echo -e -n "${DYNAMIC_DNS_PASSWD}"
+      #          GETPW=false
+      #       fi
+      #    done
+      # else
+      #    echo -e -n "No Dynamic DNS"
+      # fi
 
       #  # Configure ACME Email Address (Manager)
-      echo -e "\n"
-      read -p "${GR}Type ACME Email Address${RD}${BO} default=[${ACME_EMAIL_ADDRESS}] ${WH}> "
-      if [[ -z "$REPLY" ]]; then
-         echo -e -n "${ACME_EMAIL_ADDRESS}"
-      else
-         ACME_EMAIL_ADDRESS=$REPLY
-         echo -e -n "${ACME_EMAIL_ADDRESS}"
-      fi
+      # echo -e "\n"
+      # read -p "${GR}Type ACME Email Address${RD}${BO} default=[${ACME_EMAIL_ADDRESS}] ${WH}> "
+      # if [[ -z "$REPLY" ]]; then
+      #    echo -e -n "${ACME_EMAIL_ADDRESS}"
+      # else
+      #    ACME_EMAIL_ADDRESS=$REPLY
+      #    echo -e -n "${ACME_EMAIL_ADDRESS}"
+      # fi
 
       #  # Configure Traefik EntryPoint Address (Manager)
       echo -e "\n"
@@ -446,17 +472,16 @@ function PromptForInput() {
    fi
 
    # # Configure Manager password (Manager & Worker)
-   # # The password are SHA512 hashed
+   #
    echo -e "\n"
    GETPW=true
    while $GETPW; do
       read -p "${GR}Type Swarm Manager password ${WH}> "
       if [[ -z "$REPLY" ]]; then
-         echo -e -n "You must supply password"
+         echo -e -n "You must supply password\n"
       else
-         #MANAGER_PASSWORD=$(GetPWHash $REPLY)
+         #MANAGER_PASSWORD=$(python3 ./Artifacts/Hidepw.py $REPLY)
          MANAGER_PASSWORD=$REPLY
-         echo -e -n "${MANAGER_ENCRYPTED_PASSWORD}"
          GETPW=false
       fi
    done
@@ -472,44 +497,44 @@ function PromptForInput() {
    fi
 
    #  # Configure ETH0 LAN (Manager & Worker)
-   echo -e "\n"
-   read -p "${GR}Type ETH0 Lan${RD}${BO} default=[${ETH0_LAN}] ${WH}> "
-   if [[ -z "$REPLY" ]]; then
-      echo -e -n "${ETH0_LAN}"
-   else
-      ETH0_LAN=$REPLY
-      echo -e -n "${ETH0_LAN}"
-   fi
+   # echo -e "\n"
+   # read -p "${GR}Type ETH0 Lan${RD}${BO} default=[${ETH0_LAN}] ${WH}> "
+   # if [[ -z "$REPLY" ]]; then
+   #    echo -e -n "${ETH0_LAN}"
+   # else
+   #    ETH0_LAN=$REPLY
+   #    echo -e -n "${ETH0_LAN}"
+   # fi
 
-   #  # Configure ETH0 IP Address (Manager & Worker)
-   echo -e "\n"
-   read -p "${GR}Type ETH0 IP address${RD}${BO} default=[${ETH0_IP_ADDRESS}] ${WH}> "
-   if [[ -z "$REPLY" ]]; then
-      echo -e -n "${ETH0_IP_ADDRESS}"
-   else
-      ETH0_IP_ADDRESS=$REPLY
-      echo -e -n "${ETH0_IP_ADDRESS}"
-   fi
+   # #  # Configure ETH0 IP Address (Manager & Worker)
+   # echo -e "\n"
+   # read -p "${GR}Type ETH0 IP address${RD}${BO} default=[${ETH0_IP_ADDRESS}] ${WH}> "
+   # if [[ -z "$REPLY" ]]; then
+   #    echo -e -n "${ETH0_IP_ADDRESS}"
+   # else
+   #    ETH0_IP_ADDRESS=$REPLY
+   #    echo -e -n "${ETH0_IP_ADDRESS}"
+   # fi
 
-   #  # Configure ETH0 Static Routers (Manager & Worker)
-   echo -e "\n"
-   read -p "${GR}Type ETH0 Static Routers${RD}${BO} default=[${ETH0_STATIC_ROUTERS}] ${WH}> "
-   if [[ -z "$REPLY" ]]; then
-      echo -e -n "${ETH0_STATIC_ROUTERS}"
-   else
-      ETH0_STATIC_ROUTERS=$REPLY
-      echo -e -n "${ETH0_STATIC_ROUTERS}"
-   fi
+   # #  # Configure ETH0 Static Routers (Manager & Worker)
+   # echo -e "\n"
+   # read -p "${GR}Type ETH0 Static Routers${RD}${BO} default=[${ETH0_STATIC_ROUTERS}] ${WH}> "
+   # if [[ -z "$REPLY" ]]; then
+   #    echo -e -n "${ETH0_STATIC_ROUTERS}"
+   # else
+   #    ETH0_STATIC_ROUTERS=$REPLY
+   #    echo -e -n "${ETH0_STATIC_ROUTERS}"
+   # fi
 
-   #  # Configure ETH0 DNS Servers (Manager & Worker)
-   echo -e "\n"
-   read -p "${GR}Type ETH0 DNS Servers${RD}${BO} default=[${ETH0_DNS_SERVERS}] ${WH}> "
-   if [[ -z "$REPLY" ]]; then
-      echo -e -n "${ETH0_DNS_SERVERS}"
-   else
-      ETH0_DNS_SERVERS=$REPLY
-      echo -e -n "${ETH0_DNS_SERVERS}"
-   fi
+   # #  # Configure ETH0 DNS Servers (Manager & Worker)
+   # echo -e "\n"
+   # read -p "${GR}Type ETH0 DNS Servers${RD}${BO} default=[${ETH0_DNS_SERVERS}] ${WH}> "
+   # if [[ -z "$REPLY" ]]; then
+   #    echo -e -n "${ETH0_DNS_SERVERS}"
+   # else
+   #    ETH0_DNS_SERVERS=$REPLY
+   #    echo -e -n "${ETH0_DNS_SERVERS}"
+   # fi
 
    #  # Configure USB Drive mount
    echo -e "\n"
@@ -564,17 +589,20 @@ function ListProperties() {
    echo -e "WIFI_PASSWD: " $WIFI_PASSWD
 
    echo -e "\n--- ETH0 properties ---"
-   echo -e "ETH0_LAN: " $ETH0_LAN
+   echo -e "ETH0_NETWORK_ADDRESS: " $ETH0_NETWORK_ADDRESS
+   echo -e "ETH0_NETWORK_NETMASK: " $ETH0_NETWORK_NETMASK
+   echo -e "ETH0_NETWORK_BITS: " $ETH0_NETWORK_BITS
    echo -e "ETH0_IP_ADDRESS: " $ETH0_IP_ADDRESS
    echo -e "ETH0_STATIC_ROUTERS: " $ETH0_STATIC_ROUTERS
    echo -e "ETH0_DNS_SERVERS: " $ETH0_DNS_SERVERS
 
    echo -e "\n--- WLAN0 properties ---"
-   echo -e "WLAN0_LAN: " $WLAN0_LAN
+   echo -e "WLAN0_NETWORK_ADDRESS: " $WLAN0_NETWORK_ADDRESS
+   echo -e "WLAN0_NETWORK_NETMASK: " $WLAN0_NETWORK_NETMASK
+   echo -e "WLAN0_NETWORK_BITS: " $WLAN0_NETWORK_BITS
    echo -e "WLAN0_IP_ADDRESS: " $WLAN0_IP_ADDRESS
    echo -e "WLAN0_STATIC_ROUTERS: " $WLAN0_STATIC_ROUTERS
    echo -e "WLAN0_DNS_SERVERS: " $WLAN0_DNS_SERVERS
-   echo -e "WLAN0_IP_ADDRESS_LAST_BYTE: " $WLAN0_IP_ADDRESS_LAST_BYTE
 
    echo -e "\n--- Domain properties ---"
    echo -e "INTERNAL_DOMAIN_NAME: " $INTERNAL_DOMAIN_NAME
@@ -730,23 +758,19 @@ function ReadProperties() {
    WIFI_PASSWD=$WIFI_PASSWORD
 
    # Swarm Node ETH0 properties
-   ETH0_LAN=$ETH0_LAN
+   ETH0_NETWORK_ADDRESS=$ETH0_NETWORK_ADDRESS
+   ETH0_NETWORK_NETMASK=$ETH0_NETWORK_NETMASK
    ETH0_IP_ADDRESS=$ETH0_IP_ADDRESS
    ETH0_STATIC_ROUTERS=$ETH0_STATIC_ROUTERS
    ETH0_DNS_SERVERS=$ETH0_DNS_SERVERS
 
-   # Swarm Node IP Address
-   # WS01_DNS_ADDRESS=$WS01_DNS_ADDRESS
-   # WS02_DNS_ADDRESS=$WS02_DNS_ADDRESS
-   # WS03_DNS_ADDRESS=$WS03_DNS_ADDRESS
-   # WS04_DNS_ADDRESS=$WS04_DNS_ADDRESS
-
    # Manager Node WLAN0 properties
-   WLAN0_LAN=$WLAN0_LAN
+   WLAN0_NETWORK_ADDRESS=$WLAN0_NETWORK_ADDRESS
+   WLAN0_NETWORK_NETMASK=$WLAN0_NETWORK_NETMASK
    WLAN0_IP_ADDRESS=$WLAN0_IP_ADDRESS
    WLAN0_STATIC_ROUTERS=$WLAN0_STATIC_ROUTERS
    WLAN0_DNS_SERVERS=$WLAN0_DNS_SERVERS
-   WLAN0_IP_ADDRESS_LAST_BYTE=$WLAN0_IP_ADDRESS_LAST_BYTE
+
    # Domain properties
    INTERNAL_DOMAIN_NAME=$INTERNAL_DOMAIN_NAME
    EXTERNAL_DOMAIN_NAME=$EXTERNAL_DOMAIN_NAME
@@ -772,6 +796,9 @@ function ReadProperties() {
    # SnakeConfig properties
    APPLICATION_LIST=$APPLICATION_LIST
    ENVIRONMENT_LIST=$ENVIRONMENT_LIST
+   
+   # SnakeHistory properties
+   HISTORY_DB_NAME=$HISTORY_DB_NAME   
 
    # Redis properties
    REDIS_MASTER_SERVER_ADDRESS=$REDIS_MASTER_SERVER_ADDRESS
@@ -805,16 +832,17 @@ function SetNetAddress() {
       LAN_STR=$(ifconfig | grep 'inet ' | grep -v 127.0.0.1 | cut -d\  -f2)
       read -ra LANADDR <<<"$LAN_STR" # LAN_STR is read into an array as tokens separated by IFS
    else
-      LAN_STR=$WLAN0_LAN_ADDRESS
+      LAN_STR=$WLAN0_NETWORK_ADDRESS
       read -ra LANADDR <<<"$LAN_STR" # LAN_STR is read into an array as tokens separated by IFS
    fi
-   read -ra ETH0ADDR <<<"$ETH0_LAN_ADDRESS" # ETH0_IP_ADDRESS is read into an array as tokens separated by IFS
-   WLAN0_LAN="${LANADDR[0]}.${LANADDR[1]}.${LANADDR[2]}.0/24"
+
+   WLAN0_NETWORK_BITS="${LANADDR[0]}.${LANADDR[1]}.${LANADDR[2]}.0/24"
    read -ra WLANIPTMP <<<"$WLAN0_IP_ADDRESS"
-   #WLAN0_IP_ADDRESS="${LANADDR[0]}.${LANADDR[1]}.${LANADDR[2]}.${WLAN0_IP_ADDRESS_LAST_BYTE}"
-   WLAN0_IP_ADDRESS="${LANADDR[0]}.${LANADDR[1]}.${LANADDR[2]}.${WLANIPTMP[3]}"
-   ETH0_LAN_NET="${ETH0ADDR[0]}.${ETH0ADDR[1]}.${ETH0ADDR[2]}"
-   ETH0_LAN="${ETH0ADDR[0]}.${ETH0ADDR[1]}.${ETH0ADDR[2]}.0"
+   #WLAN0_IP_ADDRESS="${LANADDR[0]}.${LANADDR[1]}.${LANADDR[2]}.${WLANIPTMP[3]}"
+
+   read -ra ETH0ADDR <<<"$ETH0_NETWORK_ADDRESS" # ETH0_IP_ADDRESS is read into an array as tokens separated by IFS
+   local ETH0_LAN_NET="${ETH0ADDR[0]}.${ETH0ADDR[1]}.${ETH0ADDR[2]}"
+   ETH0_NETWORK_BITS="${ETH0ADDR[0]}.${ETH0ADDR[1]}.${ETH0ADDR[2]}.0/24"
 
    # Can be deleted  but must be changes in editconfig
    # WS01_IP_ADDRESS="${ETH0_LAN_NET}.1"
@@ -829,10 +857,10 @@ function SetNetAddress() {
    IP_ADDRESSES[3]="${ETH0_LAN_NET}.4"
 
    # Set Swarm Node internal DNS Url
-   DNS_URLS[0]="${ETH0ADDR[0]}.${ETH0ADDR[1]}.${ETH0ADDR[2]}.1 ${SWARM_NODES[0]} ${SWARM_NODES[0]}.${INTERNAL_DOMAIN_NAME}"
-   DNS_URLS[1]="${ETH0ADDR[0]}.${ETH0ADDR[1]}.${ETH0ADDR[2]}.2 ${SWARM_NODES[1]} ${SWARM_NODES[1]}.${INTERNAL_DOMAIN_NAME}"
-   DNS_URLS[2]="${ETH0ADDR[0]}.${ETH0ADDR[1]}.${ETH0ADDR[2]}.3 ${SWARM_NODES[2]} ${SWARM_NODES[2]}.${INTERNAL_DOMAIN_NAME}"
-   DNS_URLS[3]="${ETH0ADDR[0]}.${ETH0ADDR[1]}.${ETH0ADDR[2]}.4 ${SWARM_NODES[3]} ${SWARM_NODES[3]}.${INTERNAL_DOMAIN_NAME}"
+   # DNS_URLS[0]="${ETH0ADDR[0]}.${ETH0ADDR[1]}.${ETH0ADDR[2]}.1 ${SWARM_NODES[0]} ${SWARM_NODES[0]}.${INTERNAL_DOMAIN_NAME}"
+   # DNS_URLS[1]="${ETH0ADDR[0]}.${ETH0ADDR[1]}.${ETH0ADDR[2]}.2 ${SWARM_NODES[1]} ${SWARM_NODES[1]}.${INTERNAL_DOMAIN_NAME}"
+   # DNS_URLS[2]="${ETH0ADDR[0]}.${ETH0ADDR[1]}.${ETH0ADDR[2]}.3 ${SWARM_NODES[2]} ${SWARM_NODES[2]}.${INTERNAL_DOMAIN_NAME}"
+   # DNS_URLS[3]="${ETH0ADDR[0]}.${ETH0ADDR[1]}.${ETH0ADDR[2]}.4 ${SWARM_NODES[3]} ${SWARM_NODES[3]}.${INTERNAL_DOMAIN_NAME}"
 
    # Set Traefik entrypoint address
    TRAEFIK_ENTRYPOINT_ADDRESS="$WLAN0_IP_ADDRESS"
@@ -1044,12 +1072,13 @@ function ConfigureWorkerNode() {
 function ConfigureInternalNetwork() {
    #  # Configure ETH0 LAN (Manager & Worker)
    echo -e "\n"
-   read -p "${GR}Type ETH0 Lan${RD}${BO} default=[${ETH0_LAN}] ${WH}> "
+   read -p "${GR}Type ETH0 Lan${RD}${BO} default=[${ETH0_NETWORK_ADDRESS}] ${WH}> "
    if [[ -z "$REPLY" ]]; then
-      echo -e -n "${ETH0_LAN}"
+      echo -e -n "${ETH0_NETWORK_ADDRESS}"
    else
-      ETH0_LAN=$REPLY
-      echo -e -n "${ETH0_LAN}"
+      ETH0_NETWORK_ADDRESS=$REPLY
+      ETH0_NETWORK_BITS="$REPLY/24"
+      echo -e -n "${ETH0_NETWORK_ADDRESS}"
    fi
 
    #  # Configure ETH0 IP Address (Manager & Worker)
@@ -1097,13 +1126,13 @@ function ConfigureWiFiNetwork() {
 
    # WLAN0 Lan Address
    echo -e "\n"
-   read -p "${GR}Type WLAN0 Lan address${RD}${BO} default=[${WLAN0_LAN_ADDRESS}] ${WH}> "
+   read -p "${GR}Type WLAN0 Lan address${RD}${BO} default=[${WLAN0_NETWORK_ADDRESS}] ${WH}> "
    if [[ -z "$REPLY" ]]; then
-      echo -e -n "${WLAN0_LAN_ADDRESS}"
+      echo -e -n "${WLAN0_NETWORK_ADDRESS}"
    else
-      WLAN0_LAN_ADDRESS=$REPLY
-      WLAN0_LAN="$REPLY/24"
-      echo -e -n "${WLAN0_LAN_ADDRESS}"
+      WLAN0_NETWORK_ADDRESS=$REPLY
+      WLAN0_NETWORK_BITS="$REPLY/24"
+      echo -e -n "${WLAN0_NETWORK_ADDRESS}"
    fi
 
    #  # Configure WLAN0 IP Address (Manager)
@@ -1169,7 +1198,7 @@ function ConfigureWiFiNetwork() {
          echo -e -n "You must provide WiFi SSID"
       else
          WIFI_PASSWD=$REPLY
-         WIFI_PASSWD=$(python3 ./Artifacts/Hidepw.py $REPLY)
+         #WIFI_PASSWD=$(python3 ./Artifacts/Hidepw.py $REPLY)
          echo -e -n "${WIFI_PASSWD}"
          GETPW=FALSE
       fi
@@ -1211,6 +1240,12 @@ function ConfigureDNS() {
       IFS=' '
    done
 
+   # Set Swarm Node internal DNS Url
+   DNS_URLS[0]="${ETH0ADDR[0]}.${ETH0ADDR[1]}.${ETH0ADDR[2]}.1 ${SWARM_NODES[0]} ${SWARM_NODES[0]}.${INTERNAL_DOMAIN_NAME}"
+   DNS_URLS[1]="${ETH0ADDR[0]}.${ETH0ADDR[1]}.${ETH0ADDR[2]}.2 ${SWARM_NODES[1]} ${SWARM_NODES[1]}.${INTERNAL_DOMAIN_NAME}"
+   DNS_URLS[2]="${ETH0ADDR[0]}.${ETH0ADDR[1]}.${ETH0ADDR[2]}.3 ${SWARM_NODES[2]} ${SWARM_NODES[2]}.${INTERNAL_DOMAIN_NAME}"
+   DNS_URLS[3]="${ETH0ADDR[0]}.${ETH0ADDR[1]}.${ETH0ADDR[2]}.4 ${SWARM_NODES[3]} ${SWARM_NODES[3]}.${INTERNAL_DOMAIN_NAME}"
+
    #  # Configure LetsEncrype Certificate ACME Email Address (Manager)
    # This E-mail adddress must be registere by LetsEncrype together with
    # the external domain name. Must be a valid mail address.
@@ -1228,7 +1263,7 @@ function ConfigureDNS() {
    read -p "${GR}Use Dynamic DNS ? ${WH}y | n > " -n 1 -r
    if [[ $REPLY =~ ^[Yy]$ ]]; then
       echo -e "\n"
-      DYNCOUNT=${#DNS_PROVIDER_LIST[@]} # Get length of array
+      DYNCOUNT=${#DNS_PROVIDER_LIST[@]}    # Get length of array
       DYN_MENU=("${DNS_PROVIDER_LIST[@]}") # Convert list to array
       select fav in "${DYN_MENU[@]}"; do
          case $fav in
@@ -1314,27 +1349,34 @@ function MainMenu() {
       ConfigCheckMenu
       echo -e "\n${GR}Main Menu${BLACK}"
 
-      SCRIPT_MENU=("Configure_Manager_Node"
+      SCRIPT_MENU=("Load_Configuration_File"
+         "Configure_Manager_Node"
          "Configure_Worker_Node"
          "Flash_to_SDCard"
-         "Select_Configuration_File"
          "Select_Node_Template"
-         "Save_Configuration_File"
          "Detail_Menu"
          "Quit")
 
       select fav in "${SCRIPT_MENU[@]}"; do
          case $fav in
-         "Select_Configuration_File")
+         "Load_Configuration_File")
             echo "$fav"
             # Select both Config Input and template(Manager or Worker)
             SelectInputConfig
+            # ReadProperties
+            # SetDateTime
+            # SetNodeNames "PROMPT"
+            # NODENAME_DONE=$CHECK_DONE_DEFAULT
+            # SetNetAddress "AUTO"
+            # ETH0_DONE=$CHECK_DONE_DEFAULT
             ReadProperties
-            SetDateTime
-            SetNodeNames "PROMPT"
+            SetNodeNames "NOPROMPT"
             NODENAME_DONE=$CHECK_DONE_DEFAULT
             SetNetAddress "AUTO"
             ETH0_DONE=$CHECK_DONE_DEFAULT
+            SetDnsStrings
+            DNS_DONE=$CHECK_DONE_DEFAULT
+            SetDateTime
             break
             ;;
          "Configure_Manager_Node")
@@ -1477,6 +1519,7 @@ function FlashSD() {
    # for Raspberry Pi's, based on images from
    # Hypriot.
    #
+   
    diskutil list
    echo -e "\n"
    read -p "Look at the Disk list, and type the Disk to flash the image to > "
@@ -1485,15 +1528,19 @@ function FlashSD() {
    echo -e "\n"
    DISK=$REPLY
 
-   read -p "Select Node to flash, ws01, ws02, ws03 or ws04 > "
+   read -p "Select Node to flash  > "
    echo -e "You have choosen $REPLY"
    echo -e "\n"
-   NODE=$REPLY
+   NODE_NAME=$REPLY
 
-   read -p "Are you ready for Flashing $NODE? y/n " -n 1 -r
+   #EditPasswordProperties $NODE_NAME
+
+   read -p "Are you ready for Flashing $NODE_NAME? y/n " -n 1 -r
    if [[ $REPLY =~ ^[Yy]$ ]]; then
-      cd $NODE
-      flash --force --userdata user-data-test-1.12.3 --metadata meta-data -d $DISK https://github.com/hypriot/image-builder-rpi/releases/download/v1.12.3/hypriotos-rpi-v1.12.3.img.zip
+      cd $NODE_NAME
+      echo -e "Node: $NODE_NAME\n"
+      echo -e "$(ls -l)"
+      flash --force --userdata user-data --metadata meta-data -d $DISK https://github.com/hypriot/image-builder-rpi/releases/download/v1.12.3/hypriotos-rpi-v1.12.3.img.zip
       cd ..
       echo -e "\n"
    fi
@@ -1508,14 +1555,6 @@ echo -e "single swarm node, by prompting for configuration parameters."
 echo -e "You must choose between Manager or Worker Node\n"
 echo -e "${BLACK}"
 
-ReadProperties
-SetNodeNames "NOPROMPT"
-NODENAME_DONE=$CHECK_DONE_DEFAULT
-SetNetAddress "AUTO"
-ETH0_DONE=$CHECK_DONE_DEFAULT
-SetDnsStrings
-DNS_DONE=$CHECK_DONE_DEFAULT
-SetDateTime
 MainMenu
 
 # #
@@ -1609,4 +1648,22 @@ MainMenu
 #       #echo -e "SelectInputFile $fav"
 #       break
 #    done
+# }
+
+# function EditPasswordProperties()
+# {
+#    # Does not work
+#    cd $1
+#    pwd
+#    cp user-data tmp-user-data
+#    ls -l
+   
+#    local TMP_WIFI_PWD=$(python3 ../Artifacts/Showpw.py $WIFI_PASSWD)
+#    sed -i -n "s/$WIFI_PASSWD/$TMP_WIFI_PWD/" tmp-user-data
+   
+#    local TMP_MANAGER_PWD=$(python3 ../Artifacts/Showpw.py $MANAGER_PASSWORD)
+#    sed -i -n "s/$MANAGER_PASSWORD/$TMP_MANAGER_PWD/" tmp-user-data
+
+#    mv tmp-user-data user-data
+#    cd ..
 # }
