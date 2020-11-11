@@ -44,17 +44,62 @@
 #         echo -e "New Template file: $INPUT_TEMPLATE"
 #     fi
 # fi
-echo -e "\xE2\x9C\x94 existing"
-echo -e "\xE2\x9D\x8C missing"
-CHECK_DONE="\xE2\x9C\x94"
-CHECK_UNDONE="\xE2\x9D\x8C"
 
-WLAN0_DONE=$CHECK_DONE
-ETH0_DONE=$CHECK_DONE
-MANAGER_DONE=$CHECK_UNDONE
-USB_DONE=$CHECK_DONE
-EDIT_DONE=$CHECK_DONE
+# Test of state menu
+# echo -e "\xE2\x9C\x94 existing"
+# echo -e "\xE2\x9D\x8C missing"
+# CHECK_DONE="\xE2\x9C\x94"
+# CHECK_UNDONE="\xE2\x9D\x8C"
 
-echo -e "____________________________________________\n"
-echo -e "WLan0[$WLAN0_DONE] | Eth0 [$ETH0_DONE] | Manager[$MANAGER_DONE] | USB[$USB_DONE]  | EDIT[$EDIT_DONE]"
-echo -e "____________________________________________\n"
+# WLAN0_DONE=$CHECK_DONE
+# ETH0_DONE=$CHECK_DONE
+# MANAGER_DONE=$CHECK_UNDONE
+# USB_DONE=$CHECK_DONE
+# EDIT_DONE=$CHECK_DONE
+
+# echo -e "____________________________________________\n"
+# echo -e "WLan0[$WLAN0_DONE] | Eth0 [$ETH0_DONE] | Manager[$MANAGER_DONE] | USB[$USB_DONE]  | EDIT[$EDIT_DONE]"
+# echo -e "____________________________________________\n"
+
+# Test of USB UUID
+   echo -e "____________________________________________\n"
+   diskutil list
+   echo -e "____________________________________________\n"
+
+   DISKS=($(diskutil list | grep -o '^/dev[^ ]*'))
+  
+   #echo -e "ONE: ${DISKS[3]}"
+   
+   echo -e "Look at above list and Select the Disk you want to Flash. Be carefull, the Disk is overwritten!!!"
+   #DISK_MENU=(${DISKS[@]})
+
+   select fav in "${DISKS[@]}"; do
+         case $fav in
+         *)
+            echo -e "_____________________________ You have choosen to Flash $fav _______________\n"
+            diskutil info $fav
+            echo -e "____________________________________________________________________________\n"
+            
+         break
+         ;;
+         esac
+      done
+
+
+
+
+   #INFO=($(diskutil info ${DISKS[3]}))
+
+   IFS=' '
+   read -ra INFO <<<"$(diskutil info ${DISKS[3]})"
+   
+   echo -e "TWO: ${INFO[0]}"
+   # Get length of DISKS
+
+   # Find all disks and put them into array
+   USB_STR=$(diskutil list | grep -i -w 'hypriotos' | cut -c 69-)
+   # For each disk get info
+   UUID_STR=$(diskutil info $USB_STR | grep -i -w 'Volume UUID:' | cut -c 31-)
+   # ask user to choose
+   echo -e "USB Drive: $USB_STR"
+   echo -e "USB UUID: $UUID_STR"

@@ -214,7 +214,8 @@ function EditProperties() {
       sed -i -n "s#DNS-STRING3#${DNS_URLS[2]}#" new-user-data
 
       # USB Drive mount command
-      sed -i -n "s#USB-MOUNT-COMMAND#$USB_MOUNT_COMMAND#" new-user-data
+      #sed -i -n "s#USB-MOUNT-COMMAND#$USB_MOUNT_COMMAND#" new-user-data
+      sed -i -n "s#USB-UUID#$USB_UUID#" new-user-data
 
       ;;
    *)
@@ -430,14 +431,14 @@ function PromptForInput() {
       # fi
 
       #  # Configure Traefik EntryPoint Address (Manager)
-      echo -e "\n"
-      read -p "${GR}Type Traefik Entrypoint address${RD}${BO} default=[${TRAEFIK_ENTRYPOINT_ADDRESS}] ${WH}> "
-      if [[ -z "$REPLY" ]]; then
-         echo -e -n "${TRAEFIK_ENTRYPOINT_ADDRESS}"
-      else
-         TRAEFIK_ENTRYPOINT_ADDRESS=$REPLY
-         echo -e -n "${TRAEFIK_ENTRYPOINT_ADDRESS}"
-      fi
+      # echo -e "\n"
+      # read -p "${GR}Type Traefik Entrypoint address${RD}${BO} default=[${TRAEFIK_ENTRYPOINT_ADDRESS}] ${WH}> "
+      # if [[ -z "$REPLY" ]]; then
+      #    echo -e -n "${TRAEFIK_ENTRYPOINT_ADDRESS}"
+      # else
+      #    TRAEFIK_ENTRYPOINT_ADDRESS=$REPLY
+      #    echo -e -n "${TRAEFIK_ENTRYPOINT_ADDRESS}"
+      # fi
 
       ;;
    "${SWARM_NODES[1]}" | "${SWARM_NODES[2]}" | "${SWARM_NODES[3]}")
@@ -498,58 +499,6 @@ function PromptForInput() {
    else
       TIME_ZONE=$REPLY
       echo -e -n "${TIME_ZONE}"
-   fi
-
-   #  # Configure ETH0 LAN (Manager & Worker)
-   # echo -e "\n"
-   # read -p "${GR}Type ETH0 Lan${RD}${BO} default=[${ETH0_LAN}] ${WH}> "
-   # if [[ -z "$REPLY" ]]; then
-   #    echo -e -n "${ETH0_LAN}"
-   # else
-   #    ETH0_LAN=$REPLY
-   #    echo -e -n "${ETH0_LAN}"
-   # fi
-
-   # #  # Configure ETH0 IP Address (Manager & Worker)
-   # echo -e "\n"
-   # read -p "${GR}Type ETH0 IP address${RD}${BO} default=[${ETH0_IP_ADDRESS}] ${WH}> "
-   # if [[ -z "$REPLY" ]]; then
-   #    echo -e -n "${ETH0_IP_ADDRESS}"
-   # else
-   #    ETH0_IP_ADDRESS=$REPLY
-   #    echo -e -n "${ETH0_IP_ADDRESS}"
-   # fi
-
-   # #  # Configure ETH0 Static Routers (Manager & Worker)
-   # echo -e "\n"
-   # read -p "${GR}Type ETH0 Static Routers${RD}${BO} default=[${ETH0_STATIC_ROUTERS}] ${WH}> "
-   # if [[ -z "$REPLY" ]]; then
-   #    echo -e -n "${ETH0_STATIC_ROUTERS}"
-   # else
-   #    ETH0_STATIC_ROUTERS=$REPLY
-   #    echo -e -n "${ETH0_STATIC_ROUTERS}"
-   # fi
-
-   # #  # Configure ETH0 DNS Servers (Manager & Worker)
-   # echo -e "\n"
-   # read -p "${GR}Type ETH0 DNS Servers${RD}${BO} default=[${ETH0_DNS_SERVERS}] ${WH}> "
-   # if [[ -z "$REPLY" ]]; then
-   #    echo -e -n "${ETH0_DNS_SERVERS}"
-   # else
-   #    ETH0_DNS_SERVERS=$REPLY
-   #    echo -e -n "${ETH0_DNS_SERVERS}"
-   # fi
-
-   #  # Configure USB Drive mount
-   echo -e "\n"
-   read -p "${GR}Mount USB Drive ? ${WH}y | n > " -n 1 -r
-   if [[ $REPLY =~ ^[Yy]$ ]]; then
-      echo -e "\n"
-      read -p "${GR}Type USB UUID ${WH}> "
-      #USB_MOUNT_COMMAND = ${USB_MOUNT_COMMAND#USB_UUID#$REPLY}
-      USB_MOUNT_COMMAND=$(echo "$USB_MOUNT_COMMAND" | sed "s/USB_UUID/$REPLY/")
-   else
-      USB_MOUNT_COMMAND="logger No USB Drive Mount"
    fi
 }
 
@@ -698,8 +647,6 @@ function SaveTemplate() {
 function GetUSBUUID() {
    USB_STR=$(diskutil list | grep -i -w 'hypriotos' | cut -c 69-)
    UUID_STR=$(diskutil info $USB_STR | grep -i -w 'Volume UUID:' | cut -c 31-)
-   echo -e "USB Drive: $USB_STR"
-   echo -e "USB UUID: $UUID_STR"
 }
 
 function ReadProperties() {
@@ -1000,83 +947,6 @@ function SelectNodeTemplate() {
    done
 }
 
-function ConfigureManagerNode() {
-
-   # # Configure Manager name (Manager & Worker)
-   echo -e "\n"
-   read -p "${GR}Type Swarm Manager name ${RD}${BO}default=[${MANAGER_NAME}] ${WH}> "
-   if [[ -z "$REPLY" ]]; then
-      echo -e -n "${MANAGER_NAME}"
-   else
-      MANAGER_NAME=$REPLY
-      echo -e -n "${MANAGER_NAME}"
-   fi
-
-   # # Configure Manager password (Manager & Worker)
-   # # The password are SHA512 hashed
-   echo -e "\n"
-   GETPW=true
-   while $GETPW; do
-      read -p "${GR}Type Swarm Manager password ${WH}> "
-      if [[ -z "$REPLY" ]]; then
-         echo -e -n "You must supply password"
-      else
-         #MANAGER_PASSWORD=$(GetPWHash $REPLY)
-         MANAGER_PASSWORD=$(python3 ./Artifacts/Hidepw.py $REPLY)
-         #MANAGER_PASSWORD=$REPLY
-         echo -e -n "${MANAGER_PASSWORD}"
-         GETPW=false
-      fi
-   done
-
-   # # Configure Time Zone (Manager & Worker)
-   echo -e "\n"
-   read -p "${GR}Type Time Zone ${RD}${BO}default=[${TIME_ZONE}] ${WH}> "
-   if [[ -z "$REPLY" ]]; then
-      echo -e -n "${TIME_ZONE}"
-   else
-      TIME_ZONE=$REPLY
-      echo -e -n "${TIME_ZONE}"
-   fi
-
-   #  # Configure Traefik EntryPoint Address (Manager)
-   echo -e "\n"
-   read -p "${GR}Type Traefik Entrypoint address${RD}${BO} default=[${TRAEFIK_ENTRYPOINT_ADDRESS}] ${WH}> "
-   if [[ -z "$REPLY" ]]; then
-      echo -e -n "${TRAEFIK_ENTRYPOINT_ADDRESS}"
-   else
-      TRAEFIK_ENTRYPOINT_ADDRESS=$REPLY
-      echo -e -n "${TRAEFIK_ENTRYPOINT_ADDRESS}"
-   fi
-}
-
-function ConfigureWorkerNode() {
-   # First ask for node name to configure
-   echo -e "\n"
-   read -p "${GR}Select node by typing ${RD}${BO}${SWARM_NODES[1]}, ${SWARM_NODES[2]} ${GR}or ${RD}${SWARM_NODES[3]} ${EC}${WH}> " -n 4 -r
-   NODE_NAME=$REPLY
-
-   # Configure Docker Swarm TCP port number
-   echo -e "\n"
-   read -p "${GR}Type Swarm TCP Port number ${RD}${BO}default=[${SWARM_PORT}] ${WH}> "
-   if [[ -z "$REPLY" ]]; then
-      echo -e -n "${SWARM_PORT}"
-   else
-      SWARM_PORT=$REPLY
-      echo -e -n "${SWARM_PORT}"
-   fi
-   # Configure Swarm Worker Token (worker)
-   # The token is obtained from the Swarm Manager Node
-   echo -e "\n"
-   read -p "${GR}Paste Swarm Worker Token, obtained from Manager Node ${WH}> "
-   if [[ -z "$REPLY" ]]; then
-      echo -e -n "${SWARM_WORKER_TOKEN}"
-   else
-      SWARM_WORKER_TOKEN=$REPLY
-      echo -e -n "${SWARM_PORT}"
-   fi
-}
-
 function ConfigureInternalNetwork() {
    #  # Configure ETH0 LAN (Manager & Worker)
    echo -e "\n"
@@ -1223,7 +1093,7 @@ function ConfigureUSBDrives() {
       #USB_MOUNT_COMMAND = ${USB_MOUNT_COMMAND#USB_UUID#$REPLY}
       USB_MOUNT_COMMAND=$(echo "$USB_MOUNT_COMMAND" | sed "s/USB_UUID/$REPLY/")
    else
-      USB_MOUNT_COMMAND="logger No USB Drive Mount"
+      USB_MOUNT_COMMAND="'logger No USB Drive Mount'"
    fi
 }
 
@@ -1554,7 +1424,9 @@ function FlashSD() {
    fi
    echo -e "\nLeaving Flash...\n"
 }
+#
 # Start Script execution
+#
 printf "\033c"
 echo -e "\n"
 echo -e "${RED}${BOLD}WaveSnake Flash Configuration Utility v1.0.3\n"
@@ -1674,4 +1546,121 @@ MainMenu
 
 #    mv tmp-user-data user-data
 #    cd ..
+# }
+
+#  # Configure ETH0 LAN (Manager & Worker)
+   # echo -e "\n"
+   # read -p "${GR}Type ETH0 Lan${RD}${BO} default=[${ETH0_LAN}] ${WH}> "
+   # if [[ -z "$REPLY" ]]; then
+   #    echo -e -n "${ETH0_LAN}"
+   # else
+   #    ETH0_LAN=$REPLY
+   #    echo -e -n "${ETH0_LAN}"
+   # fi
+
+   # #  # Configure ETH0 IP Address (Manager & Worker)
+   # echo -e "\n"
+   # read -p "${GR}Type ETH0 IP address${RD}${BO} default=[${ETH0_IP_ADDRESS}] ${WH}> "
+   # if [[ -z "$REPLY" ]]; then
+   #    echo -e -n "${ETH0_IP_ADDRESS}"
+   # else
+   #    ETH0_IP_ADDRESS=$REPLY
+   #    echo -e -n "${ETH0_IP_ADDRESS}"
+   # fi
+
+   # #  # Configure ETH0 Static Routers (Manager & Worker)
+   # echo -e "\n"
+   # read -p "${GR}Type ETH0 Static Routers${RD}${BO} default=[${ETH0_STATIC_ROUTERS}] ${WH}> "
+   # if [[ -z "$REPLY" ]]; then
+   #    echo -e -n "${ETH0_STATIC_ROUTERS}"
+   # else
+   #    ETH0_STATIC_ROUTERS=$REPLY
+   #    echo -e -n "${ETH0_STATIC_ROUTERS}"
+   # fi
+
+   # #  # Configure ETH0 DNS Servers (Manager & Worker)
+   # echo -e "\n"
+   # read -p "${GR}Type ETH0 DNS Servers${RD}${BO} default=[${ETH0_DNS_SERVERS}] ${WH}> "
+   # if [[ -z "$REPLY" ]]; then
+   #    echo -e -n "${ETH0_DNS_SERVERS}"
+   # else
+   #    ETH0_DNS_SERVERS=$REPLY
+   #    echo -e -n "${ETH0_DNS_SERVERS}"
+   # fi
+
+   # function ConfigureManagerNode() {
+
+#    # # Configure Manager name (Manager & Worker)
+#    echo -e "\n"
+#    read -p "${GR}Type Swarm Manager name ${RD}${BO}default=[${MANAGER_NAME}] ${WH}> "
+#    if [[ -z "$REPLY" ]]; then
+#       echo -e -n "${MANAGER_NAME}"
+#    else
+#       MANAGER_NAME=$REPLY
+#       echo -e -n "${MANAGER_NAME}"
+#    fi
+
+#    # # Configure Manager password (Manager & Worker)
+#    # # The password are SHA512 hashed
+#    echo -e "\n"
+#    GETPW=true
+#    while $GETPW; do
+#       read -p "${GR}Type Swarm Manager password ${WH}> "
+#       if [[ -z "$REPLY" ]]; then
+#          echo -e -n "You must supply password"
+#       else
+#          #MANAGER_PASSWORD=$(GetPWHash $REPLY)
+#          MANAGER_PASSWORD=$(python3 ./Artifacts/Hidepw.py $REPLY)
+#          #MANAGER_PASSWORD=$REPLY
+#          echo -e -n "${MANAGER_PASSWORD}"
+#          GETPW=false
+#       fi
+#    done
+
+#    # # Configure Time Zone (Manager & Worker)
+#    echo -e "\n"
+#    read -p "${GR}Type Time Zone ${RD}${BO}default=[${TIME_ZONE}] ${WH}> "
+#    if [[ -z "$REPLY" ]]; then
+#       echo -e -n "${TIME_ZONE}"
+#    else
+#       TIME_ZONE=$REPLY
+#       echo -e -n "${TIME_ZONE}"
+#    fi
+
+#    #  # Configure Traefik EntryPoint Address (Manager)
+#    echo -e "\n"
+#    read -p "${GR}Type Traefik Entrypoint address${RD}${BO} default=[${TRAEFIK_ENTRYPOINT_ADDRESS}] ${WH}> "
+#    if [[ -z "$REPLY" ]]; then
+#       echo -e -n "${TRAEFIK_ENTRYPOINT_ADDRESS}"
+#    else
+#       TRAEFIK_ENTRYPOINT_ADDRESS=$REPLY
+#       echo -e -n "${TRAEFIK_ENTRYPOINT_ADDRESS}"
+#    fi
+# }
+
+# function ConfigureWorkerNode() {
+#    # First ask for node name to configure
+#    echo -e "\n"
+#    read -p "${GR}Select node by typing ${RD}${BO}${SWARM_NODES[1]}, ${SWARM_NODES[2]} ${GR}or ${RD}${SWARM_NODES[3]} ${EC}${WH}> " -n 4 -r
+#    NODE_NAME=$REPLY
+
+#    # Configure Docker Swarm TCP port number
+#    echo -e "\n"
+#    read -p "${GR}Type Swarm TCP Port number ${RD}${BO}default=[${SWARM_PORT}] ${WH}> "
+#    if [[ -z "$REPLY" ]]; then
+#       echo -e -n "${SWARM_PORT}"
+#    else
+#       SWARM_PORT=$REPLY
+#       echo -e -n "${SWARM_PORT}"
+#    fi
+#    # Configure Swarm Worker Token (worker)
+#    # The token is obtained from the Swarm Manager Node
+#    echo -e "\n"
+#    read -p "${GR}Paste Swarm Worker Token, obtained from Manager Node ${WH}> "
+#    if [[ -z "$REPLY" ]]; then
+#       echo -e -n "${SWARM_WORKER_TOKEN}"
+#    else
+#       SWARM_WORKER_TOKEN=$REPLY
+#       echo -e -n "${SWARM_PORT}"
+#    fi
 # }

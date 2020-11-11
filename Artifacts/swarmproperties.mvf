@@ -2,6 +2,10 @@
 #
 # WaveSnake Swarm Properties
 #
+# If PROMPT=NO the script will not prompt for input, meaning that all
+# properties must be set and valid.
+#
+PROMPT="YES"
 
 # --- New Properties section
 

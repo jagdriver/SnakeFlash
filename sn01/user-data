@@ -151,9 +151,9 @@ write_files:
     path: /etc/network/interfaces.d/eth0
   # #
   # # WiFi interface setup
-  # # allow-hotplug wlan0
-  # # iface wlan0 inet dhcp
+  # # 
   - content: |
+      auto wlan0
       iface wlan0 inet static
       address 192.168.1.220
       network 192.168.1.0
@@ -468,19 +468,18 @@ write_files:
   # 
   # NFS Crontab script, Mount & Export NFS file system
   # I might mount the NFS drive in FSTAB instead
-  # - content: |
-  #     sudo mount /dev/sda1 /mnt/nfs
-  #     sudo exportfs -r
-  #   path: /home/manager/nfs.sh
+  - content: |
+      sudo exportfs -r
+      sudo mount --bind /opt/containers /mnt/config
+    path: /home/manager/nfs.sh
   # 
   # NFS Exports settings (not finished)
   # How to get the right  ip addresses
-  # Commentwd out, NFS cannot start on boot if this file are there
-  # - content: |
-  #     /mnt/nfs 192.168.230.2(rw,sync,no_subtree_check,root_squash)
-  #     /mnt/nfs 192.168.230.3(rw,sync,no_subtree_check,root_squash)
-  #     /mnt/nfs 192.168.230.4(rw,sync,no_subtree_check,root_squash)
-  #   path: /etc/exports
+  # Commented out, NFS cannot start on boot if this file are there
+#  - c ontent: |
+#       /opt/containers 127.0.0.1(rw,sync,no_subtree_check)
+#       /mnt/config *(rw,sync,no_subtree_check)
+#     path: /etc/exports
 #
 # These commands will be run once on first boot only
 #
@@ -495,7 +494,7 @@ runcmd:
   - 'logger !!! wavesnake !!!'
   - 'logger !!! wavesnake !!! Workaround for Buster Fake Time error initializing date/time'
   - 'logger !!! wavesnake !!!'
-  - sudo date -s '06 Nov 2020  22:40'
+  - sudo date -s '10 Nov 2020  00:59'
   - 'sudo service ntp --full-restart'
   - 'sudo sleep 15'
   - 'sudo date'
@@ -508,7 +507,7 @@ runcmd:
   - 'sudo ifup eth0'
   - 'sudo sleep 15'
 
-# Start ETH0 interface
+  # Start ETH0 interface
   - 'sudo ip addr flush dev eth0'
   - 'sudo ifdown eth0'
   - 'sudo ifup eth0'
@@ -522,16 +521,20 @@ runcmd:
   - 'sudo ip route delete default via 192.168.1.1'
   - 'sudo ip route add default via 192.168.1.1 dev wlan0 src 192.168.1.220 metric 100'
   
+  # Directories for NFS
+  - 'sudo mkdir -p /mnt/nfs'
+  - 'sudo mkdir -p /mnt/config'
+  - 'sudo chown -R manager:manager /mnt/nfs'
+  - 'sudo chown -R manager:manager /mnt/config'
+  - 'sudo chmod 755 /mnt/nfs'
+  - 'sudo chmod 755 /mnt/config'
+  - 'sudo chmod +x /home/manager/nfs.sh'
+
   # Update packagee index
   - 'logger !!! wavesnake !!!'
   - 'logger !!! wavesnake !!! Update Package list'
   - 'logger !!! wavesnake !!!'
   - 'sudo apt-get update --allow-releaseinfo-change'
-
-  # Mount for NFS
-  - 'sudo mkdir -p /mnt/nfs'
-  - 'sudo chown -R manager:manager /mnt/nfs'
-  - 'sudo chmod ug+rwx /mnt/nfs'
 
   # Install packages
   - 'logger !!! wavesnake !!!'
@@ -540,7 +543,7 @@ runcmd:
   - 'sudo apt-get -y install acl'
   - 'sudo apt-get -y install sshfs'
   - 'sudo apt-get -y install nfs-kernel-server'
-  
+
   #- 'DYNAMIC-DNS'
 
   #  Docker Swarm Initialization
@@ -596,7 +599,7 @@ runcmd:
   - 'logger !!! wavesnake !!! Setup Cron job to start NFS after reboot'
   - 'logger !!! wavesnake !!!'
   - 'sudo chmod +x /home/manager/nfs.sh'
-  # - 'sudo sed  -i "$ a\@reboot	root /home/manager/nfs.sh" /etc/crontab'
+  - 'sudo sed  -i "$ a\@reboot	root /home/manager/nfs.sh" /etc/crontab'
 
   # Prepare save of IPTables (Docker might do this already)
   #- 'sudo touch /etc/rc.local'
@@ -665,7 +668,6 @@ runcmd:
   - 'chown -R manager /opt/containers'
   - 'sudo chmod a+rw /opt/containers -R'
 
-
   # set special rights on ACME file
   - 'logger !!! wavesnake !!!'
   - 'logger !!! wavesnake !!! Set rights on ACME file'
@@ -714,8 +716,12 @@ runcmd:
        "--compose-file", "/opt/containers/portainer/docker-compose.yml",
        "portainer"
     ]
-  # Create NFS File Sharing
+  # Create NFS File File system mount
   - 'logger !!! wavesnake !!! Configure fstab entries for NFS'
+
+  # Create exports for NFS
+  - 'sudo sed  -i "$ a\/opt/containers 127.0.0.1(rw,sync,no_subtree_check)" /etc/exports'
+  - 'sudo sed  -i "$ a\/mnt/config *(rw,sync,no_subtree_check)" /etc/exports'
 
   - 'logger !!! wavesnake !!! End of RUNCMD'
   

@@ -154,6 +154,7 @@ write_files:
   # # allow-hotplug wlan0
   # # iface wlan0 inet dhcp
   - content: |
+      auto wlan0
       iface wlan0 inet static
       address WLAN0-IP-ADDRESS
       network WLAN0-NETWORK-ADDRESS
@@ -466,21 +467,12 @@ write_files:
       sudo iptables -A FORWARD -i eth0 -o wlan0 -j ACCEPT
     path: /home/manager/bridge.sh
   # 
-  # NFS Crontab script, Mount & Export NFS file system
-  # I might mount the NFS drive in FSTAB instead
-  # - content: |
-  #     sudo mount /dev/sda1 /mnt/nfs
-  #     sudo exportfs -r
-  #   path: /home/manager/nfs.sh
-  # 
-  # NFS Exports settings (not finished)
-  # How to get the right  ip addresses
-  # Commentwd out, NFS cannot start on boot if this file are there
-  # - content: |
-  #     /mnt/nfs WS02-IP-ADDRESS(rw,sync,no_subtree_check,root_squash)
-  #     /mnt/nfs WS03-IP-ADDRESS(rw,sync,no_subtree_check,root_squash)
-  #     /mnt/nfs WS04-IP-ADDRESS(rw,sync,no_subtree_check,root_squash)
-  #   path: /etc/exports
+  # NFS startup script
+  #
+  - content: |
+      sudo exportfs -r
+      sudo mount --bind /opt/containers /mnt/config
+    path: /home/manager/nfs.sh
 #
 # These commands will be run once on first boot only
 #
@@ -522,16 +514,20 @@ runcmd:
   - 'sudo ip route delete default via WLAN0-STATIC-ROUTERS'
   - 'sudo ip route add default via WLAN0-STATIC-ROUTERS dev wlan0 src WLAN0-IP-ADDRESS metric 100'
   
+  # Directories for NFS
+  - 'sudo mkdir -p /mnt/nfs'
+  - 'sudo mkdir -p /mnt/config'
+  - 'sudo chown -R manager:manager /mnt/nfs'
+  - 'sudo chown -R manager:manager /mnt/config'
+  - 'sudo chmod 755 /mnt/nfs'
+  - 'sudo chmod 755 /mnt/config'
+  - 'sudo chmod +x /home/manager/nfs.sh'
+
   # Update packagee index
   - 'logger !!! wavesnake !!!'
   - 'logger !!! wavesnake !!! Update Package list'
   - 'logger !!! wavesnake !!!'
   - 'sudo apt-get update --allow-releaseinfo-change'
-
-  # Mount for NFS
-  - 'sudo mkdir -p /mnt/nfs'
-  - 'sudo chown -R manager:manager /mnt/nfs'
-  - 'sudo chmod ug+rwx /mnt/nfs'
 
   # Install packages
   - 'logger !!! wavesnake !!!'
@@ -540,8 +536,6 @@ runcmd:
   - 'sudo apt-get -y install acl'
   - 'sudo apt-get -y install sshfs'
   - 'sudo apt-get -y install nfs-kernel-server'
-  
-  #- 'DYNAMIC-DNS'
 
   #  Docker Swarm Initialization
   - 'logger !!! wavesnake !!!'
@@ -598,25 +592,11 @@ runcmd:
   - 'sudo chmod +x /home/manager/nfs.sh'
   # - 'sudo sed  -i "$ a\@reboot	root /home/manager/nfs.sh" /etc/crontab'
 
-  # Prepare save of IPTables (Docker might do this already)
-  #- 'sudo touch /etc/rc.local'
-
   # Skip Locale check on User Session Startup
   - 'logger !!! wavesnake !!!'
   - 'logger !!! wavesnake !!! Skip Locale check'
   - 'logger !!! wavesnake !!!'
   - 'sudo touch /var/lib/cloud/instance/locale-check.skip'
-
-  # Setup & Start NFS Services ( Wait with this )
-  - 'logger !!! wavesnake !!!'
-  - 'logger !!! wavesnake !!! Setup and start NFS service'
-  - 'logger !!! wavesnake !!!'
-  #- 'sudo systemctl enable rpcbind.service'
-  #- 'sudo systemctl enable nfs-server.service'
-  #- 'sudo systemctl start rpcbind.service'
-  #- 'sudo systemctl start nfs-server.service'
-  #- 'sudo mount /dev/sda1 /mnt/nfs'
-  #- 'sudo exportfs -r'
 
   # Create Container directories
   - 'logger !!! wavesnake !!!'
@@ -663,8 +643,7 @@ runcmd:
   - 'logger !!! wavesnake !!!'
   - 'sudo chgrp -R manager /opt/containers'
   - 'chown -R manager /opt/containers'
-  - 'sudo chmod a+rw /opt/containers -R'
-
+  - 'sudo chmod ug+rw /opt/containers -R'
 
   # set special rights on ACME file
   - 'logger !!! wavesnake !!!'
@@ -714,11 +693,31 @@ runcmd:
        "--compose-file", "/opt/containers/portainer/docker-compose.yml",
        "portainer"
     ]
-  # Create NFS File Sharing
-  - 'logger !!! wavesnake !!! Configure fstab entries for NFS'
+  # Create NFS File system mount
+  - 'logger !!! wavesnake !!!'
+  - 'logger !!! wavesnake !!! Configure fstab file system mounts for NFS'
+  - 'logger !!! wavesnake !!!'
 
-  - 'logger !!! wavesnake !!! End of RUNCMD'
+  # Create exports for NFS, will only work after a reboot
+  - 'logger !!! wavesnake !!!'
+  - 'logger !!! wavesnake !!! Create NFS Exports config'
+  - 'logger !!! wavesnake !!!'
+  - 'sudo sed  -i "$ a\/opt/containers 127.0.0.1(rw,sync,no_subtree_check)" /etc/exports'
+  - 'sudo sed  -i "$ a\/mnt/config *(rw,sync,no_subtree_check)" /etc/exports'
   
+  #
+  # Craete USB Mount command in /etc/fstab
+  #
+  - 'logger !!! wavesnake !!!'
+  - 'logger !!! wavesnake !!! Create NFS Exports config'
+  - 'logger !!! wavesnake !!!'
+  - USB_MOUNT_COMMAND
+  
+  
+  - 'logger !!! wavesnake !!!'
+  - 'logger !!! wavesnake !!! End of RUNCMD'
+  - 'logger !!! wavesnake !!!'
+
   #
   # Below command requires that we know the UUID of the mounted USB stick
   # and then append a line for each USB stick
