@@ -1113,8 +1113,12 @@ function ConfigureDNS() {
       fi
       # Now set internal domain name
       IFS='.'
-      read -ra DOM <<<$EXTERNAL_DOMAIN_NAME
-      INTERNAL_DOMAIN_NAME="${DOM[0]}.local"
+      read -ra DDOM <<<$EXTERNAL_DOMAIN_NAME
+      INTERNAL_DOMAIN_NAME="${DDOM[0]}.local"
+      echo -e "\n Internal Domain: $INTERNAL_DOMAIN_NAME"
+      echo -e "\n Dom0: ${DDOM[0]}}"
+      echo -e "\n Dom1:${DDOM[1]}"
+      echo -e "\n External Domain: $EXTERNAL_DOMAIN_NAME}"
       IFS=' '
    done
 
