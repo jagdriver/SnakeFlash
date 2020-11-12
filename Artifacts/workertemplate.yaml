@@ -18,7 +18,6 @@ users:
     shell: /bin/bash
     groups: users,docker,video,input
     plain_text_passwd: MANAGER-PASSWORD
-    #passwd: MANAGER-ENCRYPTED-PASSWORD
     lock_passwd: false
     ssh_pwauth: true
     chpasswd: { expire: false }
@@ -53,88 +52,37 @@ write_files:
   - content: |
       NODE_NAME=NODE-NAME
     path:  /opt/containers/environment/nodename.env
+  # #
+  # # ETH0 interface setup
+  # #
+  - content: |
+      auto eth0
+      iface eth0 inet static
+      address ETH0-IP-ADDRESS
+      network ETH0-NETWORK-ADDRESS
+      netmask ETH0-NETWORK-NETMASK
+      gateway ETH0-STATIC-ROUTERS
+      dns-nameservers ETH0-DNS-SERVERS
+    path: /etc/network/interfaces.d/eth0
+  #
+  # Interfaces (Recommended content)
+  #
+  - content: |
+      # Please note that this file is written to be used with dhcpcd
+      # For static IP, consult /etc/dhcpcd.conf and 'man dhcpcd.conf'
+
+      # Include files from /etc/network/interfaces.d:
+      source-directory /etc/network/interfaces.d
+    path: /etc/network/interfaces
   #
   # dhcpcd.conf static network setup
   #
   - content: |
-      persistent
-      # Generate Stable Private IPv6 Addresses instead of hardware based ones
-      slaac private
-      # static IP configuration:
       interface eth0
       static ip_address=ETH0-IP-ADDRESS/24
       static routers=ETH0-STATIC-ROUTERS
       static domain_name_servers=ETH0-DNS-SERVERS
     path: /etc/dhcpcd.conf
-  #
-  # Mosquitto config file
-  #  
-  - content: |
-      # Place your local configuration in /mqtt/config/conf.d/
-      #
-      # A full description of the configuration file is at
-      # /usr/share/doc/mosquitto/examples/mosquitto.conf.example
-      # ---  WaveSnake Technologies --------
-
-      pid_file /var/run/mosquitto.pid
-
-      persistence true
-      persistence_location /mosquitto/data/
-
-      log_dest file /mosquitto/log/mosquitto.log
-      log_dest topic
-      log_timestamp true
-
-      log_type error
-      log_type warning
-      log_type notice
-      log_type information
-
-      connection_messages true
-
-      sys_interval 60
-
-      include_dir /mosquitto/config/conf.d
-      password_file /mosquitto/config/conf.d/pw
-      acl_file /mosquitto/config/conf.d/acl
-
-      allow_anonymous false
-
-      port 1883
-
-    path: /var/local/mosquitto.conf
-  #
-  # Mosquitto ACL file
-  #
-  - content: |
-      user wavesnake
-      topic readwrite homebridge/#
-      topic readwrite homeassistant/#
-      topic readwrite openhab/#
-
-      user WaveSnake
-      topic readwrite BA57D00A15054C2C/#
-
-      user manager
-      topic readwrite test/#
-      topic readwrite BA57D00A15054C2C/#
-      topic readwrite BA57D00A15054C2C/temp/to/#
-      topic readwrite 0489DD53321AF351/#
-      topic readwrite 6E9EBD20FC256C87/#
-      topic readwrite 1D9C7CF151EB3CF6/#
-      topic readwrite 33DA9E7B63025E56/#
-      topic readwrite 7155E1E0C60EA6B9/#
-      topic read $SYS/broker/#
-    path: /var/local/acl
-  #
-  # Mosquitto PW file
-  #
-  - content: |
-      wavesnake:$6$jSdkcgBqdInm4bOU$+qWvEDP/P8ydZzTz6eaR2/4FcRz1j2klgaEDWmKHcREZ6H0UwaL/so+nzPqwem8D0bvtQaHauun+XaTv+b4W5g==
-      WaveSnake:$6$6c8kY97qllo/M3pH$NHa7T41WMuY7RFGg242wxKoyc8XoYvwQ8IaguM5/8T/A+qVsvpzjvLvmk0Ae1uNwLr83b3yLViVt/8LeCHW6VA==
-      manager:$6$nOsgGCKqIEZx1rbO$JA1qDqW2/E7K+xWIY6csrrrlLC38Gmirn0ZnVBy6ASwhKfW63FCJchTAh0RYycjlqvpOZypxpfkCmJdN2ck7Eg==
-      pi:$6$jKCofPce5HszESHR$s8UwnZkVVye0/NC6gbE8tcF8IKiQYNRcLsqxOTMZM/Rbzpvt3gza60WWlvhX65djyJJ9roObdK/3hwIopGnamA==
-    path: /var/local/pw
   #
   # Hosts
   #
@@ -144,32 +92,33 @@ write_files:
       DNS-STRING1
       DNS-STRING2
       DNS-STRING3
-
-      # The following lines are desirable for IPv6 capable hosts
-      ::1 ip6-localhost ip6-loopback
-      fe00::0 ip6-localnet
-      ff00::0 ip6-mcastprefix
-      ff02::1 ip6-allnodes
-      ff02::2 ip6-allrouters
-      ff02::3 ip6-allhosts
     path: /etc/hosts
 
 # These commands will be run once on first boot only
 runcmd:
-  # Restart Avahi daemon and sleep 30 seec
-  - 'logger !!! wavesnake !!! Restart avahi-deamon'  
+  # Restart Avahi daemon and sleep 30 seec  - 'logger !!! wavesnake !!!'
+  - 'logger !!! wavesnake !!!' 
+  - 'logger !!! wavesnake !!! Restart avahi-deamon'
+  - 'logger !!! wavesnake !!!' 
   - 'systemctl restart avahi-daemon'
-  #
-  # Restart NTP, workaround for Debian Buster fake time initialization
-  #
-  - 'logger !!! wavesnake !!! Workaround for Buster error initializing date/time'
-  - 'sudo date --set ISO-DATE'
-  - 'sudo date --set ISO-TIME'
+ 
+  
+  # Set Fake HW Date, Restart NTP, workaround for Debian Buster time initialization
+  - 'logger !!! wavesnake !!!'
+  - 'logger !!! wavesnake !!! Workaround for Buster Fake Time error initializing date/time'
+  - 'logger !!! wavesnake !!!'
+  - sudo date -s 'ISO-DATE'
   - 'sudo service ntp --full-restart'
   - 'sudo sleep 15'
   - 'sudo date'
 
-  # Update packagee index
+  # Start ETH0 interface
+  - 'sudo ip addr flush dev eth0'
+  - 'sudo ifdown eth0'
+  - 'sudo ifup eth0'
+  - 'sudo sleep 15'
+
+  # Update package index
   - 'logger !!! wavesnake !!! Update Package list'
   - 'sudo apt-get update --allow-releaseinfo-change'
 
@@ -177,12 +126,15 @@ runcmd:
   - 'logger !!! wavesnake !!! Install packages'
   - 'sudo apt-get -y install acl'
   - 'sudo apt-get -y install sshfs'
+  - 'sudo apt-get -y install nfs-common'
 
   # Skip Locale check on User Session Startup
   - 'sudo touch /var/lib/cloud/instance/locale-check.skip'
 
-  # Set Manager in Docker group
+  # Setup Manager
   - 'logger !!! wavesnake !!! Set manager in docker group'
+  - 'sudo chown manager:manager /home/manager'
+  - 'sudo chmod -R u+rwX,go+rX-w /home/manager'
   - 'sudo usermod -aG docker $(whoami)'
 
   # Add Node to Swarm
@@ -192,11 +144,6 @@ runcmd:
   
   # Skip Locale check on User Session Startup
   - 'sudo touch /var/lib/cloud/instance/locale-check.skip'
-
-  # Create Home directory
-  - 'logger !!! wavesnake !!! Set manager as owner and set rights on home directory'
-  - 'sudo chown manager:manager /home/manager'
-  - 'sudo chmod -R u+rwX,go+rX-w /home/manager'
 
   # Create SSH private/public key
   - 'logger !!! wavesnake !!! Create ssh private/public keys'

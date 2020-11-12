@@ -28,11 +28,7 @@ users:
     shell: /bin/bash
     groups: users,docker,video,input
     plain_text_passwd: MANAGER-PASSWORD
-    #passwd: MANAGER-ENCRYPTED-PASSWORD
     lock_passwd: false
-    #ssh_authorized_keys:
-    #  - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCdpRpqR6pSdoXVLH7pIFkVXY9KIZJVA0wfKlqvpeHD/iKl+0dVU0xRoZYO/+Bot2i0rTJdfTPjcGpgMm4rpqkLfUT6ryyGFRSMF/yObUf9vCCPlz/nRh//PQfAN+JPK61z104EeatHbQhSHuHhJPzVDBNYLhsi7O1wsOkTTtSMs1Xos28HXdB+gpKup1Uddb4lq+GkB110IN3mjHYo4Tckl5VNH9cmWBTYvyVSgzv3hIG2ur/jrQMB2dLzqkchjrKpV1VLjW4dpxNlSTRt/1eo+KCjRraBYALL8t5xiLZHSx/6mA91eQU2zBDufJKWzy93vdzd6r3DJcqDIAzQ2PFP nielsjorgennielsen@snakemacpro.local
-    #  - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC6YYuWDPd8CxKYZlQ6oQiXVqvM0HXBARbl/MtokxmxIySH94liiGUn+1+lBC9qSMo5a6DcNekULSvHp4a5cj6WoOx0veJlFu+Gx5Xzu/oWcq3yIkTkI/x9sgZiLAwQgGmxfEEzY++tDHwhPzrpQsB4Xzjf8YFJ+1t25eAhBLarpsM/A9XtZ/8E7zbaCKJ81Utajp/kODyWwdK3Q4NoetUfjE6M8b8yWcjUUhQqHPpBKGghS2sG78OgazjwJSDSy7vMZ+vqs6ZsRjUIxjg9/d5iymR3qM8xR1AnXcYsjUZR7s5y3DW1boYv6f5gcPFLCJ2aYzgKQahzcL0ajJecdd33 manager@ws06
     ssh_pwauth: true
     chpasswd: { expire: false }
 
@@ -133,6 +129,75 @@ write_files:
       }
     path:  /opt/containers/configuration/snakehistory.prop
   #
+  # Mosquitto config file
+  #  
+  - content: |
+      # Place your local configuration in /mqtt/config/conf.d/
+      #
+      # A full description of the configuration file is at
+      # /usr/share/doc/mosquitto/examples/mosquitto.conf.example
+      # ---  WaveSnake Technologies --------
+
+      pid_file /var/run/mosquitto.pid
+
+      persistence true
+      persistence_location /mosquitto/data/
+
+      log_dest file /mosquitto/log/mosquitto.log
+      log_dest topic
+      log_timestamp true
+
+      log_type error
+      log_type warning
+      log_type notice
+      log_type information
+
+      connection_messages true
+
+      sys_interval 60
+
+      include_dir /mosquitto/config/conf.d
+      password_file /mosquitto/config/conf.d/pw
+      acl_file /mosquitto/config/conf.d/acl
+
+      allow_anonymous false
+
+      port 1883
+
+    path: /opt/containers/mosquitto/config/mosquitto.conf
+  #
+  # Mosquitto ACL file
+  #
+  - content: |
+      user wavesnake
+      topic readwrite homebridge/#
+      topic readwrite homeassistant/#
+      topic readwrite openhab/#
+
+      user WaveSnake
+      topic readwrite BA57D00A15054C2C/#
+
+      user manager
+      topic readwrite test/#
+      topic readwrite BA57D00A15054C2C/#
+      topic readwrite BA57D00A15054C2C/temp/to/#
+      topic readwrite 0489DD53321AF351/#
+      topic readwrite 6E9EBD20FC256C87/#
+      topic readwrite 1D9C7CF151EB3CF6/#
+      topic readwrite 33DA9E7B63025E56/#
+      topic readwrite 7155E1E0C60EA6B9/#
+      topic read $SYS/broker/#
+    path: /opt/containers/mosquitto/config/config.d/acl
+  #
+  # Mosquitto PW file
+  #
+  - content: |
+      wavesnake:$6$jSdkcgBqdInm4bOU$+qWvEDP/P8ydZzTz6eaR2/4FcRz1j2klgaEDWmKHcREZ6H0UwaL/so+nzPqwem8D0bvtQaHauun+XaTv+b4W5g==
+      WaveSnake:$6$6c8kY97qllo/M3pH$NHa7T41WMuY7RFGg242wxKoyc8XoYvwQ8IaguM5/8T/A+qVsvpzjvLvmk0Ae1uNwLr83b3yLViVt/8LeCHW6VA==
+      manager:$6$nOsgGCKqIEZx1rbO$JA1qDqW2/E7K+xWIY6csrrrlLC38Gmirn0ZnVBy6ASwhKfW63FCJchTAh0RYycjlqvpOZypxpfkCmJdN2ck7Eg==
+      pi:$6$jKCofPce5HszESHR$s8UwnZkVVye0/NC6gbE8tcF8IKiQYNRcLsqxOTMZM/Rbzpvt3gza60WWlvhX65djyJJ9roObdK/3hwIopGnamA==
+    path: /opt/containers/mosquitto/config/config.d/pw
+  #
   # NodeName.env ( Should this be a json file?)
   #
   - content: |
@@ -191,9 +256,10 @@ write_files:
   #
   - content: |
       interface wlan0
-      static ip_address=192.168.1.220/24
-      static routers=192.168.1.1
-      static domain_name_servers=8.8.8.8 8.8.4.4
+      static ip_address=WLAN0-IP-ADDRESS/24
+      static routers=WLAN0-STATIC-ROUTERS
+      static domain_name_servers=WLAN0-DNS-SERVERS
+
     path: /etc/dhcpcd.conf
   #
   # Hosts
@@ -204,7 +270,24 @@ write_files:
       DNS-STRING1
       DNS-STRING2
       DNS-STRING3
-    path: /etc/hosts   
+    path: /etc/hosts
+  #
+  # Bash script to mount USB Stick
+  #
+  - content: |
+      #!/bin/bash
+      #
+      # Mount USB Stick
+      #
+      echo -e  "\n"
+      read -p "Type SD Card Label>"
+      if [ $REPLY != "" ]; then
+        DISKUUID=$(lsblk -f | sed -n -e "s/^.*$REPLY //p" | xargs)
+        echo "/dev/disk/by-uuid/$DISKUUID /media/data vfat auto,nofail,noatime,users,rw,uid=manager,gid=manager 0 0" >> /etc/fstab
+      else
+        echo -e "No label given"
+      fi
+    path: /home/manager
   #
   # Portainer Docker Compose (Version 2.0)
   #
@@ -590,7 +673,7 @@ runcmd:
   - 'logger !!! wavesnake !!! Setup Cron job to start NFS after reboot'
   - 'logger !!! wavesnake !!!'
   - 'sudo chmod +x /home/manager/nfs.sh'
-  # - 'sudo sed  -i "$ a\@reboot	root /home/manager/nfs.sh" /etc/crontab'
+  - 'sudo sed  -i "$ a\@reboot	root /home/manager/nfs.sh" /etc/crontab'
 
   # Skip Locale check on User Session Startup
   - 'logger !!! wavesnake !!!'
@@ -621,7 +704,7 @@ runcmd:
   # Mosquitto
   - 'sudo mkdir -p /opt/containers/mosquitto'
   - 'sudo mkdir -p /opt/containers/mosquitto/config'
-  - 'sudo mkdir -p /opt/containers/mosquitto/cconfig/conf.d'
+  - 'sudo mkdir -p /opt/containers/mosquitto/config/conf.d'
   - 'sudo mkdir -p /opt/containers/mosquitto/data'
   # SnakeApi
   - 'sudo mkdir -p /opt/containers/snakeapi'

@@ -7,8 +7,6 @@
 #
 PROMPT="YES"
 
-# --- New Properties section
-
 # You can change the Node name prefix here. Node names are generated
 # as NODENAME_PREFIX + "0" + NODENAME_COUNT, e.g. sn01, sn02 ...
 # The Swarm manager node will always be the first node.
@@ -34,7 +32,6 @@ MANAGER_PASSWORD="your-manager-password"
 #MANAGER_ENCRYPTED_PASSWORD="$6$$lkFOYhhCGZiVmaOiZxSrpcvun.YOgyWuin0l0/aHRkep9sHrMTVp4uzHsAkTIJ.q3c8RuTA.NUNE8yqrh72O5/"
 
 # Node properties
-#NODE_NAME="sn01"
 SWARM_LOCALE="en_US.UTF-8"
 TIME_ZONE="Europe/Copenhagen"
 
@@ -81,15 +78,22 @@ WLAN0_STATIC_ROUTERS="192.168.1.1"
 WLAN0_DNS_SERVERS="8.8.8.8 8.8.4.4"
 
 # Domain properties
-#INTERNAL_DOMAIN_NAME="Your internal domain name"
 EXTERNAL_DOMAIN_NAME="Your external domain name"
 
-# Dynamic DNS properties
+# Dynamic DNS Providers
 DNS_PROVIDER_LIST="GratisDNS CloudFlare OneCom"
-DNS_PROVIDER_URL_LIST="https://admin.gratisdns.com/ddns.php https://xx.yy https://xx.yy"
+
+# GratisDNS Dynamic DNS properties
+DNS_PROVIDER_URL_LIST="https://admin.gratisdns.com/ddns.php https://cloudflare.com https://onecom.com"
 DYNAMIC_DNS_PROVIDER=""
 DYNAMIC_DNS_USER="Your GratisDNS user"
 DYNAMIC_DNS_PASSWD="Your GratisDNS password"
+
+# CloudFlare Dynamic DNS properties
+DDNS_EMAIL="CLOUDFLARE ACCOUNT EMAIL ADDRESS"
+DDNS_API_TOKEN="CLOUDFLARE GLOBAL API KEY"
+DDNS_DOMAIN="example.com"
+DDNS_HOSTNAME="dynamic"
 
 # ACME properties
 ACME_EMAIL_ADDRESS="yourmail@mailserver.com"
