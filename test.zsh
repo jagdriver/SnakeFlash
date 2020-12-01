@@ -62,6 +62,8 @@
 # echo -e "____________________________________________\n"
 
 # Test of USB UUID
+   echo -e ""
+   read -p "${GR}Mount USB stick, and type return ${WH}> "
    echo -e "____________________________________________\n"
    diskutil list
    echo -e "____________________________________________\n"
@@ -69,8 +71,11 @@
    DISKS=($(diskutil list | grep -o '^/dev[^ ]*'))
   
    #echo -e "ONE: ${DISKS[3]}"
-   
-   echo -e "Look at above list and Select the Disk you want to Flash. Be carefull, the Disk is overwritten!!!"
+   echo -e ""
+   echo -e "Look at above list and Select the Disk you want to Flash."
+   echo -e "Look for the labe HypriotOS."
+   echo -e "Be carefull, the Disk is overwritten!!!"
+   echo -e ""
    #DISK_MENU=(${DISKS[@]})
 
    select fav in "${DISKS[@]}"; do

@@ -93,7 +93,24 @@ write_files:
       DNS-STRING2
       DNS-STRING3
     path: /etc/hosts
-
+  #
+  # Bash script to mount USB Stick
+  # Script must be run on RPI with sudo
+  # and requires reboot
+  - content: |
+      #!/bin/bash
+      #
+      # Mount USB Stick
+      #
+      echo -e  "\n"
+      read -p "Type USB Stick Label>"
+      if [ $REPLY != "" ]; then
+        DISKUUID=$(lsblk -f | sed -n -e "s/^.*$REPLY //p" | xargs)
+        echo "/dev/disk/by-uuid/$DISKUUID /media/data vfat auto,nofail,noatime,users,rw,uid=manager,gid=manager 0 0" >> /etc/fstab
+      else
+        echo -e "No label given"
+      fi
+    path: /home/manager
 # These commands will be run once on first boot only
 runcmd:
   # Restart Avahi daemon and sleep 30 seec  - 'logger !!! wavesnake !!!'

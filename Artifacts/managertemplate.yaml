@@ -57,77 +57,206 @@ package_upgrade: false
 # # - use `wpa_passphrase SSID PASSWORD` to encrypt the psk
 write_files:
   #
-  # Redis.prop (Must be tested)
-  # This must be a valid json file 
-  - content: |
-      {
-        "REDIS_MASTER_SERVER_ADDRESS":"REDIS-MASTER-SERVER-ADDRESS",
-        "REDIS_MASTER_SERVER_PORT":"REDIS-MASTER-SERVER-PORT",
-        "REDIS_REPLICA_SERVER_ADDRESS":"REDIS-REPLICA-SERVER-ADDRESS",
-        "REDIS_REPLICA_SERVER_PORT":"REDIS-REPLICA-SERVER-PORT"
-      }
-    path:  /opt/containers/configuration/redis.prop
-  #
-  # Global.prop (Must be tested)
+  # Global Application Config
   #
   - content: |
       {
-      "LOG_PATH":"LOG-PATH",
-      "API_SERVER_ADDRESS":"API-SERVER-ADDRESS",
-      "API_SERVER_PORT":"API-SERVER-PORT",
-      "MQTT_SERVER_ADDRESS":"MQTT-SERVER-ADDRESS",
-      "MQTT_SERVER_PORT":"MQTT-SERVER-PORT",
-      "SKETCH_SERVER_ADDRESS":"SKETCH-SERVER-ADDRESS",
-      "SKETCH_SERVER_PORT":"SKETCH-SERVER-PORT",
-      "REDIS_MASTER_SERVER_ADDRESS":"REDIS-MASTER-SERVER-ADDRESS",
-      "REDIS_MASTER_SERVER_PORT":"REDIS-MASTER-SERVER-PORT",
-      "REDIS_REPLICA_SERVER_ADDRESS":"REDIS-REPLICA-SERVER-ADDRESS",
-      "REDIS_REPLICA_SERVER_PORT":"REDIS-REPLICA-SERVER-PORT",
-      "MANAGER_PASSWORD":"MANAGER-PASSWORD",
-      "MANAGER_NAME":"MANAGER-NAME"
+      "Users": {
+            "ManagerName":"MANAGER-NAME"
+        }
+      "Redis": {
+        "Development": {
+            "RedisConfiguration":"development",
+            "RedisMasterServerAddress":"REDIS-MASTER-SERVER-ADDRESS",
+            "RedisMasterServerPort":"REDIS-MASTER-SERVER-PORT",
+            "redisReplicaServerAddress":"REDIS-REPLICA-SERVER-ADDRESS",
+            "RedisReplicaServerPort":"REDIS-REPLICA-SERVER-PORT"
+        },
+        "Production": {
+            "RedisConfiguration":"production",
+            "RedisMasterServerAddress":"REDIS-MASTER-SERVER-ADDRESS",
+            "RedisMasterServerPort":"REDIS-MASTER-SERVER-PORT",
+            "redisReplicaServerAddress":"REDIS-REPLICA-SERVER-ADDRESS",
+            "RedisReplicaServerPort":"REDIS-REPLICA-SERVER-PORT"
+        }
+      },
+      "Logging": {
+        "Development": {
+            "ApplicationLogPath":"APPLICATION-LOG-PATH",
+            "SnakeUtilLogFile":"SNAKEUTIL-LOG-FILE",
+            "SnakeApiLogFile":"SNAKEAPI-LOG-FILE",
+            "SnakeHistoryLogFile":"SNAKEHISTORY-LOG-FILE",
+            "SnakeConfigLogFile":"SNAKECONFIG-LOG-FILE",
+            "SnakeTimerLogFile":"SNAKETIMER-LOG-FILE"
+        },
+        "Production": {
+            "ApplicationLogPath":"APPLICATION-LOG-PATH",
+            "SnakeUtilLogFile":"SNAKEUTIL-LOG-FILE",
+            "SnakeApiLogFile":"SNAKEAPI-LOG-FILE",
+            "SnakeHistoryLogFile":"SNAKEHISTORY-LOG-FILE",
+            "SnakeConfigLogFile":"SNAKECONFIG-LOG-FILE",
+            "SnakeTimerLogFile":"SNAKETIMER-LOG-FILE"
+        }
+      },
+      "SnakeApi": {
+          "Development" : {
+              "Version":"SNAKEAPI-VERSION",
+              "DBAdmin":"SQL-DB-ADMIN",
+              "UsersDB":"SQL-USERS-DB-NAME",
+              "HomesDBName":"SQL-HOMES-DB-NAME",
+              "CollectionsDB":"SQL-COLLECTIONS-DB-NAME",
+              "DBServer":"SQL-SERVER-ADDRESS",
+              "DBServerPort":"SQL-SERVER-PORT",
+              "MqttServer":"MQTT-SERVER-ADDRESS",
+              "MqttServerPort":"MQTT-SERVER-PORT",
+              "SketchServer":"SKETCH-SERVER-ADDRESS",
+              "SketchServerPort":"SKETCH-SERVER-PORT",
+              "SwarmMailUser":"SWARM-MAIL-USER",
+              "SwarmMailSubject":"SWARM-MAIL-SUBJECT",
+              "SwarmMailBody":"SWARM-MAIL-BODY",
+              "SwarmMailPath":"SWARM-MAIL-PATH",
+              "Template":"SQL-TEMPLATE",
+              "TemplateLookupUser":"SQL-TEMPLATE-LOOKUP-USER",
+              "TemplateCreateUser":"SQL-TEMPLATE-CREATE-USER",
+              "TemplateGrantPrivileges":"SQL-TEMPLATE-GRANT-PRIVILEGES",
+              "TemplateFindUser":"SQL-TEMPLATE-FIND-USER",
+              "TemplateGrantAllPrivileges":"SQL-TEMPLATE-GRANT-ALL-PRIVILEGES",
+              "RuleTypes":"RULE-TYPES",
+              "AccessoryTypes":"ACCESSORY-TYPES",
+              "ServiceTypes":"SERVICE-TYPES",
+              "Services":"ACCESSORY-SERVICES"         
+          },
+          "Production" : {
+              "Version":"SNAKEAPI-VERSION",
+              "DBAdmin":"SQL-DB-ADMIN",
+              "UsersDB":"SQL-USERS-DB-NAME",
+              "HomesDBName":"SQL-HOMES-DB-NAME",
+              "CollectionsDB":"SQL-COLLECTIONS-DB-NAME",
+              "DBServer":"SQL-SERVER-ADDRESS",
+              "DBServerPort":"SQL-SERVER-PORT",
+              "MqttServer":"MQTT-SERVER-ADDRESS",
+              "MqttServerPort":"MQTT-SERVER-PORT",
+              "SketchServer":"SKETCH-SERVER-ADDRESS",
+              "SketchServerPort":"SKETCH-SERVER-PORT",
+              "SwarmMailUser":"SWARM-MAIL-USER",
+              "SwarmMailSubject":"SWARM-MAIL-SUBJECT",
+              "SwarmMailBody":"SWARM-MAIL-BODY",
+              "SwarmMailPath":"SWARM-MAIL-PATH",
+              "Template":"SQL-TEMPLATE",
+              "TemplateLookupUser":"SQL-TEMPLATE-LOOKUP-USER",
+              "TemplateCreateUser":"SQL-TEMPLATE-CREATE-USER",
+              "TemplateGrantPrivileges":"SQL-TEMPLATE-GRANT-PRIVILEGES",
+              "TemplateFindUser":"SQL-TEMPLATE-FIND-USER",
+              "TemplateGrantAllPrivileges":"SQL-TEMPLATE-GRANT-ALL-PRIVILEGES",
+              "RuleTypes":"RULE-TYPES",
+              "AccessoryTypes":"ACCESSORY-TYPES",
+              "ServiceTypes":"SERVICE-TYPES",
+              "Services":"ACCESSORY-SERVICES"         
+          }
+        },
+        "SnakeUtil": {
+          "Development": {
+            "Version":"SNAKEUTIL-VERSION",
+            "ExternalDomainName":"EXTERNAL-DOMAIN-NAME",
+            "DnsProviderList":"DNS-PROVIDER-LIST",
+            "DnsProviderName":"DNS-PROVIDER-NAME",
+            "DnsProviderId":"DNS-PROVIDER-ID",
+            "DnsProviderUrl":"DNS-PROVIDER-URL",
+            "DnsProviderUser":"DNS-PROVIDER-USER",
+            "DnsProviderPassword":"DNS-PROVIDER-PASSWD"
+          },
+          "Production": {
+            "Version":"SNAKEUTIL-VERSION",
+            "ExternalDomainName":"EXTERNAL-DOMAIN-NAME",
+            "DnsProviderList":"DNS-PROVIDER-LIST",
+            "DnsProviderName":"DNS-PROVIDER-NAME",
+            "DnsProviderId":"DNS-PROVIDER-ID",
+            "DnsProviderUrl":"DNS-PROVIDER-URL",
+            "DnsProviderUser":"DNS-PROVIDER-USER",
+            "DnsProviderPassword":"DNS-PROVIDER-PASSWD"
+          }
+        },        
+        "SnakeTimer": {
+          "Development": {
+            "Version":"SNAKETIMER-VERSION"
+          },
+          "Production": {
+            "Version":"SNAKETIMER-VERSION"
+          }
+        },
+        "SnakeConfig": {
+          "Development": {
+            "Version":"SNAKECONFIG-VERSION",
+            "APIServer":"API-SERVER-ADDRESS",
+            "APIServerPort":"API-SERVER-PORT",
+            "HomesDBName":"SQL-HOMES-DB-NAME",
+            "RedisSynchKey":"REDIS-SYNC-KEY",
+            "RedisSyncPath":"REDIS-SYNC-PATH",
+            "ApplicationList":"APPLICATION-LIST",
+            "EnvironmentList":"ENVIRONMENT-LIST"
+          },
+          "Production": {
+          "Version":"SNAKECONFIG-VERSION",
+            "APIServer":"API-SERVER-ADDRESS",
+            "APIServerPort":"API-SERVER-PORT",
+            "HomesDBName":"SQL-HOMES-DB-NAME",
+            "RedisSynchKey":"REDIS-SYNC-KEY",
+            "RedisSyncPath":"REDIS-SYNC-PATH",
+            "ApplicationList":"APPLICATION-LIST",
+            "EnvironmentList":"ENVIRONMENT-LIST"
+          }
+        },
+        "SnakeHistory": {
+            "Development" : {
+              "Version":"SNAKEHISTORY-VERSION",
+              "APIServer":"API-SERVER-ADDRESS",
+              "APIServerPort":"API-SERVER-PORT",
+              "MqttServer":"MQTT-SERVER-ADDRESS",
+              "MqttServerPort":"MQTT-SERVER-PORT",
+              "ManagerEmail":"MANAGER-EMAIL"
+            },
+            "Production": {
+              "Version":"SNAKEHISTORY-VERSION",
+              "APIServer":"API-SERVER-ADDRESS",
+              "APIServerPort":"API-SERVER-PORT", 
+              "MqttServer":"MQTT-SERVER-ADDRESS",
+              "MqttServerPort":"MQTT-SERVER-PORT",
+              "ManagerEmail":"MANAGER-EMAIL"
+            }
+          }
       }
-    path:  /opt/containers/configuration/global.prop
-  #
-  # SnakeApi.prop (Must be tested)
-  #
-  - content: |
-      {
-      "DEFAULT_SQL_TEMPLATE":"DEFAULT-SQL-TEMPLATE",
-      "CREATE_USER_TEMPLATE":"CREATE-USER-TEMPLATE",
-      "DELETE_USER_TEMPLATE":"DELETE-USER-TEMPLATE"
-      }
-    path:  /opt/containers/configuration/snakeapi.prop
+    path:  /opt/containers/configuration/globalconfig.json
   #
   # SnakeConfig.prop (Must be tested)
   #
-  - content: |
-      {
-      "APPLICATION_LIST":"APPLICATION-LIST",
-      "ENVIRONMENT_LIST":"ENVIRONMENT-LIST"
-      }
-    path:  /opt/containers/configuration/snakeconfig.prop
+  # - content: |
+  #     {
+  #     "APPLICATION_LIST":"APPLICATION-LIST",
+  #     "ENVIRONMENT_LIST":"ENVIRONMENT-LIST"
+  #     }
+  #   path:  /opt/containers/configuration/snakeconfig.prop
   #
   # SnakeUtil.prop (Must be tested)
   #
-  - content: |
-      {
-      "DNS_PROVIDER_LIST":"DNS-PROVIDER-LIST",
-      "DNS_PROVIDER_NAME":"DNS-PROVIDER-NAME",
-      "EXTERNAL_DOMAIN_NAME":"EXTERNAL-DOMAIN-NAME",
-      "DNS_PROVIDER_ID":"DNS-PROVIDER-ID",
-      "DNS_PROVIDER_URL":"DNS-PROVIDER-URL",
-      "DNS_PROVIDER_USER":"DYNAMIC-DNS-USER",
-      "DNS_PROVIDER_PASSWORD":"DYNAMIC-DNS-PASSWORD"
-      }
-    path:  /opt/containers/configuration/snakeutil.prop
+  # - content: |
+  #     {
+  #     "DNS_PROVIDER_LIST":"DNS-PROVIDER-LIST",
+  #     "DNS_PROVIDER_NAME":"DNS-PROVIDER-NAME",
+  #     "EXTERNAL_DOMAIN_NAME":"EXTERNAL-DOMAIN-NAME",
+  #     "DNS_PROVIDER_ID":"DNS-PROVIDER-ID",
+  #     "DNS_PROVIDER_URL":"DNS-PROVIDER-URL",
+  #     "DNS_PROVIDER_USER":"DYNAMIC-DNS-USER",
+  #     "DNS_PROVIDER_PASSWORD":"DYNAMIC-DNS-PASSWORD"
+  #     }
+  #   path:  /opt/containers/configuration/snakeutil.prop
   #
   # SnakeHistory.prop (Must be tested)
   #
-  - content: |
-      {
-      "HISTORY_DB_NAME":"HISTORY-DB-NAME"
-      }
-    path:  /opt/containers/configuration/snakehistory.prop
+  # - content: |
+  #     {
+  #     "HISTORY_DB_NAME":"HISTORY-DB-NAME"
+  #     }
+  #   path:  /opt/containers/configuration/snakehistory.prop
   #
   # Mosquitto config file
   #  
@@ -273,14 +402,15 @@ write_files:
     path: /etc/hosts
   #
   # Bash script to mount USB Stick
-  #
+  # Script must be run on RPI with sudo
+  # and requires reboot 
   - content: |
       #!/bin/bash
       #
       # Mount USB Stick
       #
       echo -e  "\n"
-      read -p "Type SD Card Label>"
+      read -p "Type USB Stick Label>"
       if [ $REPLY != "" ]; then
         DISKUUID=$(lsblk -f | sed -n -e "s/^.*$REPLY //p" | xargs)
         echo "/dev/disk/by-uuid/$DISKUUID /media/data vfat auto,nofail,noatime,users,rw,uid=manager,gid=manager 0 0" >> /etc/fstab
@@ -794,7 +924,7 @@ runcmd:
   - 'logger !!! wavesnake !!!'
   - 'logger !!! wavesnake !!! Create NFS Exports config'
   - 'logger !!! wavesnake !!!'
-  - USB_MOUNT_COMMAND
+  - 'USB-MOUNT-COMMAND'
   
   
   - 'logger !!! wavesnake !!!'
