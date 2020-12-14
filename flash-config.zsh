@@ -59,6 +59,7 @@ USB_DONE=$CHECK_UNDONE
 EDIT_DONE=$CHECK_UNDONE
 MANAGER_DONE=$CHECK_UNDONE
 WORKER_DONE=$CHECK_UNDONE
+SSH_DONE=$CHECK_UNDONE
 
 # Noded names
 SWARM_NODES=()
@@ -70,7 +71,7 @@ DNS_URLS=()
 IP_ADDRESSES=()
 
 function Quit() {
-   echo -e "${WHITE}"
+   echo -e "${BLACK}"
    echo "\nLeaving Swarm Configuration"
    exit
 }
@@ -213,7 +214,7 @@ function EditProperties() {
       # SnakeUtil
       sed -i -n "s#SNAKEUTIL-VERSION#$SNAKEUTIL_VERSION#" new-user-data
       sed -i -n "s#DNS-PROVIDER-LIST#$DNS_PROVIDER_LIST#" new-user-data
-      
+
       # SnakeTimer
       sed -i -n "s#SNAKETIMER-VERSION#$SNAKETIMER_VERSION#" new-user-data
 
@@ -298,6 +299,7 @@ function EditProperties() {
    # Swarm Manager
    sed -i -n "s/MANAGER-PASSWORD/$MANAGER_PASSWORD/" new-user-data
    sed -i -n "s/MANAGER-NAME/$MANAGER_NAME/" new-user-data
+   sed -i -n "s/AUTHORIZED-SSH-KRY/$AUTHORIZED_SSH_KEY" new-user-data
    #sed -i -n "s*MANAGER-ENCRYPTED-PASSWORD*$MANAGER_ENCRYPTED_PASSWORD*" new-user-data
 
    # Swarm Node
@@ -527,15 +529,6 @@ function SaveTemplate() {
    fi
 }
 
-function GetUSBUUID() {
-   # USB stick UUID and PARTUUID are different on Mac and RaspberryPI
-   # So we must verify the USB stick on RaspberryPI, and
-   # Type in the UUID here.  
-   USB_STR=$(diskutil list | grep -i -w 'hypriotos' | cut -c 69-)
-   UUID_STR=$(diskutil info $USB_STR | grep -i -w 'Volume UUID:' | cut -c 31-)
-   echo "$UUID_STR"
-}
-
 function ReadProperties() {
    # Keep sections/lines in this function synchronized
    # with swarmconfig.txt
@@ -562,6 +555,7 @@ function ReadProperties() {
    MANAGER_NAME=$MANAGER_NAME
    MANAGER_PASSWORD=$MANAGER_PASSWORD
    MANAGER_EMAIL=$MANAGER_EMAIL
+   #AUTHORIZED_SSH_KEY=$AUTHORIZED_SSH_KEY
    #MANAGER_PASSWORD=$MANAGER_PASSWORD
    #MANAGER_ENCRYPTED_PASSWORD=$MANAGER_ENCRYPTED_PASSWORD
 
@@ -622,7 +616,6 @@ function ReadProperties() {
    DNS_PROVIDER_LIST=($DNS_PROVIDER_LIST)
 
    DNS_PROVIDER_NAMES=$DNS_PROVIDER_LIST
-   
 
    DNS_PROVIDER_URL_LIST=($DNS_PROVIDER_URL_LIST)
    DYNAMIC_DNS_PROVIDER=$DYNAMIC_DNS_PROVIDER
@@ -670,7 +663,7 @@ function ReadProperties() {
    # Not used in SnakeApi
    API_SERVER_ADDRESS=$API_SERVER_ADDRESS
    API_SERVER_PORT=$API_SERVER_PORT
-   
+
    # SnakeConfig properties
    SNAKECONFIG_VERSION=$SNAKECONFIG_VERSION
    SNAKECONFIG_LOG_FILE=$SNAKECONFIG_LOG_FILE
@@ -731,6 +724,7 @@ function SetNetAddress() {
    WLAN0_NETWORK_BITS="${LANADDR[0]}.${LANADDR[1]}.${LANADDR[2]}.0/24"
    read -ra WLANIPTMP <<<"$WLAN0_IP_ADDRESS"
    #WLAN0_IP_ADDRESS="${LANADDR[0]}.${LANADDR[1]}.${LANADDR[2]}.${WLANIPTMP[3]}"
+   WLAN0_DONE=$CHECK_DONE_DEFAULT
 
    read -ra ETH0ADDR <<<"$ETH0_NETWORK_ADDRESS" # ETH0_IP_ADDRESS is read into an array as tokens separated by IFS
    local ETH0_LAN_NET="${ETH0ADDR[0]}.${ETH0ADDR[1]}.${ETH0ADDR[2]}"
@@ -781,23 +775,19 @@ function SetNodeNames() {
    # Set node names from NODENAME_PREFIX and NODENAME_COUNT
    local nodeCount=1
    while [ $nodeCount -le $(($NODENAME_COUNT)) ]; do
-      #echo "Nodename $NODENAME_PREFIX"0"$nodeCount"
       SWARM_NODES[$nodeCount - 1]=$"$NODENAME_PREFIX"0"$nodeCount"
       echo "Nodename ${SWARM_NODES[$nodeCount - 1]}"
-      # No Node Dirs
-      #NODE_DIRS[$nodeCount - 1]=$""ws0"$nodeCount"
-      #echo "Nodedir ${NODE_DIRS[$nodeCount - 1]}"
       nodeCount=$(($nodeCount + 1))
    done
    SWARM_MANAGER_NODE=${SWARM_NODES[1]}
 
    # Create a subdir for each node
-   for ((i=0; i<$NODENAME_COUNT; i++)); do
-      #echo "$CURRENT_DIR/${SWARM_NODES[i]}"
+   for ((i = 0; i < $NODENAME_COUNT; i++)); do
       if [ ! -d "$CURRENT_DIR/${SWARM_NODES[i]}" ]; then
          mkdir "$CURRENT_DIR/${SWARM_NODES[i]}"
       fi
    done
+
 }
 
 function SetDnsStrings() {
@@ -834,22 +824,16 @@ function SelectInputConfig() {
    # Reads and presents all *.mvf files
    # so user kan choose properties file.
    INPUT_CONFIG_FILES=()
-   #INPUT_CONFIG_FILES[0]="NONE"
    j=0
    for i in ./Artifacts/*.mvf; do
       [ -f "$i" ] || break
       INPUT_CONFIG_FILES[$j]="$i"
-      #j+=1
-      #j=j + 1
-      #$j=$j+1
-      j=$(( $j + 1 ))
+      j=$(($j + 1))
    done
 
-   echo -e "\n${GR}Select Input file with predefined properties${WH}"
+   echo -e "\n${GR}Select Input file with predefined properties${BL}"
    select fav in "${INPUT_CONFIG_FILES[@]}"; do
       INPUT_FILE=$fav
-      #PROPERTY_FILE_NAME=$fav
-      #echo -e "SelectInputFile $fav"
       break
    done
 }
@@ -1005,7 +989,7 @@ function ConfigureUSBDrives() {
    #  # Configure USB Drive mount
    # USB stick UUID and PARTUUID are different on Mac and RaspberryPI
    # So we must verify the USB stick on RaspberryPI, and
-   # Type in the UUID here.  
+   # Type in the UUID here.
    echo -e "\n"
    read -p "${GR}Mount USB Drive ? ${WH}y | n > " -n 1 -r
    if [[ $REPLY =~ ^[Yy]$ ]]; then
@@ -1025,7 +1009,7 @@ function ConfigureDNS() {
    echo -e "\n"
    GETDOM=true
    while $GETDOM; do
-      read -p "${GR}Type External domain name ${WH}> "
+      read -p "${GR}Type External domain name ${BL}> "
       if [[ -z "$REPLY" ]]; then
          echo -e -n "You must supply external domain name"
       else
@@ -1050,7 +1034,7 @@ function ConfigureDNS() {
    # This E-mail adddress must be registere by LetsEncrype together with
    # the external domain name. Must be a valid mail address.
    echo -e "\n"
-   read -p "${GR}Type LetsEncrypt ACME Email Address${RD}${BO} default=[${ACME_EMAIL_ADDRESS}] ${WH}> "
+   read -p "${GR}Type LetsEncrypt ACME Email Address${RD}${BO} default=[${ACME_EMAIL_ADDRESS}] ${BL}> "
    if [[ -z "$REPLY" ]]; then
       echo -e -n "${ACME_EMAIL_ADDRESS}"
    else
@@ -1060,7 +1044,7 @@ function ConfigureDNS() {
 
    #  # Configure Dynamic DNS (Manager)
    echo -e "\n"
-   read -p "${GR}Use Dynamic DNS ? ${WH}y | n > " -n 1 -r
+   read -p "${GR}Use Dynamic DNS ? ${BL}y | n > " -n 1 -r
    if [[ $REPLY =~ ^[Yy]$ ]]; then
       echo -e "\n"
       DYNCOUNT=${#DNS_PROVIDER_LIST[@]}    # Get length of array
@@ -1084,7 +1068,7 @@ function ConfigureDNS() {
       echo -e "\n"
       GETUSR=true
       while $GETUSR; do
-         read -p "${GR}Type ${DYNAMIC_DNS_PROVIDER} User Name ${WH}> "
+         read -p "${GR}Type ${DYNAMIC_DNS_PROVIDER} User Name ${BL}> "
          if [[ -z "$REPLY" ]]; then
             echo -e -n "You must provide DNS user name"
          else
@@ -1098,7 +1082,7 @@ function ConfigureDNS() {
       echo -e "\n"
       GETPW=true
       while $GETPW; do
-         read -p "${GR}Type ${DYNAMIC_DNS_PROVIDER} User Password${RD}${BO} default=[${DYNAMIC_DNS_PASSWD}] ${WH}> "
+         read -p "${GR}Type ${DYNAMIC_DNS_PROVIDER} User Password${RD}${BO} default=[${DYNAMIC_DNS_PASSWD}] ${BL}> "
          if [[ -z "$REPLY" ]]; then
             echo -e -n "You must provide Dynamic DNS user password"
          else
@@ -1118,6 +1102,42 @@ function GetNodeName() {
    read -p "${GR}Select node by typing ${RD}${BO}${SWARM_NODES[1]}, ${SWARM_NODES[2]} ${GR}or ${RD}${SWARM_NODES[3]} ${EC}${WH}> " -n 4 -r
    NODE_NAME=$REPLY
    echo -e "\n$NODE_NAME"
+}
+
+function GetUSBUUID() {
+   # USB stick UUID and PARTUUID are different on Mac and RaspberryPI
+   # So we must verify the USB stick on RaspberryPI, and
+   # Type in the UUID here.
+
+   # Find UUID string on Mac. This wont work because the UUID found on Mac
+   # is different from the UUID string on Raspberry PI.
+   #USB_STR=$(diskutil list | grep -i -w 'hypriotos' | cut -c 69-)
+   #UUID_STR=$(diskutil info $USB_STR | grep -i -w 'Volume UUID:' | cut -c 31-)
+   #echo "$UUID_STR"
+
+   # So ask for the UUID string, we have to check for an empty answer!
+   read -p "Paste USB UUID here: "
+   UUID_STR="$REPLY"
+   echo "$UUID_STR"
+}
+
+function GenerateSSHKey() {
+   #user=$(logname)
+   #userHome=$(awk -F: -v u=$user '$1 == u {print $6}' /etc/passwd)
+   # Execute: ssh-keygen -t ecdsa -b 256
+
+   SSH_KEY_FILE="$(echo ~)/.ssh/id_ecdsa"
+   SSH_KEY_FILE_PUB="$SSH_KEY_FILE.pub"
+   read -p "Generate new SSH key? y/n " -n 1 -r
+   if [[ $REPLY =~ ^[Yy]$ ]]; then
+      echo ""
+      ssh-keygen -t ecdsa -b 256 -f "$SSH_KEY_FILE"
+   fi
+
+   while IFS= read -r line || [[ -n "$line" ]]; do
+      AUTHORIZED_SSH_KEY="$line"
+      #echo "Text read from file: $line"
+   done <"$SSH_KEY_FILE_PUB"
 }
 
 function MainMenu() {
@@ -1147,6 +1167,7 @@ function MainMenu() {
             SetNodeNames "NOPROMPT"
             NODENAME_DONE=$CHECK_DONE_DEFAULT
             SetNetAddress "AUTO"
+            WLAN0_DONE=$CHECK_DONE_DEFAULT
             ETH0_DONE=$CHECK_DONE_DEFAULT
             SetDnsStrings
             DNS_DONE=$CHECK_DONE_DEFAULT
@@ -1215,7 +1236,8 @@ function DetailMenu() {
          "List_Properties"
          "Hide_Password"
          "Show_Password"
-         "get_USB_ID"
+         "Get_USB_ID"
+         "Generate_ssh_key"
          "Quit")
 
       select fav in "${DETAIL_MENU[@]}"; do
@@ -1266,8 +1288,15 @@ function DetailMenu() {
             ShowPassword
             break
             ;;
-         "get_USB_ID")
+         "Get_USB_ID")
             GetUSBUUID
+            USB_DONE=$CHECK_DONE
+            break
+            ;;
+         "Generate_ssh_key")
+            GenerateSSHKey
+            $SSH_DONE=$CHECK_DONE
+            break
             ;;
          "Quit")
             echo "$fav"
@@ -1281,10 +1310,10 @@ function DetailMenu() {
 
 function ConfigCheckMenu() {
    echo -e "\n"
-   echo -e "_____________________________________ Visited Menu's _______________________________________________________________________\n"
+   echo -e "_____________________________________ Visited Menu's ______________________________________________________________________________\n"
    echo -e "WLan0[$WLAN0_DONE] | Eth0 [$ETH0_DONE] | Manager[$MANAGER_DONE] | USB[$USB_DONE] | EDIT[$EDIT_DONE]\
- | ManagerNode[$MANAGER_DONE] | WorkerNode[$WORKER_DONE] | DNS Strings[$DNS_DONE] | NodeNames[$NODENAME_DONE]"
-   echo -e "____________________________________________________________________________________________________________________________\n"
+ | ManagerNode[$MANAGER_DONE] | WorkerNode[$WORKER_DONE] | DNS Strings[$DNS_DONE] | NodeNames[$NODENAME_DONE] | SSH[$SSH_DONE]"
+   echo -e "___________________________________________________________________________________________________________________________________\n"
 }
 
 function FlashSD() {
@@ -1293,7 +1322,7 @@ function FlashSD() {
    # for Raspberry Pi's, based on images from
    # Hypriot.
    #
-   
+
    diskutil list
    echo -e "\n"
    read -p "Look at the Disk list, and type the Disk to flash the image to > "

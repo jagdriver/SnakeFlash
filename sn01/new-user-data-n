@@ -61,8 +61,41 @@ write_files:
   #
   - content: |
       {
-      "Users": {
-            "ManagerName":"manager"
+      "Swarm": {
+          "Development": {
+              "APIServer":"192.168.1.230",
+              "APIServerPort":"80",
+              "MqttServer":"192.168.1.230",
+              "MqttServerPort":"6379",
+              "DBServer":"sql.wavesnake.local",
+              "DBServerPort":"3308",
+              "SketchServer":"192.168.1.230",
+              "SketchServerPort":"80",
+              "HomesDBName":"homes",
+              "UsersDB":"users",
+              "CollectionsDB":"collections",
+              "SwarmManager":"manager",
+              "ManagerEmail":"MANAGER_EMAIL",
+              "DBAdmin":"root,",
+              "SwarmSecret":"SWARM-SECRET"
+          },
+          "Production": {
+              "APIServer":"192.168.1.230",
+              "APIServerPort":"80",
+              "MqttServer":"192.168.1.230",
+              "MqttServerPort":"6379",
+              "DBServer":"sql.wavesnake.local",
+              "DBServerPort":"3308",
+              "SketchServer":"192.168.1.230",
+              "SketchServerPort":"80",
+              "HomesDBName":"homes",
+              "UsersDB":"users",
+              "CollectionsDB":"collections",
+              "SwarmManager":"manager",
+              "ManagerEmail":"MANAGER_EMAIL",
+              "DBAdmin":"root,",
+              "SwarmSecret":"SWARM-SECRET"
+          }
         }
       "Redis": {
         "Development": {
@@ -124,7 +157,7 @@ write_files:
               "RuleTypes":"accessory, group",
               "AccessoryTypes":"TempSensor,TempHumSensor,GateController,Relay,Switch,GasBurner",
               "ServiceTypes":"Temperature,Humidity,Sketch,UpTime,OpenClose,OnOff",
-              "Services":"[ { 'Id':0, 'ServiceId':0, 'Type':'Temperature', 'Description':'Temperature in degree Celsius', 'Value':'', 'Range':'-40;+50', 'Unit':'3' }, { 'Id':0, 'ServiceId':0, 'Type':'Humidity', 'Description':'Humidity i percentage', 'Value':'', 'Range':'0;100', 'Unit':'1' }, { 'Id':0, 'ServiceId':0, 'Type':'OpenClose', 'Description':'State Open/Closed', 'Value':'', 'Range':'0;1', 'Unit':'5' }, { 'Id':0, 'ServiceId':0, 'Type':'OnOff', 'Description':'State On/Off', 'Value':'', 'Range':'0;1', 'Unit':'5' }, { 'Id':0, 'ServiceId':0, 'Type':'Sketch', 'Description':'Sketch Version', 'Value':'', 'Range':'*', 'Unit':'4' }, { 'Id':0, 'ServiceId':0, 'Type':'UpTime', 'Description':'Accessory Uptime', 'Value':'', 'Range':'5000;3600000', 'Unit':'2' } ]"         
+              "Services":"[ { 'Id':0, 'ServiceId':202000, 'Type':'Temperature', 'Description':'Temperature in degree Celsius', 'Value':'', 'Range':'-40;+50', 'Unit':'3' }, { 'Id':1, 'ServiceId':202001, 'Type':'Humidity', 'Description':'Humidity i percentage', 'Value':'', 'Range':'0;100', 'Unit':'1' }, { 'Id':2, 'ServiceId':202002, 'Type':'OpenClose', 'Description':'State Open/Closed', 'Value':'', 'Range':'0;1', 'Unit':'5' }, { 'Id':3, 'ServiceId':202003, 'Type':'OnOff', 'Description':'State On/Off', 'Value':'', 'Range':'0;1', 'Unit':'5' }, { 'Id':4, 'ServiceId':202004, 'Type':'Sketch', 'Description':'Sketch Version', 'Value':'', 'Range':'*', 'Unit':'4' }, { 'Id':5, 'ServiceId':202005, 'Type':'UpTime', 'Description':'Accessory Uptime', 'Value':'', 'Range':'5000;3600000', 'Unit':'2' } ]"         
           },
           "Production" : {
               "Version":"1.2.0",
@@ -151,7 +184,7 @@ write_files:
               "RuleTypes":"accessory, group",
               "AccessoryTypes":"TempSensor,TempHumSensor,GateController,Relay,Switch,GasBurner",
               "ServiceTypes":"Temperature,Humidity,Sketch,UpTime,OpenClose,OnOff",
-              "Services":"[ { 'Id':0, 'ServiceId':0, 'Type':'Temperature', 'Description':'Temperature in degree Celsius', 'Value':'', 'Range':'-40;+50', 'Unit':'3' }, { 'Id':0, 'ServiceId':0, 'Type':'Humidity', 'Description':'Humidity i percentage', 'Value':'', 'Range':'0;100', 'Unit':'1' }, { 'Id':0, 'ServiceId':0, 'Type':'OpenClose', 'Description':'State Open/Closed', 'Value':'', 'Range':'0;1', 'Unit':'5' }, { 'Id':0, 'ServiceId':0, 'Type':'OnOff', 'Description':'State On/Off', 'Value':'', 'Range':'0;1', 'Unit':'5' }, { 'Id':0, 'ServiceId':0, 'Type':'Sketch', 'Description':'Sketch Version', 'Value':'', 'Range':'*', 'Unit':'4' }, { 'Id':0, 'ServiceId':0, 'Type':'UpTime', 'Description':'Accessory Uptime', 'Value':'', 'Range':'5000;3600000', 'Unit':'2' } ]"         
+              "Services":"[ { 'Id':0, 'ServiceId':202000, 'Type':'Temperature', 'Description':'Temperature in degree Celsius', 'Value':'', 'Range':'-40;+50', 'Unit':'3' }, { 'Id':1, 'ServiceId':202001, 'Type':'Humidity', 'Description':'Humidity i percentage', 'Value':'', 'Range':'0;100', 'Unit':'1' }, { 'Id':2, 'ServiceId':202002, 'Type':'OpenClose', 'Description':'State Open/Closed', 'Value':'', 'Range':'0;1', 'Unit':'5' }, { 'Id':3, 'ServiceId':202003, 'Type':'OnOff', 'Description':'State On/Off', 'Value':'', 'Range':'0;1', 'Unit':'5' }, { 'Id':4, 'ServiceId':202004, 'Type':'Sketch', 'Description':'Sketch Version', 'Value':'', 'Range':'*', 'Unit':'4' }, { 'Id':5, 'ServiceId':202005, 'Type':'UpTime', 'Description':'Accessory Uptime', 'Value':'', 'Range':'5000;3600000', 'Unit':'2' } ]"         
           }
         },
         "SnakeUtil": {
@@ -159,7 +192,7 @@ write_files:
             "Version":"1.2.0",
             "ExternalDomainName":"wavesnake.dk",
             "DnsProviderList":"GratisDNS CloudFlare OneCom",
-            "DnsProviderName":"GRATISDNS",
+            "DnsProviderName":"GratisDNS",
             "DnsProviderId":"DNS-PROVIDER-ID",
             "DnsProviderUrl":"https://admin.gratisdns.com/ddns.php",
             "DnsProviderUser":"jagdriver",
@@ -169,7 +202,7 @@ write_files:
             "Version":"1.2.0",
             "ExternalDomainName":"wavesnake.dk",
             "DnsProviderList":"GratisDNS CloudFlare OneCom",
-            "DnsProviderName":"GRATISDNS",
+            "DnsProviderName":"GratisDNS",
             "DnsProviderId":"DNS-PROVIDER-ID",
             "DnsProviderUrl":"https://admin.gratisdns.com/ddns.php",
             "DnsProviderUser":"jagdriver",
@@ -227,21 +260,18 @@ write_files:
       }
     path:  /opt/containers/configuration/globalconfig.json
   #
-  # SnakeConfig.prop (Must be tested)
+  # Authorized Keys
   #
-  # - content: |
-  #     {
-  #     "APPLICATION_LIST":"SnakeApi,SnakeHistory,SnakeUtil,SnakeConfig,SnakeTimer,SnakeConsole",
-  #     "ENVIRONMENT_LIST":"Development,Test,Production"
-  #     }
-  #   path:  /opt/containers/configuration/snakeconfig.prop
+  - content: |
+      AUTHORIZED-SHH-KEY
+    path:  /home/manager/.ssh/authorized_keys
   #
   # SnakeUtil.prop (Must be tested)
   #
   # - content: |
   #     {
   #     "DNS_PROVIDER_LIST":"GratisDNS CloudFlare OneCom",
-  #     "DNS_PROVIDER_NAME":"GRATISDNS",
+  #     "DNS_PROVIDER_NAME":"GratisDNS",
   #     "EXTERNAL_DOMAIN_NAME":"wavesnake.dk",
   #     "DNS_PROVIDER_ID":"DNS-PROVIDER-ID",
   #     "DNS_PROVIDER_URL":"https://admin.gratisdns.com/ddns.php",
@@ -713,7 +743,7 @@ runcmd:
   - 'sudo ifup eth0'
   - 'sudo sleep 15'
 
-# Start ETH0 interface
+  # Start ETH0 interface
   - 'sudo ip addr flush dev eth0'
   - 'sudo ifdown eth0'
   - 'sudo ifup eth0'

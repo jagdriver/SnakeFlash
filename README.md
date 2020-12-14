@@ -12,6 +12,8 @@
         3. [SnakeTimer](#snaketimer)
         4. [SnakeRule](#snakerule)
         5. [SnakeConfig](#snakeconfig)
+        6. [SnakeConsole](#snakeconsole)
+        7. [SnakeHistory](#snakehistory)
 3. [Configuration](#configuration)
     1. [Setup guide](#setupguide)
     2. [Flashing SD Cards](#flash)
@@ -98,6 +100,11 @@ Traefik and Portainer are installed at boot time, and will be available after sw
 #### SnakeRule  <a name="snakerule"></a>
 
 #### SnakeConfig  <a name="snakeconfig"></a>
+
+#### SnakeConsole  <a name="snakeconsole"></a>
+
+#### SnakeHistory  <a name="snakehistory"></a>
+
 Repository URL: https://github.com/jagdriver/Stacks.git
 
 Compose path: /SnakeConfig/docker-compose.yml
@@ -113,7 +120,7 @@ The initial setup and flashing of the SnakeHome Swarm includes below steps.
 
 - Format an MicroSD card, preferrably 16GB, and give it the name HyprriotOS. Se the format description here.
 
-- Edit swarmproperties.txt and nodeproperties.txt but be carefull not to jeopardise these files. Or run  flash-config.zsh to be prompted for property values.
+- Edit swarmproperties.mvf but be carefull not to jeopardise the file.
 
 - CD into Flashing directory
 

@@ -61,8 +61,41 @@ write_files:
   #
   - content: |
       {
-      "Users": {
-            "ManagerName":"MANAGER-NAME"
+      "Swarm": {
+          "Development": {
+              "APIServer":"API-SERVER-ADDRESS",
+              "APIServerPort":"API-SERVER-PORT",
+              "MqttServer":"MQTT-SERVER-ADDRESS",
+              "MqttServerPort":"MQTT-SERVER-PORT",
+              "DBServer":"SQL-SERVER-ADDRESS",
+              "DBServerPort":"SQL-SERVER-PORT",
+              "SketchServer":"SKETCH-SERVER-ADDRESS",
+              "SketchServerPort":"SKETCH-SERVER-PORT",
+              "HomesDBName":"SQL-HOMES-DB-NAME",
+              "UsersDB":"SQL-USERS-DB-NAME",
+              "CollectionsDB":"SQL-COLLECTIONS-DB-NAME",
+              "SwarmManager":"MANAGER-NAME",
+              "ManagerEmail":"MANAGER-EMAIL",
+              "DBAdmin":"SQL-DB-ADMIN",
+              "SwarmSecret":"SWARM-SECRET"
+          },
+          "Production": {
+              "APIServer":"API-SERVER-ADDRESS",
+              "APIServerPort":"API-SERVER-PORT",
+              "MqttServer":"MQTT-SERVER-ADDRESS",
+              "MqttServerPort":"MQTT-SERVER-PORT",
+              "DBServer":"SQL-SERVER-ADDRESS",
+              "DBServerPort":"SQL-SERVER-PORT",
+              "SketchServer":"SKETCH-SERVER-ADDRESS",
+              "SketchServerPort":"SKETCH-SERVER-PORT",
+              "HomesDBName":"SQL-HOMES-DB-NAME",
+              "UsersDB":"SQL-USERS-DB-NAME",
+              "CollectionsDB":"SQL-COLLECTIONS-DB-NAME",
+              "SwarmManager":"MANAGER-NAME",
+              "ManagerEmail":"MANAGER_EMAIL",
+              "DBAdmin":"SQL-DB-ADMIN",
+              "SwarmSecret":"SWARM-SECRET"
+          }
         }
       "Redis": {
         "Development": {
@@ -101,16 +134,6 @@ write_files:
       "SnakeApi": {
           "Development" : {
               "Version":"SNAKEAPI-VERSION",
-              "DBAdmin":"SQL-DB-ADMIN",
-              "UsersDB":"SQL-USERS-DB-NAME",
-              "HomesDBName":"SQL-HOMES-DB-NAME",
-              "CollectionsDB":"SQL-COLLECTIONS-DB-NAME",
-              "DBServer":"SQL-SERVER-ADDRESS",
-              "DBServerPort":"SQL-SERVER-PORT",
-              "MqttServer":"MQTT-SERVER-ADDRESS",
-              "MqttServerPort":"MQTT-SERVER-PORT",
-              "SketchServer":"SKETCH-SERVER-ADDRESS",
-              "SketchServerPort":"SKETCH-SERVER-PORT",
               "SwarmMailUser":"SWARM-MAIL-USER",
               "SwarmMailSubject":"SWARM-MAIL-SUBJECT",
               "SwarmMailBody":"SWARM-MAIL-BODY",
@@ -128,16 +151,6 @@ write_files:
           },
           "Production" : {
               "Version":"SNAKEAPI-VERSION",
-              "DBAdmin":"SQL-DB-ADMIN",
-              "UsersDB":"SQL-USERS-DB-NAME",
-              "HomesDBName":"SQL-HOMES-DB-NAME",
-              "CollectionsDB":"SQL-COLLECTIONS-DB-NAME",
-              "DBServer":"SQL-SERVER-ADDRESS",
-              "DBServerPort":"SQL-SERVER-PORT",
-              "MqttServer":"MQTT-SERVER-ADDRESS",
-              "MqttServerPort":"MQTT-SERVER-PORT",
-              "SketchServer":"SKETCH-SERVER-ADDRESS",
-              "SketchServerPort":"SKETCH-SERVER-PORT",
               "SwarmMailUser":"SWARM-MAIL-USER",
               "SwarmMailSubject":"SWARM-MAIL-SUBJECT",
               "SwarmMailBody":"SWARM-MAIL-BODY",
@@ -187,19 +200,13 @@ write_files:
         "SnakeConfig": {
           "Development": {
             "Version":"SNAKECONFIG-VERSION",
-            "APIServer":"API-SERVER-ADDRESS",
-            "APIServerPort":"API-SERVER-PORT",
-            "HomesDBName":"SQL-HOMES-DB-NAME",
             "RedisSynchKey":"REDIS-SYNC-KEY",
             "RedisSyncPath":"REDIS-SYNC-PATH",
             "ApplicationList":"APPLICATION-LIST",
             "EnvironmentList":"ENVIRONMENT-LIST"
           },
           "Production": {
-          "Version":"SNAKECONFIG-VERSION",
-            "APIServer":"API-SERVER-ADDRESS",
-            "APIServerPort":"API-SERVER-PORT",
-            "HomesDBName":"SQL-HOMES-DB-NAME",
+            "Version":"SNAKECONFIG-VERSION",
             "RedisSynchKey":"REDIS-SYNC-KEY",
             "RedisSyncPath":"REDIS-SYNC-PATH",
             "ApplicationList":"APPLICATION-LIST",
@@ -208,55 +215,22 @@ write_files:
         },
         "SnakeHistory": {
             "Development" : {
-              "Version":"SNAKEHISTORY-VERSION",
-              "APIServer":"API-SERVER-ADDRESS",
-              "APIServerPort":"API-SERVER-PORT",
-              "MqttServer":"MQTT-SERVER-ADDRESS",
-              "MqttServerPort":"MQTT-SERVER-PORT",
-              "ManagerEmail":"MANAGER-EMAIL"
+              "Version":"SNAKEHISTORY-VERSION"
             },
             "Production": {
-              "Version":"SNAKEHISTORY-VERSION",
-              "APIServer":"API-SERVER-ADDRESS",
-              "APIServerPort":"API-SERVER-PORT", 
-              "MqttServer":"MQTT-SERVER-ADDRESS",
-              "MqttServerPort":"MQTT-SERVER-PORT",
-              "ManagerEmail":"MANAGER-EMAIL"
+              "Version":"SNAKEHISTORY-VERSION"
             }
           }
       }
     path:  /opt/containers/configuration/globalconfig.json
+  
   #
-  # SnakeConfig.prop (Must be tested)
+  # Authorized Keys
   #
-  # - content: |
-  #     {
-  #     "APPLICATION_LIST":"APPLICATION-LIST",
-  #     "ENVIRONMENT_LIST":"ENVIRONMENT-LIST"
-  #     }
-  #   path:  /opt/containers/configuration/snakeconfig.prop
-  #
-  # SnakeUtil.prop (Must be tested)
-  #
-  # - content: |
-  #     {
-  #     "DNS_PROVIDER_LIST":"DNS-PROVIDER-LIST",
-  #     "DNS_PROVIDER_NAME":"DNS-PROVIDER-NAME",
-  #     "EXTERNAL_DOMAIN_NAME":"EXTERNAL-DOMAIN-NAME",
-  #     "DNS_PROVIDER_ID":"DNS-PROVIDER-ID",
-  #     "DNS_PROVIDER_URL":"DNS-PROVIDER-URL",
-  #     "DNS_PROVIDER_USER":"DYNAMIC-DNS-USER",
-  #     "DNS_PROVIDER_PASSWORD":"DYNAMIC-DNS-PASSWORD"
-  #     }
-  #   path:  /opt/containers/configuration/snakeutil.prop
-  #
-  # SnakeHistory.prop (Must be tested)
-  #
-  # - content: |
-  #     {
-  #     "HISTORY_DB_NAME":"HISTORY-DB-NAME"
-  #     }
-  #   path:  /opt/containers/configuration/snakehistory.prop
+  - content: |
+      AUTHORIZED-SHH-KEY
+    path:  /home/manager/.ssh/authorized_keys
+
   #
   # Mosquitto config file
   #  
@@ -294,47 +268,33 @@ write_files:
       port 1883
 
     path: /opt/containers/mosquitto/config/mosquitto.conf
+  
   #
   # Mosquitto ACL file
   #
   - content: |
-      user wavesnake
-      topic readwrite homebridge/#
-      topic readwrite homeassistant/#
-      topic readwrite openhab/#
-
-      user WaveSnake
-      topic readwrite BA57D00A15054C2C/#
-
       user manager
-      topic readwrite test/#
-      topic readwrite BA57D00A15054C2C/#
-      topic readwrite BA57D00A15054C2C/temp/to/#
-      topic readwrite 0489DD53321AF351/#
-      topic readwrite 6E9EBD20FC256C87/#
-      topic readwrite 1D9C7CF151EB3CF6/#
-      topic readwrite 33DA9E7B63025E56/#
-      topic readwrite 7155E1E0C60EA6B9/#
+      topic readwrite #
       topic read $SYS/broker/#
     path: /opt/containers/mosquitto/config/config.d/acl
+  
   #
   # Mosquitto PW file
   #
   - content: |
-      wavesnake:$6$jSdkcgBqdInm4bOU$+qWvEDP/P8ydZzTz6eaR2/4FcRz1j2klgaEDWmKHcREZ6H0UwaL/so+nzPqwem8D0bvtQaHauun+XaTv+b4W5g==
-      WaveSnake:$6$6c8kY97qllo/M3pH$NHa7T41WMuY7RFGg242wxKoyc8XoYvwQ8IaguM5/8T/A+qVsvpzjvLvmk0Ae1uNwLr83b3yLViVt/8LeCHW6VA==
       manager:$6$nOsgGCKqIEZx1rbO$JA1qDqW2/E7K+xWIY6csrrrlLC38Gmirn0ZnVBy6ASwhKfW63FCJchTAh0RYycjlqvpOZypxpfkCmJdN2ck7Eg==
-      pi:$6$jKCofPce5HszESHR$s8UwnZkVVye0/NC6gbE8tcF8IKiQYNRcLsqxOTMZM/Rbzpvt3gza60WWlvhX65djyJJ9roObdK/3hwIopGnamA==
     path: /opt/containers/mosquitto/config/config.d/pw
+  
   #
   # NodeName.env ( Should this be a json file?)
   #
   - content: |
       NODE_NAME=NODE-NAME
     path:  /opt/containers/environment/nodename.env
-  # #
-  # # ETH0 interface setup
-  # #
+  
+  #
+  # ETH0 interface setup
+  #
   - content: |
       auto eth0
       iface eth0 inet static
@@ -343,10 +303,10 @@ write_files:
       netmask ETH0-NETWORK-NETMASK
       dns-nameservers ETH0-DNS-SERVERS
     path: /etc/network/interfaces.d/eth0
-  # #
-  # # WiFi interface setup
-  # # allow-hotplug wlan0
-  # # iface wlan0 inet dhcp
+  
+  #
+  # WiFi interface setup
+  #
   - content: |
       auto wlan0
       iface wlan0 inet static
@@ -357,6 +317,7 @@ write_files:
       dns-nameservers WLAN0-DNS-SERVERS
       wpa-conf /etc/wpa_supplicant/wpa_supplicant.conf
     path: /etc/network/interfaces.d/wlan0
+ 
   #
   # WiFi properties setup
   #
@@ -369,13 +330,13 @@ write_files:
         psk="WIFI-PASSWD"
       }
     path: /etc/wpa_supplicant/wpa_supplicant.conf
+  
   #
   # Interfaces (Recommended content)
   #
   - content: |
       # Please note that this file is written to be used with dhcpcd
       # For static IP, consult /etc/dhcpcd.conf and 'man dhcpcd.conf'
-
       # Include files from /etc/network/interfaces.d:
       source-directory /etc/network/interfaces.d
     path: /etc/network/interfaces
@@ -390,6 +351,7 @@ write_files:
       static domain_name_servers=WLAN0-DNS-SERVERS
 
     path: /etc/dhcpcd.conf
+ 
   #
   # Hosts
   #
@@ -400,6 +362,7 @@ write_files:
       DNS-STRING2
       DNS-STRING3
     path: /etc/hosts
+  
   #
   # Bash script to mount USB Stick
   # Script must be run on RPI with sudo
@@ -713,7 +676,7 @@ runcmd:
   - 'sudo ifup eth0'
   - 'sudo sleep 15'
 
-# Start ETH0 interface
+  # Start ETH0 interface
   - 'sudo ip addr flush dev eth0'
   - 'sudo ifdown eth0'
   - 'sudo ifup eth0'
