@@ -225,10 +225,10 @@ write_files:
     path:  /opt/containers/configuration/globalconfig.json
   
   #
-  # Authorized Keys
+  # Authorized SSH Keys
   #
   - content: |
-      AUTHORIZED-SHH-KEY
+      AUTHORIZED-SSH-KEY
     path:  /home/manager/.ssh/authorized_keys
 
   #
@@ -280,11 +280,17 @@ write_files:
   
   #
   # Mosquitto PW file
+  # Build a DotNet Console app
+  # How to get hash key?
+  # Build a DotNet Console app that outputs the admin users hashed password.
+  # For that to work we must have the DotNet Runtime installed. Or could we make a
+  # self contained App? 
+  # We could also try to use docker desktop
+  # and run a container with Debian.
   #
   - content: |
-      manager:$6$nOsgGCKqIEZx1rbO$JA1qDqW2/E7K+xWIY6csrrrlLC38Gmirn0ZnVBy6ASwhKfW63FCJchTAh0RYycjlqvpOZypxpfkCmJdN2ck7Eg==
+      MANAGER-ENCRYPTED-PASSWORD
     path: /opt/containers/mosquitto/config/config.d/pw
-  
   #
   # NodeName.env ( Should this be a json file?)
   #
@@ -699,7 +705,7 @@ runcmd:
   - 'sudo chmod 755 /mnt/config'
   - 'sudo chmod +x /home/manager/nfs.sh'
 
-  # Update packagee index
+  # Update package index
   - 'logger !!! wavesnake !!!'
   - 'logger !!! wavesnake !!! Update Package list'
   - 'logger !!! wavesnake !!!'
@@ -741,7 +747,7 @@ runcmd:
   - 'sudo chown manager:manager /home/manager/.ssh'
   - 'sudo touch /home/manager/.ssh/authorized_keys'
   - 'sudo chmod 700 /home/manager/.ssh'
-  #- 'sudo cp -P /boot/keyfile.txt /home/manager/.ssh/authorized_keys'
+  - 'sudo cp -P /boot/keyfile.txt /home/manager/.ssh/authorized_keys'
   - 'sudo chown manager:manager /home/manager/.ssh/authorized_keys'
   - 'sudo chmod 600 /home/manager/.ssh/authorized_keys'
 
@@ -765,8 +771,8 @@ runcmd:
   - 'logger !!! wavesnake !!!'
   - 'logger !!! wavesnake !!! Setup Cron job to start NFS after reboot'
   - 'logger !!! wavesnake !!!'
-  - 'sudo chmod +x /home/manager/nfs.sh'
-  - 'sudo sed  -i "$ a\@reboot	root /home/manager/nfs.sh" /etc/crontab'
+  # - 'sudo chmod +x /home/manager/nfs.sh'
+  # - 'sudo sed  -i "$ a\@reboot	root /home/manager/nfs.sh" /etc/crontab'
 
   # Skip Locale check on User Session Startup
   - 'logger !!! wavesnake !!!'
@@ -875,12 +881,16 @@ runcmd:
   - 'logger !!! wavesnake !!!'
 
   # Create exports for NFS, will only work after a reboot
+  # We exports only /mnt/config
   - 'logger !!! wavesnake !!!'
   - 'logger !!! wavesnake !!! Create NFS Exports config'
   - 'logger !!! wavesnake !!!'
-  - 'sudo sed  -i "$ a\/opt/containers 127.0.0.1(rw,sync,no_subtree_check)" /etc/exports'
-  - 'sudo sed  -i "$ a\/mnt/config *(rw,sync,no_subtree_check)" /etc/exports'
+  - 'sudo sed  -i "$ a\/mnt/config 192.168.230.0/24(rw,nohide,insecure,no_subtree_check,async)" /etc/exports'
   
+  # Create NFS Mount Command in /etc/fstab
+  # To locally mount /opt/container to /mnt/config
+  - 'sudo sed  -i "$ a\/opt/containers /mnt/config none bind  0  0" /etc/fstab'
+
   #
   # Craete USB Mount command in /etc/fstab
   #

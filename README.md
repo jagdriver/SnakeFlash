@@ -4,9 +4,10 @@
 1. [Introduction](#introduction)
 2. [Prerequisites](#prerequisites)
     1. [ESP Hardware](#esphardware)
-    2. [RPI  Hardware](#rpihardware)
+    2. [ESP Software](#espsoftware)
+    3. [RPI  Hardware](#rpihardware)
         1. [Hardware list](#hardwarelist)
-    3. [Software](#software)
+    4. [RPI Software](#software)
         1. [Redis](#redis)
         2. [SnakeApi](#snakeapi)
         3. [SnakeTimer](#snaketimer)
@@ -23,19 +24,19 @@
 6. [Features](#features)
     1. [Complete Dockerized Swarm setup](#dockerized)
     2. [Prompted setup & flashing og Manager and Worker nodes](#prompted)
-    3. [Dynamic DNS](#dynamicdns)
-    4. [SSH login with pregenerated keys](#sshlogin)
-    5. [Password Hash login](#passwdhash)
-    6. [Automatic IP address & network detection](#autoip)
-    7. [Isolated Swarm network](#isolated)
-    8. [Automated Certificate handling](#certgen)
-7. [Configuration documentation](#configdocumentation)
+    3. [SSH login with pregenerated keys](#sshlogin)
+    4. [Password Hash login](#passwdhash)
+    5. [Automatic IP address & network detection](#autoip)
+    6. [Isolated Swarm network](#isolated)
+    7. [Automated Certificate handling](#certgen)
+    8. [Configuration documentation](#configdocumentation)
 
 ## SnakeHome <a name="introduction"></a>
 SnakeHome is the platform for hobbyist, who want the possibility to create their own IoT devices, but lack the background infrastructure, to integrate these devices into a manageable platform. I've put together some of the best tools available, written som apps, services, sketches and scripts, tested a lot, out came the SnakeHome management system, and it's free. 
 
 The system consists of:
-- Sketches for booting/initializing ESP8266/ESP32.
+- Sketches for initializing/configuring ESP8266/ESP32.
+- Sketches for Temperature, Humidity, Gate ontroller, Gas Burner ontroller and Water Pump controller.
 - Bash script for configuring and flashing MicroSD cards for a RaspBerry PI Docker Swarm Cluster.   
 - Docker images for Swarm applications.
 - Web application for managing/monitoring Swarm applications.
@@ -48,6 +49,19 @@ prerequisites: Mac, Windows or Linux, Visual Studio Code with some extensions (f
 
 ### ESP hardware <a name="esphardware"></a>
 
+| Hardware                | Count         | Prise DKr           |
+| ----------------------- | ------------- | ------------------- |  
+| ESP8266 E12 Module      | 1             | 30                  |
+| ESP8266 Dev Module      | 1             | 30                  |
+| ESP32 Module            | 1             | 20                  |
+| ESP32 Dev Module        | 1             | 50                  |
+
+
+ESP8266 & ESP32 are manufactored by Espressif. For detailed documentation
+se here https://www.espressif.com.
+
+### ESP software <a name="espsoftware"></a>
+
 ### RPI hardware <a name="rpihardware"></a>
 
 #### List of hardware <a name="hardwarelist"></a>
@@ -57,7 +71,7 @@ prerequisites: Mac, Windows or Linux, Visual Studio Code with some extensions (f
 | RPI 3B or 4B            | 4             | 1200-2000           |
 | Micro SD Card 16 GB     | 4             | 200                 |
 | Cluster case 4 Node     | 1             | 170                 |
-| Deltaco power supply    | 1             | 430                 |
+| Mean Well power supply  | 1             | 180                 |
 | Tenda network switch    | 1             | 90                  |
 | Ethernet cables 25cm    | 4             | 100                 |
 | USB-A to Micro USB 25cm | 4             | 200                 |
@@ -144,9 +158,9 @@ The next step is to install Docker Images and instantiating Containers from with
 
 ## Features <a name="features"></a>
 
-### Complete Dockerized Swarm setup <a name="dockerized"></a>
+### Complete Containerized Swarm setup <a name="dockerized"></a>
 
-### Prompted setup & flashing og Manager and Worker nodes <a name="prompted"></a>
+### Prompted setup & flashing of Manager and Worker nodes <a name="prompted"></a>
 
 ### Dynamic DNS <a name="dynamicdns"></a>
 
@@ -163,7 +177,7 @@ The next step is to install Docker Images and instantiating Containers from with
 ## Configuration documentation <a name="configdocumentation"></a>
 
 The configuration starts with preparing the information going into the configuration process. 
-You can find the properties in the file Artifacts/swarmconfig.txt.
+You can find the properties in the file Artifacts/swarmconfig.mvf.
 test test
 
 

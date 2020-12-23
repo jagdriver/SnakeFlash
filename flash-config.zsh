@@ -31,7 +31,8 @@ BOLD='\033[1m'
 BLACK='\033[0;30m'
 WHITE='\033[0;97m'
 CURRENT_DIR=$(pwd)
-RESETALL='\033[0m'
+RESETALL=$'\e[0m'
+echo -e "$RESETALL"
 RD=$'\e[31m'
 GR=$'\e[32m'
 WH=$'\e[97m'
@@ -39,7 +40,7 @@ BC=$'\e[4m'
 EC=$'\e[0m'
 BO=$'\e[1m'
 BL=$'\e[34m'
-
+BLA=$'\e[30m'
 # Configuration input file
 INPUT_FILE="./Artifacts/swarmproperties.mvf"
 PROPERTY_FILE_NAME="swarmproperties"
@@ -47,7 +48,7 @@ PROPERTY_FILE_EXT="mvf"
 
 # Config Check Menu
 CHECK_DONE_DEFAULT="\xE2\x9C\x94"
-CHECK_DONE="$GR\xE2\x9C\x94$WH"
+CHECK_DONE="$GR\xE2\x9C\x94$BLA"
 CHECK_UNDONE="\xE2\x9D\x8C"
 
 WLAN0_DONE=$CHECK_UNDONE
@@ -60,6 +61,7 @@ EDIT_DONE=$CHECK_UNDONE
 MANAGER_DONE=$CHECK_UNDONE
 WORKER_DONE=$CHECK_UNDONE
 SSH_DONE=$CHECK_UNDONE
+DATE_DONE=$CHECK_UNDONE
 
 # Noded names
 SWARM_NODES=()
@@ -140,13 +142,17 @@ function EditProperties() {
       sed -i -n "s#WS02-IP-ADDRESS#${IP_ADDRESSES[1]}#" new-user-data
       sed -i -n "s#WS03-IP-ADDRESS#${IP_ADDRESSES[2]}#" new-user-data
       sed -i -n "s#WS04-IP-ADDRESS#${IP_ADDRESSES[3]}#" new-user-data
-
+      
+      #
       # Global application properties, only manager node
+      #
+      
       # Redis Master and Replica Server
       sed -i -n "s#REDIS-MASTER-SERVER-ADDRESS#$REDIS_MASTER_SERVER_ADDRESS#" new-user-data
       sed -i -n "s#REDIS-MASTER-SERVER-PORT#$REDIS_MASTER_SERVER_PORT#" new-user-data
       sed -i -n "s#REDIS-REPLICA-SERVER-ADDRESS#$REDIS_REPLICA_SERVER_ADDRESS#" new-user-data
       sed -i -n "s#REDIS-REPLICA-SERVER-PORT#$REDIS_REPLICA_SERVER_PORT#" new-user-data
+
       # Logging
       sed -i -n "s#APPLICATION-LOG-PATH#$APPLICATION_LOG_PATH#" new-user-data
       sed -i -n "s#SNAKEUTIL-LOG-FILE#$SNAKEUTIL_LOG_FILE#" new-user-data
@@ -155,29 +161,39 @@ function EditProperties() {
       sed -i -n "s#SNAKECONFIG-LOG-FILE#$SNAKECONFIG_LOG_FILE#" new-user-data
       sed -i -n "s#SNAKETIMER-LOG-FILE#$SNAKETIMER_LOG_FILE#" new-user-data
       #sed -i -n "s##$#" new-user-data
+
       # Sketch Server
       sed -i -n "s#SKETCH-SERVER-ADDRESS#$SKETCH_SERVER_ADDRESS#" new-user-data
       sed -i -n "s#SKETCH-SERVER-PORT#$SKETCH_SERVER_PORT#" new-user-data
+
       # API Server
       sed -i -n "s#API-SERVER-ADDRESS#$API_SERVER_ADDRESS#" new-user-data
       sed -i -n "s#API-SERVER-PORT#$API_SERVER_PORT#" new-user-data
+
       # SnakeApi Version
       sed -i -n "s#SNAKEAPI-VERSION#$SNAKEAPI_VERSION#" new-user-data
+
       # SQL Admin
       sed -i -n "s#SQL-DB-ADMIN#$SQL_DB_ADMIN#" new-user-data
+
       # SQL Database names
       sed -i -n "s#SQL-USERS-DB-NAME#$SQL_USERS_DB_NAME#" new-user-data
       sed -i -n "s#SQL-HOMES-DB-NAME#$SQL_HOMES_DB_NAME#" new-user-data
       sed -i -n "s#SQL-COLLECTIONS-DB-NAME#$SQL_COLLECTIONS_DB_NAME#" new-user-data
+
       # SQL Server
       sed -i -n "s#SQL-SERVER-ADDRESS#$SQL_SERVER_ADDRESS#" new-user-data
       sed -i -n "s#SQL-SERVER-PORT#$SQL_SERVER_PORT#" new-user-data
+
       # MQTT Server
       sed -i -n "s#MQTT-SERVER-ADDRESS#$MQTT_SERVER_ADDRESS#" new-user-data
       sed -i -n "s#MQTT-SERVER-PORT#$MQTT_SERVER_PORT#" new-user-data
+      sed -i -n "s#MANAGER-ENCRYPTED-PASSWORD#$MANAGER_ENCRYPTED_PASSWORD#g" new-user-data
+      
       # SKETCH Server
       sed -i -n "s#SKETCH-SERVER-ADDRESS#$SKETCH_SERVER_ADDRESS#" new-user-data
       sed -i -n "s#SKETCH-SERVER-PORT#$SKETCH_SERVER_PORT#" new-user-data
+      
       # SWARM Mail
       sed -i -n "s#SWARM-MAIL-USER#$SWARM_MAIL_USER#" new-user-data
       sed -i -n "s#SWARM-MAIL-SUBJECT#$SWARM_MAIL_SUBJECT#" new-user-data
@@ -292,6 +308,9 @@ function EditProperties() {
    #sed -i -n "s#ISO-DATE#$ISO_DATE#" new-user-data
    #sed -i -n "s#ISO-TIME#$ISO_TIME#" new-user-data
 
+   # SSH Authorized Key
+   sed -i -n "s#AUTHORIZED-SSH-KEY#$AUTHORIZED_SSH_KEY#" new-user-data
+
    # Domains
    sed -i -n "s/INTERNAL-DOMAIN-NAME/$INTERNAL_DOMAIN_NAME/" new-user-data
    sed -i -n "s/EXTERNAL-DOMAIN-NAME/$EXTERNAL_DOMAIN_NAME/" new-user-data
@@ -299,7 +318,7 @@ function EditProperties() {
    # Swarm Manager
    sed -i -n "s/MANAGER-PASSWORD/$MANAGER_PASSWORD/" new-user-data
    sed -i -n "s/MANAGER-NAME/$MANAGER_NAME/" new-user-data
-   sed -i -n "s/AUTHORIZED-SSH-KRY/$AUTHORIZED_SSH_KEY" new-user-data
+   #sed -i -n "s/AUTHORIZED-SSH-KRY/$AUTHORIZED_SSH_KEY" new-user-data
    #sed -i -n "s*MANAGER-ENCRYPTED-PASSWORD*$MANAGER_ENCRYPTED_PASSWORD*" new-user-data
 
    # Swarm Node
@@ -329,7 +348,7 @@ function PromptForInput() {
       #  # Configure Swarm Port (worker)
       echo -e "Configuring Worker Node"
       echo -e "\n"
-      read -p "${GR}Type Swarm TCP Port number ${RD}${BO}default=[${SWARM_PORT}] ${WH}> "
+      read -e -p "Type Swarm TCP Port number ${RD}${BO}default=[${SWARM_PORT}] ${BLA}> "
       if [[ -z "$REPLY" ]]; then
          echo -e -n "${SWARM_PORT}"
       else
@@ -338,7 +357,7 @@ function PromptForInput() {
       fi
       #  # Configure Swarm Worker Token (worker)
       echo -e "\n"
-      read -p "${GR}Paste Swarm Worker Token, obtained from Manager Node ${WH}> "
+      read -e -p "Paste Swarm Worker Token, obtained from Manager Node ${BLA}> "
       if [[ -z "$REPLY" ]]; then
          echo -e -n "${SWARM_WORKER_TOKEN}"
       else
@@ -353,7 +372,7 @@ function PromptForInput() {
 
    # # Configure Manager name (Manager & Worker)
    echo -e "\n"
-   read -p "${GR}Type Swarm Manager name ${RD}${BO}default=[${MANAGER_NAME}] ${WH}> "
+   read -e -p "Type Swarm Manager name ${RD}${BO}default=[${MANAGER_NAME}] ${BLA}> "
    if [[ -z "$REPLY" ]]; then
       echo -e -n "${MANAGER_NAME}"
    else
@@ -366,7 +385,7 @@ function PromptForInput() {
    echo -e "\n"
    GETPW=true
    while $GETPW; do
-      read -p "${GR}Type Swarm Manager password ${WH}> "
+      read -e -p "Type Swarm Manager password ${BLA}> "
       if [[ -z "$REPLY" ]]; then
          echo -e -n "You must supply password\n"
       else
@@ -374,11 +393,14 @@ function PromptForInput() {
          MANAGER_PASSWORD=$REPLY
          GETPW=false
       fi
+
+      # Set Mosquitto Manager User and Password string
+      MANAGER_ENCRYPTED_PASSWORD=$(./Utilities/HashUtil $MANAGER_NAME $MANAGER_PASSWORD)
    done
 
    # # Configure Time Zone (Manager & Worker)
    echo -e "\n"
-   read -p "${GR}Type Time Zone ${RD}${BO}default=[${TIME_ZONE}] ${WH}> "
+   read -e -p "Type Time Zone ${RD}${BO}default=[${TIME_ZONE}] ${BLA}> "
    if [[ -z "$REPLY" ]]; then
       echo -e -n "${TIME_ZONE}"
    else
@@ -540,7 +562,7 @@ function ReadProperties() {
    source "$INPUT_FILE"
    #.$PROPERTY_FILE_EXT"
    #echo -e "Input File: ./Artifacts/$PROPERTY_FILE_NAME.$PROPERTY_FILE_EXT"
-   echo -e "Input File: $INPUT_FILE"
+   echo -e "Selected file: $INPUT_FILE"
 
    # Script properties
    NODENAME_PREFIX=$NODENAME_PREFIX
@@ -555,9 +577,12 @@ function ReadProperties() {
    MANAGER_NAME=$MANAGER_NAME
    MANAGER_PASSWORD=$MANAGER_PASSWORD
    MANAGER_EMAIL=$MANAGER_EMAIL
-   #AUTHORIZED_SSH_KEY=$AUTHORIZED_SSH_KEY
+   AUTHORIZED_SSH_KEY=$AUTHORIZED_SSH_KEY
    #MANAGER_PASSWORD=$MANAGER_PASSWORD
    #MANAGER_ENCRYPTED_PASSWORD=$MANAGER_ENCRYPTED_PASSWORD
+
+   # SSH Properties
+   SSH_KEY_FILE=$SSH_KEY_FILE
 
    # NODE Properties
    NODE_NAME=$NODE_NAME
@@ -703,7 +728,6 @@ function ReadProperties() {
    USB_MOUNT_COMMAND=$USB_MOUNT_COMMAND
 
    REDIS_DEFAULT_CONFIG=$REDIS_DEFAULT_CONFIG
-
 }
 
 function SetNetAddress() {
@@ -754,7 +778,7 @@ function SetNodeNames() {
    #  # Configure Node Name Count
    if [ $1 == "PROMPT" ]; then
       echo -e "\n"
-      read -p "${GR}Type Node Count${RD}${BO} default=[${NODENAME_COUNT}] ${WH}> "
+      read -e -p "${GR}Type Node Count${RD}${BO} default=[${NODENAME_COUNT}] ${WH}> "
       if [[ -z "$REPLY" ]]; then
          echo -e -n "${NODENAME_COUNT}"
       else
@@ -764,7 +788,7 @@ function SetNodeNames() {
 
       #  # Configure Node Name Prefix
       echo -e "\n"
-      read -p "${GR}Type Node Name Prefix${RD}${BO} default=[${NODENAME_PREFIX}] ${WH}> "
+      read -e -p "${GR}Type Node Name Prefix${RD}${BO} default=[${NODENAME_PREFIX}] ${WH}> "
       if [[ -z "$REPLY" ]]; then
          echo -e "${NODENAME_PREFIX}"
       else
@@ -776,7 +800,7 @@ function SetNodeNames() {
    local nodeCount=1
    while [ $nodeCount -le $(($NODENAME_COUNT)) ]; do
       SWARM_NODES[$nodeCount - 1]=$"$NODENAME_PREFIX"0"$nodeCount"
-      echo "Nodename ${SWARM_NODES[$nodeCount - 1]}"
+      #echo "Nodename ${SWARM_NODES[$nodeCount - 1]}"
       nodeCount=$(($nodeCount + 1))
    done
    SWARM_MANAGER_NODE=${SWARM_NODES[1]}
@@ -831,7 +855,7 @@ function SelectInputConfig() {
       j=$(($j + 1))
    done
 
-   echo -e "\n${GR}Select Input file with predefined properties${BL}"
+   echo -e "\nSelect Input file with predefined properties"
    select fav in "${INPUT_CONFIG_FILES[@]}"; do
       INPUT_FILE=$fav
       break
@@ -860,7 +884,7 @@ function SelectNodeTemplate() {
 function ConfigureInternalNetwork() {
    #  # Configure ETH0 LAN (Manager & Worker)
    echo -e "\n"
-   read -p "${GR}Type ETH0 Lan${RD}${BO} default=[${ETH0_NETWORK_ADDRESS}] ${WH}> "
+   read -e -p "${GR}Type ETH0 Lan${RD}${BO} default=[${ETH0_NETWORK_ADDRESS}] ${WH}> "
    if [[ -z "$REPLY" ]]; then
       echo -e -n "${ETH0_NETWORK_ADDRESS}"
    else
@@ -871,7 +895,7 @@ function ConfigureInternalNetwork() {
 
    #  # Configure ETH0 IP Address (Manager & Worker)
    echo -e "\n"
-   read -p "${GR}Type ETH0 IP address${RD}${BO} default=[${ETH0_IP_ADDRESS}] ${WH}> "
+   read -e -p "${GR}Type ETH0 IP address${RD}${BO} default=[${ETH0_IP_ADDRESS}] ${WH}> "
    if [[ -z "$REPLY" ]]; then
       echo -e -n "${ETH0_IP_ADDRESS}"
    else
@@ -881,7 +905,7 @@ function ConfigureInternalNetwork() {
 
    #  # Configure ETH0 Static Routers (Manager & Worker)
    echo -e "\n"
-   read -p "${GR}Type ETH0 Static Routers${RD}${BO} default=[${ETH0_STATIC_ROUTERS}] ${WH}> "
+   read -e -p "${GR}Type ETH0 Static Routers${RD}${BO} default=[${ETH0_STATIC_ROUTERS}] ${WH}> "
    if [[ -z "$REPLY" ]]; then
       echo -e -n "${ETH0_STATIC_ROUTERS}"
    else
@@ -889,9 +913,9 @@ function ConfigureInternalNetwork() {
       echo -e -n "${ETH0_STATIC_ROUTERS}"
    fi
 
-   #  # Configure ETH0 DNS Servers (Manager & Worker)
+   # # Configure ETH0 DNS Servers (Manager & Worker)
    echo -e "\n"
-   read -p "${GR}Type ETH0 DNS Servers${RD}${BO} default=[${ETH0_DNS_SERVERS}] ${WH}> "
+   read -e -p "${GR}Type ETH0 DNS Servers${RD}${BO} default=[${ETH0_DNS_SERVERS}] ${WH}> "
    if [[ -z "$REPLY" ]]; then
       echo -e -n "${ETH0_DNS_SERVERS}"
    else
@@ -906,7 +930,7 @@ function ConfigureWiFiNetwork() {
 
    # WLAN0 Lan Address
    echo -e "\n"
-   read -p "${GR}Type WLAN0 Lan address${RD}${BO} default=[${WLAN0_NETWORK_ADDRESS}] ${WH}> "
+   read -e -p "Type WLAN0 Lan address${RD}${BO} default=[${WLAN0_NETWORK_ADDRESS}] ${BLA}> "
    if [[ -z "$REPLY" ]]; then
       echo -e -n "${WLAN0_NETWORK_ADDRESS}"
    else
@@ -917,7 +941,7 @@ function ConfigureWiFiNetwork() {
 
    #  # Configure WLAN0 IP Address (Manager)
    echo -e "\n"
-   read -p "${GR}Type WLAN0 IP address${RD}${BO} default=[${WLAN0_IP_ADDRESS}] ${WH}> "
+   read -e -p "Type WLAN0 IP address${RD}${BO} default=[${WLAN0_IP_ADDRESS}] ${BLA}> "
    if [[ -z "$REPLY" ]]; then
       echo -e -n "${WLAN0_IP_ADDRESS}"
    else
@@ -927,7 +951,7 @@ function ConfigureWiFiNetwork() {
 
    #  # Configure WLAN0 Static Routers (Manager)
    echo -e "\n"
-   read -p "${GR}Type WLAN0 Static Routers${RD}${BO} default=[${WLAN0_STATIC_ROUTERS}] ${WH}> "
+   read -e -p "Type WLAN0 Static Routers${RD}${BO} default=[${WLAN0_STATIC_ROUTERS}] ${BLA}> "
    if [[ -z "$REPLY" ]]; then
       echo -e -n "${WLAN0_STATIC_ROUTERS}"
    else
@@ -937,7 +961,7 @@ function ConfigureWiFiNetwork() {
 
    #  # Configure WLAN0 DNS Servers (Manager)
    echo -e "\n"
-   read -p "${GR}Type WLAN0 DNS Servers${RD}${BO} default=[${WLAN0_DNS_SERVERS}] ${WH}> "
+   read -e -p "Type WLAN0 DNS Servers${RD}${BO} default=[${WLAN0_DNS_SERVERS}] ${BLA}> "
    if [[ -z "$REPLY" ]]; then
       echo -e -n "${WLAN0_DNS_SERVERS}"
    else
@@ -947,7 +971,7 @@ function ConfigureWiFiNetwork() {
 
    #  # Configure WiFi Country Code (Manager)
    echo -e "\n"
-   read -p "${GR}Type WiFi Country Code${RD}${BO} default=[${COUNTRY_CODE}] ${WH}> "
+   read -e -p "Type WiFi Country Code${RD}${BO} default=[${COUNTRY_CODE}] ${BLA}> "
    if [[ -z "$REPLY" ]]; then
       echo -e -n "${COUNTRY_CODE}"
    else
@@ -959,7 +983,7 @@ function ConfigureWiFiNetwork() {
    echo -e "\n"
    GETSSID=true
    while $GETSSID; do
-      read -p "${GR}Type WiFi SSID ${WH}> "
+      read -e -p "Type WiFi SSID ${BLA}> "
       if [[ -z "$REPLY" ]]; then
          echo -e -n "You must provide WiFi SSID"
       else
@@ -973,7 +997,7 @@ function ConfigureWiFiNetwork() {
    echo -e "\n"
    GETPW=true
    while $GETPW; do
-      read -p "${GR}Type WiFi Password ${WH}> "
+      read -e -p "Type WiFi Password ${BLA}> "
       if [[ -z "$REPLY" ]]; then
          echo -e -n "You must provide WiFi SSID"
       else
@@ -991,10 +1015,10 @@ function ConfigureUSBDrives() {
    # So we must verify the USB stick on RaspberryPI, and
    # Type in the UUID here.
    echo -e "\n"
-   read -p "${GR}Mount USB Drive ? ${WH}y | n > " -n 1 -r
+   read -e -p "${GR}Mount USB Drive ? ${WH}y | n > " -n 1 -r
    if [[ $REPLY =~ ^[Yy]$ ]]; then
       echo -e "\n"
-      read -p "${GR}Type USB UUID ${WH}> "
+      read -e -p "${GR}Type USB UUID ${WH}> "
       #USB_MOUNT_COMMAND = ${USB_MOUNT_COMMAND#USB_UUID#$REPLY}
       USB_MOUNT_COMMAND=$(echo "$USB_MOUNT_COMMAND" | sed "s/USB_UUID/$REPLY/")
       echo -e ""
@@ -1009,7 +1033,7 @@ function ConfigureDNS() {
    echo -e "\n"
    GETDOM=true
    while $GETDOM; do
-      read -p "${GR}Type External domain name ${BL}> "
+      read -e -p "${GR}Type External domain name ${BL}> "
       if [[ -z "$REPLY" ]]; then
          echo -e -n "You must supply external domain name"
       else
@@ -1034,7 +1058,7 @@ function ConfigureDNS() {
    # This E-mail adddress must be registere by LetsEncrype together with
    # the external domain name. Must be a valid mail address.
    echo -e "\n"
-   read -p "${GR}Type LetsEncrypt ACME Email Address${RD}${BO} default=[${ACME_EMAIL_ADDRESS}] ${BL}> "
+   read -e -p "${GR}Type LetsEncrypt ACME Email Address${RD}${BO} default=[${ACME_EMAIL_ADDRESS}] ${BL}> "
    if [[ -z "$REPLY" ]]; then
       echo -e -n "${ACME_EMAIL_ADDRESS}"
    else
@@ -1044,7 +1068,7 @@ function ConfigureDNS() {
 
    #  # Configure Dynamic DNS (Manager)
    echo -e "\n"
-   read -p "${GR}Use Dynamic DNS ? ${BL}y | n > " -n 1 -r
+   read -e -p "${GR}Use Dynamic DNS ? ${BL}y | n > " -n 1 -r
    if [[ $REPLY =~ ^[Yy]$ ]]; then
       echo -e "\n"
       DYNCOUNT=${#DNS_PROVIDER_LIST[@]}    # Get length of array
@@ -1068,7 +1092,7 @@ function ConfigureDNS() {
       echo -e "\n"
       GETUSR=true
       while $GETUSR; do
-         read -p "${GR}Type ${DYNAMIC_DNS_PROVIDER} User Name ${BL}> "
+         read -e -p "${GR}Type ${DYNAMIC_DNS_PROVIDER} User Name ${BL}> "
          if [[ -z "$REPLY" ]]; then
             echo -e -n "You must provide DNS user name"
          else
@@ -1082,9 +1106,11 @@ function ConfigureDNS() {
       echo -e "\n"
       GETPW=true
       while $GETPW; do
-         read -p "${GR}Type ${DYNAMIC_DNS_PROVIDER} User Password${RD}${BO} default=[${DYNAMIC_DNS_PASSWD}] ${BL}> "
+         read -e -p "${GR}Type ${DYNAMIC_DNS_PROVIDER} User Password${RD}${BO} default=[${DYNAMIC_DNS_PASSWD}] ${BL}> "
          if [[ -z "$REPLY" ]]; then
-            echo -e -n "You must provide Dynamic DNS user password"
+            echo -e -n "${DYNAMIC_DNS_PASSWD}"
+            GETPW=false
+            #echo -e -n "You must provide Dynamic DNS user password"
          else
             DYNAMIC_DNS_PASSWD=$REPLY
             echo -e -n "${DYNAMIC_DNS_PASSWD}"
@@ -1125,19 +1151,28 @@ function GenerateSSHKey() {
    #user=$(logname)
    #userHome=$(awk -F: -v u=$user '$1 == u {print $6}' /etc/passwd)
    # Execute: ssh-keygen -t ecdsa -b 256
-
-   SSH_KEY_FILE="$(echo ~)/.ssh/id_ecdsa"
-   SSH_KEY_FILE_PUB="$SSH_KEY_FILE.pub"
-   read -p "Generate new SSH key? y/n " -n 1 -r
+   
+   # Temp Key file
+   #SSH_KEY_FILE="$(echo ~)/.ssh/id_ecdsa"
+   # SSH_KEY_FILE="id_ecdsa"
+   #SSH_KEY_FILE="$(echo ~)./keyfile.txt"
+   #SSH_KEY_FILE_PUB="$SSH_KEY_FILE.pub"
+   read -r -p "Generate new SSH key? y/n " -n 1
    if [[ $REPLY =~ ^[Yy]$ ]]; then
       echo ""
-      ssh-keygen -t ecdsa -b 256 -f "$SSH_KEY_FILE"
+      ssh-keygen -q -t ecdsa -b 256 -f "$SSH_KEY_FILE"  -N '' <<< ""$'\n'"y" 2>&1 >/dev/null
+      #ssh-keygen -t ecdsa -b 256 -f "$SSH_KEY_FILE"
    fi
+   #AUTHORIZED_SSH_KEY=$(<id_ecdsa.pub)
+   AUTHORIZED_SSH_KEY=$(<$SSH_KEY_FILE.pub)
+   #echo -e "$AUTHORIZED_SSH_KEY"
+   #cp "$SSH_KEY_FILE".pub "$NODE_NAME"/keyfile.txt
+   # Add keyfile.txt and keyfile.text.pub to Users .ssh file
 
-   while IFS= read -r line || [[ -n "$line" ]]; do
-      AUTHORIZED_SSH_KEY="$line"
-      #echo "Text read from file: $line"
-   done <"$SSH_KEY_FILE_PUB"
+   # while IFS= read -r line || [[ -n "$line" ]]; do
+   #    AUTHORIZED_SSH_KEY="$line"
+   #    #echo "Text read from file: $line"
+   # done <"$SSH_KEY_FILE_PUB"
 }
 
 function MainMenu() {
@@ -1147,7 +1182,7 @@ function MainMenu() {
    QUIT_MENU=""
    while [ "$QUIT_MENU" != "QUIT" ]; do
       ConfigCheckMenu
-      echo -e "\n${GR}Main Menu${BLACK}"
+      echo -e "\nMain Menu"
 
       SCRIPT_MENU=("Load_Configuration_File"
          "Configure_Manager_Node"
@@ -1172,6 +1207,7 @@ function MainMenu() {
             SetDnsStrings
             DNS_DONE=$CHECK_DONE_DEFAULT
             SetDateTime
+            DATE_DONE=$CHECK_DONE_DEFAULT
             break
             ;;
          "Configure_Manager_Node")
@@ -1192,6 +1228,7 @@ function MainMenu() {
             break
             ;;
          "Flash_to_SDCard")
+            SetDateTime
             FlashSD
             break
             ;;
@@ -1227,7 +1264,7 @@ function DetailMenu() {
    DETAIL_QUIT_MENU=""
    while [ "$DETAIL_QUIT_MENU" != "QUIT" ]; do
       ConfigCheckMenu
-      echo -e "\n${GR}Detail Menu${BLACK}"
+      echo -e "\nDetail Menu"
       DETAIL_MENU=("Configure_WiFi_Network"
          "Configure_Internal_Network"
          "Configure_DNS"
@@ -1238,6 +1275,7 @@ function DetailMenu() {
          "Show_Password"
          "Get_USB_ID"
          "Generate_ssh_key"
+         "Set_Date"
          "Quit")
 
       select fav in "${DETAIL_MENU[@]}"; do
@@ -1295,7 +1333,12 @@ function DetailMenu() {
             ;;
          "Generate_ssh_key")
             GenerateSSHKey
-            $SSH_DONE=$CHECK_DONE
+            SSH_DONE=$CHECK_DONE
+            break
+            ;;
+         "Set_Date")
+            SetDateTime
+            DATE_DONE=$CHECK_DONE
             break
             ;;
          "Quit")
@@ -1310,10 +1353,10 @@ function DetailMenu() {
 
 function ConfigCheckMenu() {
    echo -e "\n"
-   echo -e "_____________________________________ Visited Menu's ______________________________________________________________________________\n"
-   echo -e "WLan0[$WLAN0_DONE] | Eth0 [$ETH0_DONE] | Manager[$MANAGER_DONE] | USB[$USB_DONE] | EDIT[$EDIT_DONE]\
- | ManagerNode[$MANAGER_DONE] | WorkerNode[$WORKER_DONE] | DNS Strings[$DNS_DONE] | NodeNames[$NODENAME_DONE] | SSH[$SSH_DONE]"
-   echo -e "___________________________________________________________________________________________________________________________________\n"
+   echo -e "_____________________________________________ Visited Menu's ______________________________________________________________________\n"
+   echo -e " | WLan0[$WLAN0_DONE] | Eth0 [$ETH0_DONE] | Manager[$MANAGER_DONE] | USB[$USB_DONE] | EDIT[$EDIT_DONE] | DATE[$DATE_DONE]\
+ | ManagerNode[$MANAGER_DONE] | WorkerNode[$WORKER_DONE] \n | DNS Strings[$DNS_DONE] | NodeNames[$NODENAME_DONE] | SSH[$SSH_DONE]"
+ echo -e "___________________________________________________________________________________________________________________________________\n"
 }
 
 function FlashSD() {
@@ -1325,27 +1368,31 @@ function FlashSD() {
 
    diskutil list
    echo -e "\n"
-   read -p "Look at the Disk list, and type the Disk to flash the image to > "
+   read -e -p "Look at the Disk list, and type the Disk to flash the image to, example /dev/disk7 > "
 
    echo -e "You have choosen" $REPLY "which will be overridden!!!!"
    echo -e "\n"
    DISK=$REPLY
 
-   read -p "Select Node to flash  > "
+   read -e -p "Select Node to flash  > "
    echo -e "You have choosen $REPLY"
    echo -e "\n"
    NODE_NAME=$REPLY
 
    #EditPasswordProperties $NODE_NAME
 
-   read -p "Are you ready for Flashing $NODE_NAME? y/n " -n 1 -r
+   read -e -p "Are you ready for Flashing $NODE_NAME? y/n " -n 1 -r
    if [[ $REPLY =~ ^[Yy]$ ]]; then
       cd $NODE_NAME
       echo -e "Node: $NODE_NAME\n"
       echo -e "$(ls -l)"
+      # Copy SSH Key to keyfile.txt
+      pwd
+      echo -e "Keyfile: $SSH_KEY_FILE"
+      cp "../$SSH_KEY_FILE".pub keyfile.txt
       # Set DateTime for Fake HW Clock
       sed -i -n "s#ISO-DATE#$ISO_DATE#" user-data
-      flash --force --userdata user-data --metadata meta-data -d $DISK https://github.com/hypriot/image-builder-rpi/releases/download/v1.12.3/hypriotos-rpi-v1.12.3.img.zip
+      ../flash --force --userdata user-data --metadata meta-data --file keyfile.txt -d $DISK https://github.com/hypriot/image-builder-rpi/releases/download/v1.12.3/hypriotos-rpi-v1.12.3.img.zip
       cd ..
       echo -e "\n"
    fi
@@ -1356,10 +1403,9 @@ function FlashSD() {
 #
 printf "\033c"
 echo -e "\n"
-echo -e "${RED}${BOLD}WaveSnake Flash Configuration Utility v1.0.7\n"
-echo -e "This utility will prepare a Flash configuration file for a"
-echo -e "single swarm node, by prompting for configuration parameters."
-echo -e "You must choose between Manager or Worker Node\n"
-echo -e "${BLACK}"
+echo -e "${BLA}${BO}WaveSnake Flash Configuration Utility v1.0.7\n"
+echo -e "${RD}${BO}This utility will prepare a Flash configuration file for a"
+echo -e "single swarm node, by prompting for configuration parameters.${BLA}\n"
 
 MainMenu
+

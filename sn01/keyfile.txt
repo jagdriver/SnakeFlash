@@ -1,0 +1,1 @@
+ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBHYLIUDFKrhs1WTpdrkWGThkTindIGSHHTK87Vr7+t2Cx+BvYk7Qrosrcopcdv6CWxRY+TSyi4dXCojiRine7j0= nielsjorgennielsen@snakemacpro.local

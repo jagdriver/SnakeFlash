@@ -35,7 +35,7 @@ MANAGER_EMAIL="manager@swarm.local"
 # Node properties
 SWARM_LOCALE="en_US.UTF-8"
 TIME_ZONE="Europe/Copenhagen"
-AUTHORIZED_SSH_KEY="ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBCAFXvy02GBzezVDv1S2peQHR6O67yJ3eqkg5+blxSkW0y2gGBjMx02tvB5yGu6IFMXlQIX/G9phCZOktnwOPlo= nielsjorgennielsen@snakemacpro.local"
+#AUTHORIZED_SSH_KEY="ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBCAFXvy02GBzezVDv1S2peQHR6O67yJ3eqkg5+blxSkW0y2gGBjMx02tvB5yGu6IFMXlQIX/G9phCZOktnwOPlo= nielsjorgennielsen@snakemacpro.local"
 SWARM_SECRET="This is a secret string used to generate user tokens"
 # Docker Swarm properties
 SWARM_MANAGER_NODE="sn01"
@@ -81,6 +81,9 @@ WLAN0_DNS_SERVERS="8.8.8.8 8.8.4.4"
 
 # Domain properties
 EXTERNAL_DOMAIN_NAME="Your external domain name"
+
+# SSH Properties
+SSH_KEY_FILE="id_ecdsa"
 
 # Dynamic DNS Providers !OBS We need a list of URL's on which to set the dynamic IP. 
 DNS_PROVIDER_LIST="GratisDNS CloudFlare OneCom"

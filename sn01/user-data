@@ -63,37 +63,37 @@ write_files:
       {
       "Swarm": {
           "Development": {
-              "APIServer":"192.168.1.230",
+              "APIServer":"192.168.1.220",
               "APIServerPort":"80",
-              "MqttServer":"192.168.1.230",
+              "MqttServer":"192.168.1.220",
               "MqttServerPort":"6379",
               "DBServer":"sql.wavesnake.local",
               "DBServerPort":"3308",
-              "SketchServer":"192.168.1.230",
+              "SketchServer":"192.168.1.220",
               "SketchServerPort":"80",
               "HomesDBName":"homes",
               "UsersDB":"users",
               "CollectionsDB":"collections",
               "SwarmManager":"manager",
-              "ManagerEmail":"MANAGER_EMAIL",
-              "DBAdmin":"root,",
+              "ManagerEmail":"manager@swarm.local",
+              "DBAdmin":"root",
               "SwarmSecret":"SWARM-SECRET"
           },
           "Production": {
-              "APIServer":"192.168.1.230",
+              "APIServer":"192.168.1.220",
               "APIServerPort":"80",
-              "MqttServer":"192.168.1.230",
+              "MqttServer":"192.168.1.220",
               "MqttServerPort":"6379",
               "DBServer":"sql.wavesnake.local",
               "DBServerPort":"3308",
-              "SketchServer":"192.168.1.230",
+              "SketchServer":"192.168.1.220",
               "SketchServerPort":"80",
               "HomesDBName":"homes",
               "UsersDB":"users",
               "CollectionsDB":"collections",
               "SwarmManager":"manager",
               "ManagerEmail":"MANAGER_EMAIL",
-              "DBAdmin":"root,",
+              "DBAdmin":"root",
               "SwarmSecret":"SWARM-SECRET"
           }
         }
@@ -134,16 +134,6 @@ write_files:
       "SnakeApi": {
           "Development" : {
               "Version":"1.2.0",
-              "DBAdmin":"root,",
-              "UsersDB":"users",
-              "HomesDBName":"homes",
-              "CollectionsDB":"collections",
-              "DBServer":"sql.wavesnake.local",
-              "DBServerPort":"3308",
-              "MqttServer":"192.168.1.230",
-              "MqttServerPort":"6379",
-              "SketchServer":"192.168.1.230",
-              "SketchServerPort":"80",
               "SwarmMailUser":"wavesnakeapi@gmail.com",
               "SwarmMailSubject":"Wavesnake API Account",
               "SwarmMailBody":"This is your new SnakeApi account",
@@ -161,16 +151,6 @@ write_files:
           },
           "Production" : {
               "Version":"1.2.0",
-              "DBAdmin":"root,",
-              "UsersDB":"users",
-              "HomesDBName":"homes",
-              "CollectionsDB":"collections",
-              "DBServer":"sql.wavesnake.local",
-              "DBServerPort":"3308",
-              "MqttServer":"192.168.1.230",
-              "MqttServerPort":"6379",
-              "SketchServer":"192.168.1.230",
-              "SketchServerPort":"80",
               "SwarmMailUser":"wavesnakeapi@gmail.com",
               "SwarmMailSubject":"Wavesnake API Account",
               "SwarmMailBody":"This is your new SnakeApi account",
@@ -192,21 +172,21 @@ write_files:
             "Version":"1.2.0",
             "ExternalDomainName":"wavesnake.dk",
             "DnsProviderList":"GratisDNS CloudFlare OneCom",
-            "DnsProviderName":"GratisDNS",
+            "DnsProviderName":"GRATISDNS",
             "DnsProviderId":"DNS-PROVIDER-ID",
             "DnsProviderUrl":"https://admin.gratisdns.com/ddns.php",
             "DnsProviderUser":"jagdriver",
-            "DnsProviderPassword":"fis"
+            "DnsProviderPassword":"32a88235d7dfb08e11"
           },
           "Production": {
             "Version":"1.2.0",
             "ExternalDomainName":"wavesnake.dk",
             "DnsProviderList":"GratisDNS CloudFlare OneCom",
-            "DnsProviderName":"GratisDNS",
+            "DnsProviderName":"GRATISDNS",
             "DnsProviderId":"DNS-PROVIDER-ID",
             "DnsProviderUrl":"https://admin.gratisdns.com/ddns.php",
             "DnsProviderUser":"jagdriver",
-            "DnsProviderPassword":"fis"
+            "DnsProviderPassword":"32a88235d7dfb08e11"
           }
         },        
         "SnakeTimer": {
@@ -220,19 +200,13 @@ write_files:
         "SnakeConfig": {
           "Development": {
             "Version":"1.2.0",
-            "APIServer":"192.168.1.230",
-            "APIServerPort":"80",
-            "HomesDBName":"homes",
             "RedisSynchKey":"SEMSYNC",
             "RedisSyncPath":"/opt/containers",
             "ApplicationList":"SnakeApi,SnakeHistory,SnakeUtil,SnakeConfig,SnakeTimer,SnakeConsole",
             "EnvironmentList":"Development,Test,Production"
           },
           "Production": {
-          "Version":"1.2.0",
-            "APIServer":"192.168.1.230",
-            "APIServerPort":"80",
-            "HomesDBName":"homes",
+            "Version":"1.2.0",
             "RedisSynchKey":"SEMSYNC",
             "RedisSyncPath":"/opt/containers",
             "ApplicationList":"SnakeApi,SnakeHistory,SnakeUtil,SnakeConfig,SnakeTimer,SnakeConsole",
@@ -241,52 +215,22 @@ write_files:
         },
         "SnakeHistory": {
             "Development" : {
-              "Version":"1.2.0",
-              "APIServer":"192.168.1.230",
-              "APIServerPort":"80",
-              "MqttServer":"192.168.1.230",
-              "MqttServerPort":"6379",
-              "ManagerEmail":"manager@swarm.local"
+              "Version":"1.2.0"
             },
             "Production": {
-              "Version":"1.2.0",
-              "APIServer":"192.168.1.230",
-              "APIServerPort":"80", 
-              "MqttServer":"192.168.1.230",
-              "MqttServerPort":"6379",
-              "ManagerEmail":"manager@swarm.local"
+              "Version":"1.2.0"
             }
           }
       }
     path:  /opt/containers/configuration/globalconfig.json
+  
   #
-  # Authorized Keys
+  # Authorized SSH Keys
   #
   - content: |
-      AUTHORIZED-SHH-KEY
+      ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBHYLIUDFKrhs1WTpdrkWGThkTindIGSHHTK87Vr7+t2Cx+BvYk7Qrosrcopcdv6CWxRY+TSyi4dXCojiRine7j0= nielsjorgennielsen@snakemacpro.local
     path:  /home/manager/.ssh/authorized_keys
-  #
-  # SnakeUtil.prop (Must be tested)
-  #
-  # - content: |
-  #     {
-  #     "DNS_PROVIDER_LIST":"GratisDNS CloudFlare OneCom",
-  #     "DNS_PROVIDER_NAME":"GratisDNS",
-  #     "EXTERNAL_DOMAIN_NAME":"wavesnake.dk",
-  #     "DNS_PROVIDER_ID":"DNS-PROVIDER-ID",
-  #     "DNS_PROVIDER_URL":"https://admin.gratisdns.com/ddns.php",
-  #     "DNS_PROVIDER_USER":"DYNAMIC-DNS-USER",
-  #     "DNS_PROVIDER_PASSWORD":"DYNAMIC-DNS-PASSWORD"
-  #     }
-  #   path:  /opt/containers/configuration/snakeutil.prop
-  #
-  # SnakeHistory.prop (Must be tested)
-  #
-  # - content: |
-  #     {
-  #     "HISTORY_DB_NAME":"history"
-  #     }
-  #   path:  /opt/containers/configuration/snakehistory.prop
+
   #
   # Mosquitto config file
   #  
@@ -324,37 +268,28 @@ write_files:
       port 1883
 
     path: /opt/containers/mosquitto/config/mosquitto.conf
+  
   #
   # Mosquitto ACL file
   #
   - content: |
-      user wavesnake
-      topic readwrite homebridge/#
-      topic readwrite homeassistant/#
-      topic readwrite openhab/#
-
-      user WaveSnake
-      topic readwrite BA57D00A15054C2C/#
-
       user manager
-      topic readwrite test/#
-      topic readwrite BA57D00A15054C2C/#
-      topic readwrite BA57D00A15054C2C/temp/to/#
-      topic readwrite 0489DD53321AF351/#
-      topic readwrite 6E9EBD20FC256C87/#
-      topic readwrite 1D9C7CF151EB3CF6/#
-      topic readwrite 33DA9E7B63025E56/#
-      topic readwrite 7155E1E0C60EA6B9/#
+      topic readwrite #
       topic read $SYS/broker/#
     path: /opt/containers/mosquitto/config/config.d/acl
+  
   #
   # Mosquitto PW file
+  # Build a DotNet Console app
+  # How to get hash key?
+  # Build a DotNet Console app that outputs the admin users hashed password.
+  # For that to work we must have the DotNet Runtime installed. Or could we make a
+  # self contained App? 
+  # We could also try to use docker desktop
+  # and run a container with Debian.
   #
   - content: |
-      wavesnake:$6$jSdkcgBqdInm4bOU$+qWvEDP/P8ydZzTz6eaR2/4FcRz1j2klgaEDWmKHcREZ6H0UwaL/so+nzPqwem8D0bvtQaHauun+XaTv+b4W5g==
-      WaveSnake:$6$6c8kY97qllo/M3pH$NHa7T41WMuY7RFGg242wxKoyc8XoYvwQ8IaguM5/8T/A+qVsvpzjvLvmk0Ae1uNwLr83b3yLViVt/8LeCHW6VA==
-      manager:$6$nOsgGCKqIEZx1rbO$JA1qDqW2/E7K+xWIY6csrrrlLC38Gmirn0ZnVBy6ASwhKfW63FCJchTAh0RYycjlqvpOZypxpfkCmJdN2ck7Eg==
-      pi:$6$jKCofPce5HszESHR$s8UwnZkVVye0/NC6gbE8tcF8IKiQYNRcLsqxOTMZM/Rbzpvt3gza60WWlvhX65djyJJ9roObdK/3hwIopGnamA==
+      manager:$6$V5TR1WY0eIc3ODWA$cxXe8+SoggpPfjnVi2HrcBOZ+2Dbs96JzDXaIzD7WUuRiU9gjJYIDhlydTpLecVm6Bz5l7zo32awBzp6Y5AiMQ==
     path: /opt/containers/mosquitto/config/config.d/pw
   #
   # NodeName.env ( Should this be a json file?)
@@ -362,9 +297,10 @@ write_files:
   - content: |
       NODE_NAME=sn01
     path:  /opt/containers/environment/nodename.env
-  # #
-  # # ETH0 interface setup
-  # #
+  
+  #
+  # ETH0 interface setup
+  #
   - content: |
       auto eth0
       iface eth0 inet static
@@ -373,20 +309,21 @@ write_files:
       netmask 255.255.255.0
       dns-nameservers 8.8.8.8 8.8.4.4
     path: /etc/network/interfaces.d/eth0
-  # #
-  # # WiFi interface setup
-  # # allow-hotplug wlan0
-  # # iface wlan0 inet dhcp
+  
+  #
+  # WiFi interface setup
+  #
   - content: |
       auto wlan0
       iface wlan0 inet static
-      address 192.168.1.230
+      address 192.168.1.220
       network 192.168.1.0
       netmask 255.255.255.0
       gateway 192.168.1.1
       dns-nameservers 8.8.8.8 8.8.4.4
       wpa-conf /etc/wpa_supplicant/wpa_supplicant.conf
     path: /etc/network/interfaces.d/wlan0
+ 
   #
   # WiFi properties setup
   #
@@ -395,17 +332,17 @@ write_files:
       ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
       update_config=1
       network={
-        ssid="Your WiFi ssid"
-        psk=""
+        ssid="Toften8_2.4G"
+        psk="Jaguarxk120"
       }
     path: /etc/wpa_supplicant/wpa_supplicant.conf
+  
   #
   # Interfaces (Recommended content)
   #
   - content: |
       # Please note that this file is written to be used with dhcpcd
       # For static IP, consult /etc/dhcpcd.conf and 'man dhcpcd.conf'
-
       # Include files from /etc/network/interfaces.d:
       source-directory /etc/network/interfaces.d
     path: /etc/network/interfaces
@@ -415,11 +352,12 @@ write_files:
   #
   - content: |
       interface wlan0
-      static ip_address=192.168.1.230/24
+      static ip_address=192.168.1.220/24
       static routers=192.168.1.1
       static domain_name_servers=8.8.8.8 8.8.4.4
 
     path: /etc/dhcpcd.conf
+ 
   #
   # Hosts
   #
@@ -430,6 +368,7 @@ write_files:
       192.168.230.3 sn03 sn03.wavesnake.local
       192.168.230.4 sn04 sn04.wavesnake.local
     path: /etc/hosts
+  
   #
   # Bash script to mount USB Stick
   # Script must be run on RPI with sudo
@@ -730,7 +669,7 @@ runcmd:
   - 'logger !!! wavesnake !!!'
   - 'logger !!! wavesnake !!! Workaround for Buster Fake Time error initializing date/time'
   - 'logger !!! wavesnake !!!'
-  - sudo date -s 'ISO-DATE'
+  - sudo date -s '23 Dec 2020  04:47'
   - 'sudo service ntp --full-restart'
   - 'sudo sleep 15'
   - 'sudo date'
@@ -755,7 +694,7 @@ runcmd:
   - 'logger !!! wavesnake !!!'
   - 'sudo ip route delete default via 192.168.230.1'
   - 'sudo ip route delete default via 192.168.1.1'
-  - 'sudo ip route add default via 192.168.1.1 dev wlan0 src 192.168.1.230 metric 100'
+  - 'sudo ip route add default via 192.168.1.1 dev wlan0 src 192.168.1.220 metric 100'
   
   # Directories for NFS
   - 'sudo mkdir -p /mnt/nfs'
@@ -766,7 +705,7 @@ runcmd:
   - 'sudo chmod 755 /mnt/config'
   - 'sudo chmod +x /home/manager/nfs.sh'
 
-  # Update packagee index
+  # Update package index
   - 'logger !!! wavesnake !!!'
   - 'logger !!! wavesnake !!! Update Package list'
   - 'logger !!! wavesnake !!!'
@@ -808,7 +747,7 @@ runcmd:
   - 'sudo chown manager:manager /home/manager/.ssh'
   - 'sudo touch /home/manager/.ssh/authorized_keys'
   - 'sudo chmod 700 /home/manager/.ssh'
-  #- 'sudo cp -P /boot/keyfile.txt /home/manager/.ssh/authorized_keys'
+  - 'sudo cp -P /boot/keyfile.txt /home/manager/.ssh/authorized_keys'
   - 'sudo chown manager:manager /home/manager/.ssh/authorized_keys'
   - 'sudo chmod 600 /home/manager/.ssh/authorized_keys'
 
@@ -832,8 +771,8 @@ runcmd:
   - 'logger !!! wavesnake !!!'
   - 'logger !!! wavesnake !!! Setup Cron job to start NFS after reboot'
   - 'logger !!! wavesnake !!!'
-  - 'sudo chmod +x /home/manager/nfs.sh'
-  - 'sudo sed  -i "$ a\@reboot	root /home/manager/nfs.sh" /etc/crontab'
+  # - 'sudo chmod +x /home/manager/nfs.sh'
+  # - 'sudo sed  -i "$ a\@reboot	root /home/manager/nfs.sh" /etc/crontab'
 
   # Skip Locale check on User Session Startup
   - 'logger !!! wavesnake !!!'
@@ -942,12 +881,16 @@ runcmd:
   - 'logger !!! wavesnake !!!'
 
   # Create exports for NFS, will only work after a reboot
+  # We exports only /mnt/config
   - 'logger !!! wavesnake !!!'
   - 'logger !!! wavesnake !!! Create NFS Exports config'
   - 'logger !!! wavesnake !!!'
-  - 'sudo sed  -i "$ a\/opt/containers 127.0.0.1(rw,sync,no_subtree_check)" /etc/exports'
-  - 'sudo sed  -i "$ a\/mnt/config *(rw,sync,no_subtree_check)" /etc/exports'
+  - 'sudo sed  -i "$ a\/mnt/config 192.168.230.0/24(rw,nohide,insecure,no_subtree_check,async)" /etc/exports'
   
+  # Create NFS Mount Command in /etc/fstab
+  # To locally mount /opt/container to /mnt/config
+  - 'sudo sed  -i "$ a\/opt/containers /mnt/config none bind  0  0" /etc/fstab'
+
   #
   # Craete USB Mount command in /etc/fstab
   #
