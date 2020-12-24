@@ -45,6 +45,23 @@ The system consists of:
 - Web application for User setup/management of WaveSnake Home Management System.
 - IoS application for User setup/management of WaveSnake Home Management System.
 
+## Features <a name="features"></a>
+
+### Complete Containerized Swarm setup <a name="dockerized"></a>
+
+### Prompted setup & flashing of Manager and Worker nodes <a name="prompted"></a>
+
+### Dynamic DNS <a name="dynamicdns"></a>
+
+### SSH login with pregenerated keys <a name="sshlogin"></a>
+
+### Password Hash login <a name="passwdhash"></a>
+
+### Automatic IP address & network detection <a name="autoip"></a>
+
+### Isolated Swarm network <a name="isolated"></a>
+
+### Automated Certificate handling <a name="certgen"></a>
 
 ## Prerequisites <a name="prerequisites"></a>
 prerequisites: Mac, Windows or Linux, Visual Studio Code with some extensions (free). 
@@ -100,8 +117,6 @@ The nescessary tools for building/installing the SnakeSwarm project and developi
 
 You can paste above extension id's into VSCode extension search box, and from there
 install the extensions.
-
-
 
 ### RPI software <a name="software"></a>
 The software running on the RPI's are all Docker Containers, installed onto the RPI from within Portainer console. 
@@ -165,33 +180,16 @@ Voila, Your ShakeHome Swarm is up and running.
 ## Install Docker Images <a name="dockerimages"></a>
 The next step is to install Docker Images and instantiating Containers from within Portainer console.
 
-
-## Swarm Illustration <a name="swarmillustration"></a>
-![Swarm Illustration](/Artifacts/Swarm.png)
-
-## Features <a name="features"></a>
-
-### Complete Containerized Swarm setup <a name="dockerized"></a>
-
-### Prompted setup & flashing of Manager and Worker nodes <a name="prompted"></a>
-
-### Dynamic DNS <a name="dynamicdns"></a>
-
-### SSH login with pregenerated keys <a name="sshlogin"></a>
-
-### Password Hash login <a name="passwdhash"></a>
-
-### Automatic IP address & network detection <a name="autoip"></a>
-
-### Isolated Swarm network <a name="isolated"></a>
-
-### Automated Certificate handling <a name="certgen"></a>
-
 ## Configuration documentation <a name="configdocumentation"></a>
 
 The configuration starts with preparing the information going into the configuration process. 
 You can find the properties in the file Artifacts/swarmconfig.mvf.
 test test
+
+
+## Swarm Illustration <a name="swarmillustration"></a>
+![Swarm Illustration](/Artifacts/Swarm.png)
+
 
 
 # WaveSnake Swarm Properties
