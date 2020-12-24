@@ -47,21 +47,21 @@ The system consists of:
 
 ## Features <a name="features"></a>
 
-### Complete Containerized Swarm setup <a name="dockerized"></a>
+- ### Complete Containerized Swarm setup <a name="dockerized"></a>
 
-### Prompted setup & flashing of Manager and Worker nodes <a name="prompted"></a>
+- ### Prompted setup & flashing of Manager and Worker nodes <a name="prompted"></a>
 
-### Dynamic DNS <a name="dynamicdns"></a>
+- ### Dynamic DNS <a name="dynamicdns"></a>
 
-### SSH login with pregenerated keys <a name="sshlogin"></a>
+- ### SSH login with pregenerated keys <a name="sshlogin"></a>
 
-### Password Hash login <a name="passwdhash"></a>
+- ### Password Hash login <a name="passwdhash"></a>
 
-### Automatic IP address & network detection <a name="autoip"></a>
+- ### Automatic IP address & network detection <a name="autoip"></a>
 
-### Isolated Swarm network <a name="isolated"></a>
+- ### Isolated Swarm network <a name="isolated"></a>
 
-### Automated Certificate handling <a name="certgen"></a>
+- ### Automated Certificate handling <a name="certgen"></a>
 
 ## Prerequisites <a name="prerequisites"></a>
 prerequisites: Mac, Windows or Linux, Visual Studio Code with some extensions (free). 
