@@ -15,6 +15,8 @@
         5. [SnakeConfig](#snakeconfig)
         6. [SnakeConsole](#snakeconsole)
         7. [SnakeHistory](#snakehistory)
+        8. [SnakeUtil](#snakeutil)
+    5. [GIT Repository](#gitrepository)   
 3. [Configuration](#configuration)
     1. [Setup guide](#setupguide)
     2. [Flashing SD Cards](#flash)
@@ -45,7 +47,7 @@ The system consists of:
 
 
 ## Prerequisites <a name="prerequisites"></a>
-prerequisites: Mac, Windows or Linux, Visual Studio Code with some extensions (free).  
+prerequisites: Mac, Windows or Linux, Visual Studio Code with some extensions (free). 
 
 ### ESP hardware <a name="esphardware"></a>
 
@@ -106,19 +108,30 @@ The software running on the RPI's are all Docker Containers, installed onto the 
 Traefik and Portainer are installed at boot time, and will be available after swarm initialization.
 
 #### Redis  <a name="redis"></a>
+Redis are the in memory cache, where all application configuration are stored. All applications read their configuration from Redis at startup. When an application configuration are changed via SnakeConfig, and saved to Redis, the application container must be restarted to reflect the new configuration.
 
 #### SnakeApi  <a name="snakeapi"></a>
+SnakeApi are the general API for manipulating Homes, Rooms and Accessories. 
 
 #### SnakeTimer  <a name="snaketimer"></a>
+SnakeTimer is the backend service that executes timed actions, setup via SnakeApi and SnakeRule.
 
 #### SnakeRule  <a name="snakerule"></a>
+SnakeRule are the background service that creates and updates the rule DB and also updates the rule DB ingredients.  
 
 #### SnakeConfig  <a name="snakeconfig"></a>
+SnakeConfig are the Manager UI that configures the Swarm and Applications. There are also a UI for visualizing the Swarm Containers, and log files.
 
 #### SnakeConsole  <a name="snakeconsole"></a>
+SnakeConsole are the User UI, for creating Homes, Rooms and Accessories.
 
 #### SnakeHistory  <a name="snakehistory"></a>
+SnakeHistory are the background service that updates the history DB.
 
+#### SnakeUtil  <a name="snakeutil"></a>
+SnakeUtil are the background service that executes nescessary Swarm file synchronizations, and DNS updates.  
+
+#### Git Repository  <a name="gitrepository"></a>
 Repository URL: https://github.com/jagdriver/Stacks.git
 
 Compose path: /SnakeConfig/docker-compose.yml
@@ -132,7 +145,7 @@ The initial setup and flashing of the SnakeHome Swarm includes below steps.
 
 - Download the latest HypriotOS from this url https://blog.hypriot.com/downloads/
 
-- Format an MicroSD card, preferrably 16GB, and give it the name HyprriotOS. Se the format description here.
+- Format an MicroSD card, preferrably 16GB, and give it the name HypriotOS. Se the format description here.
 
 - Edit swarmproperties.mvf but be carefull not to jeopardise the file.
 
