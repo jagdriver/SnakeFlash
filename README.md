@@ -149,7 +149,7 @@ SnakeConsole are the User UI, for creating Homes, Rooms and Accessories.
 SnakeHistory are the background service that updates the history DB.
 
 #### SnakeUtil  <a name="snakeutil"></a>
-SnakeUtil are the background service that executes nescessary Swarm file synchronizations, and DNS updates.  
+SnakeUtil are the background service that executes nescessary Swarm file synchronizations, and dynamic DNS updates. This is to say that you don't need at static IP address, if your hosting provider allows dynamic DNS update. If that's not the case, you can update the DNS records your self.
 
 #### Git Repository  <a name="gitrepository"></a>
 Repository URL: https://github.com/jagdriver/Stacks.git
