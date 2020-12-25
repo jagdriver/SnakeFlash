@@ -34,7 +34,7 @@
     8. [Configuration documentation](#configdocumentation)
 
 ## SnakeHome <a name="introduction"></a>
-SnakeHome is the platform for hobbyist, who want the possibility to create their own IoT devices, but lack the background infrastructure, to integrate these devices into a manageable platform. I've put together some of the best tools available, written som apps, services, sketches and scripts, tested a lot, out came the SnakeHome management system, and it's free. 
+SnakeHome is the platform for hobbyist, who want the possibility to create their own IoT devices, but lack the background infrastructure, to integrate these devices into a manageable platform. I've put together some of the best tools available, written som apps, services, sketches and scripts, tested a lot, out came the SnakeHome management system, and it's free.
 
 The system consists of:
 - Sketches for initializing/configuring ESP8266/ESP32.
@@ -80,8 +80,13 @@ ESP8266 & ESP32 are manufactored by Espressif. For detailed documentation
 se here https://www.espressif.com.
 
 ### ESP software <a name="espsoftware"></a>
+ESP development environment consists of:
+1. Arduino development environment
+2. Visial Studio Code
+3. Extension 
 
 ### RPI hardware <a name="rpihardware"></a>
+RaspberryPI hardware are rapildy developing and as of now, the hardware of choice is RPI 4 with 4 GB memory. Resonoly priced at 480 DKr. 
 
 #### List of hardware <a name="hardwarelist"></a>
 
