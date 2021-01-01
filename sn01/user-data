@@ -172,7 +172,7 @@ write_files:
             "Version":"1.2.0",
             "ExternalDomainName":"wavesnake.dk",
             "DnsProviderList":"GratisDNS CloudFlare OneCom",
-            "DnsProviderName":"GRATISDNS",
+            "DnsProviderName":"GratisDNS",
             "DnsProviderId":"DNS-PROVIDER-ID",
             "DnsProviderUrl":"https://admin.gratisdns.com/ddns.php",
             "DnsProviderUser":"jagdriver",
@@ -182,7 +182,7 @@ write_files:
             "Version":"1.2.0",
             "ExternalDomainName":"wavesnake.dk",
             "DnsProviderList":"GratisDNS CloudFlare OneCom",
-            "DnsProviderName":"GRATISDNS",
+            "DnsProviderName":"GratisDNS",
             "DnsProviderId":"DNS-PROVIDER-ID",
             "DnsProviderUrl":"https://admin.gratisdns.com/ddns.php",
             "DnsProviderUser":"jagdriver",
@@ -289,7 +289,7 @@ write_files:
   # and run a container with Debian.
   #
   - content: |
-      manager:$6$V5TR1WY0eIc3ODWA$cxXe8+SoggpPfjnVi2HrcBOZ+2Dbs96JzDXaIzD7WUuRiU9gjJYIDhlydTpLecVm6Bz5l7zo32awBzp6Y5AiMQ==
+      manager:$6$j19T9qw+0bgraWS+$xgiBXXpoICm7bE5iIqNSiudOySQuDIgvHzW2HsBdoL/ahSAwoBLUlkYNkLE/X/a6lHgiQv2yQ2d6AEFiOEwb5g==
     path: /opt/containers/mosquitto/config/config.d/pw
   #
   # NodeName.env ( Should this be a json file?)
@@ -386,7 +386,7 @@ write_files:
       else
         echo -e "No label given"
       fi
-    path: /home/manager
+    path: /home/manager/usbmount.sh
   #
   # Portainer Docker Compose (Version 2.0)
   #
@@ -669,7 +669,7 @@ runcmd:
   - 'logger !!! wavesnake !!!'
   - 'logger !!! wavesnake !!! Workaround for Buster Fake Time error initializing date/time'
   - 'logger !!! wavesnake !!!'
-  - sudo date -s '23 Dec 2020  04:47'
+  - sudo date -s '27 Dec 2020  17:41'
   - 'sudo service ntp --full-restart'
   - 'sudo sleep 15'
   - 'sudo date'

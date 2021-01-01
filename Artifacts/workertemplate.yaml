@@ -5,7 +5,10 @@
 # You can change the configuration directly in the file "default-worker-user-data" 
 # before running ./flash-config.zsh which will prompt you for properties, 
 # and guide you thru the setup.
-
+# TODO:
+# 1. NFS Mount setup
+# 2. Check SSH setup
+# 3. 
 # Set your hostname here, the manage_etc_hosts will update the hosts file entries as well
 hostname: NODE-NAME
 manage_etc_hosts: false
@@ -158,9 +161,6 @@ runcmd:
   - 'logger !!! wavesnake !!! Join Worker Node to swarm'
   - 'docker swarm join --token SWARM-WORKER-TOKEN SWARM-MANAGER-NODE:SWARM-PORT'
   - 'sudo sleep 5'
-  
-  # Skip Locale check on User Session Startup
-  - 'sudo touch /var/lib/cloud/instance/locale-check.skip'
 
   # Create SSH private/public key
   - 'logger !!! wavesnake !!! Create ssh private/public keys'

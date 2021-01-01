@@ -44,7 +44,7 @@
             "request": "launch",
             "name": "Debug test",
             "cwd": "${workspaceFolder}",
-            "program": "/Volumes/Samsung_T5/Projects/VSCode/SnakeFlash/test.zsh",
+            "program": "/Volumes/Samsung_T5/Projects/VSCode/SnakeFlash/test2.zsh",
             "terminalKind": "integrated",
             "args": []
         },

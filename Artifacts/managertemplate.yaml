@@ -63,6 +63,8 @@ write_files:
       {
       "Swarm": {
           "Development": {
+              "PortainerServer":"PORTAINER-SERVER-ADDRESS",
+              "PortainerServerPort":"PORTAINER-SERVER-PORT",
               "APIServer":"API-SERVER-ADDRESS",
               "APIServerPort":"API-SERVER-PORT",
               "MqttServer":"MQTT-SERVER-ADDRESS",
@@ -188,7 +190,7 @@ write_files:
             "DnsProviderUser":"DNS-PROVIDER-USER",
             "DnsProviderPassword":"DNS-PROVIDER-PASSWD"
           }
-        },        
+        },
         "SnakeTimer": {
           "Development": {
             "Version":"SNAKETIMER-VERSION"
@@ -276,7 +278,7 @@ write_files:
       user manager
       topic readwrite #
       topic read $SYS/broker/#
-    path: /opt/containers/mosquitto/config/config.d/acl
+    path: /opt/containers/mosquitto/config/conf.d/acl
   
   #
   # Mosquitto PW file
@@ -290,7 +292,7 @@ write_files:
   #
   - content: |
       MANAGER-ENCRYPTED-PASSWORD
-    path: /opt/containers/mosquitto/config/config.d/pw
+    path: /opt/containers/mosquitto/config/conf.d/pw
   #
   # NodeName.env ( Should this be a json file?)
   #
@@ -386,7 +388,7 @@ write_files:
       else
         echo -e "No label given"
       fi
-    path: /home/manager
+    path: /home/manager/usbmount.sh
   #
   # Portainer Docker Compose (Version 2.0)
   #
@@ -772,7 +774,7 @@ runcmd:
   - 'logger !!! wavesnake !!! Setup Cron job to start NFS after reboot'
   - 'logger !!! wavesnake !!!'
   # - 'sudo chmod +x /home/manager/nfs.sh'
-  # - 'sudo sed  -i "$ a\@reboot	root /home/manager/nfs.sh" /etc/crontab'
+  # # - 'sudo sed  -i "$ a\@reboot	root /home/manager/nfs.sh" /etc/crontab'
 
   # Skip Locale check on User Session Startup
   - 'logger !!! wavesnake !!!'

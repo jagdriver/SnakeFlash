@@ -22,6 +22,7 @@
 # 12 Make it possible to change internal IP addresses OK
 # 13 Make it possible to change Manager WiFi IP address OK
 # 14 Obfuscate passwords in files OK
+# 15 Test boot without setting date/time and let FakeTime manage
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -142,11 +143,11 @@ function EditProperties() {
       sed -i -n "s#WS02-IP-ADDRESS#${IP_ADDRESSES[1]}#" new-user-data
       sed -i -n "s#WS03-IP-ADDRESS#${IP_ADDRESSES[2]}#" new-user-data
       sed -i -n "s#WS04-IP-ADDRESS#${IP_ADDRESSES[3]}#" new-user-data
-      
+
       #
       # Global application properties, only manager node
       #
-      
+
       # Redis Master and Replica Server
       sed -i -n "s#REDIS-MASTER-SERVER-ADDRESS#$REDIS_MASTER_SERVER_ADDRESS#" new-user-data
       sed -i -n "s#REDIS-MASTER-SERVER-PORT#$REDIS_MASTER_SERVER_PORT#" new-user-data
@@ -161,6 +162,10 @@ function EditProperties() {
       sed -i -n "s#SNAKECONFIG-LOG-FILE#$SNAKECONFIG_LOG_FILE#" new-user-data
       sed -i -n "s#SNAKETIMER-LOG-FILE#$SNAKETIMER_LOG_FILE#" new-user-data
       #sed -i -n "s##$#" new-user-data
+
+      # Portainer Server
+      sed -i -n "s#PORTAINER-SERVER-ADDRESS#$PORTAINER_SERVER_ADDRESS#" new-user-data
+      sed -i -n "s#PORTAINER-SERVER-PORT#$PORTAINER_SERVER_PORT#" new-user-data
 
       # Sketch Server
       sed -i -n "s#SKETCH-SERVER-ADDRESS#$SKETCH_SERVER_ADDRESS#" new-user-data
@@ -189,11 +194,11 @@ function EditProperties() {
       sed -i -n "s#MQTT-SERVER-ADDRESS#$MQTT_SERVER_ADDRESS#" new-user-data
       sed -i -n "s#MQTT-SERVER-PORT#$MQTT_SERVER_PORT#" new-user-data
       sed -i -n "s#MANAGER-ENCRYPTED-PASSWORD#$MANAGER_ENCRYPTED_PASSWORD#g" new-user-data
-      
+
       # SKETCH Server
       sed -i -n "s#SKETCH-SERVER-ADDRESS#$SKETCH_SERVER_ADDRESS#" new-user-data
       sed -i -n "s#SKETCH-SERVER-PORT#$SKETCH_SERVER_PORT#" new-user-data
-      
+
       # SWARM Mail
       sed -i -n "s#SWARM-MAIL-USER#$SWARM_MAIL_USER#" new-user-data
       sed -i -n "s#SWARM-MAIL-SUBJECT#$SWARM_MAIL_SUBJECT#" new-user-data
@@ -473,11 +478,11 @@ function ListProperties() {
    echo -e "DYNAMIC_DNS_USER: " $DYNAMIC_DNS_USER
    echo -e "DYNAMIC_DNS_PASSWD: " $DYNAMIC_DNS_PASSWD
 
-   echo -e "\n--- Node Default IP Address ---"
-   echo -e "WS01_IP_ADDRESS: " $WS01_IP_ADDRESS
-   echo -e "WS02_IP_ADDRESS: " $WS02_IP_ADDRESS
-   echo -e "WS03_IP_ADDRESS: " $WS03_IP_ADDRESS
-   echo -e "WS04_IP_ADDRESS: " $WS04_IP_ADDRESS
+   # echo -e "\n--- Node Default IP Address ---"
+   # echo -e "WS01_IP_ADDRESS: " $WS01_IP_ADDRESS
+   # echo -e "WS02_IP_ADDRESS: " $WS02_IP_ADDRESS
+   # echo -e "WS03_IP_ADDRESS: " $WS03_IP_ADDRESS
+   # echo -e "WS04_IP_ADDRESS: " $WS04_IP_ADDRESS
 
    echo -e "\n--- Traefik properties ---"
    echo -e "ACME_EMAIL_ADDRESS: " $ACME_EMAIL_ADDRESS
@@ -511,7 +516,7 @@ function ListProperties() {
    echo -e "External SKETCH Url: " $SKETCH_SERVER_URL
 
    # Test of json string
-   echo -e "REDIS_DEFAULT_CONFIG: " $REDIS_DEFAULT_CONFIG
+   # echo -e "REDIS_DEFAULT_CONFIG: " $REDIS_DEFAULT_CONFIG
    echo -e "---------- $1 ----------\n"
 }
 
@@ -689,6 +694,10 @@ function ReadProperties() {
    API_SERVER_ADDRESS=$API_SERVER_ADDRESS
    API_SERVER_PORT=$API_SERVER_PORT
 
+   # Portainer properties
+   PORTAINER_SERVER_ADDRESS=$PORTAINER_SERVER_ADDRESS
+   PORTAINER_SERVER_PORT=$PORTAINER_SERVER_PORT
+
    # SnakeConfig properties
    SNAKECONFIG_VERSION=$SNAKECONFIG_VERSION
    SNAKECONFIG_LOG_FILE=$SNAKECONFIG_LOG_FILE
@@ -767,6 +776,7 @@ function SetNetAddress() {
    API_SERVER_ADDRESS="$WLAN0_IP_ADDRESS"
    SKETCH_SERVER_ADDRESS="$WLAN0_IP_ADDRESS"
    MQTT_SERVER_ADDRESS="$WLAN0_IP_ADDRESS"
+   PORTAINER_SERVER_ADDRESS="$WLAN0_IP_ADDRESS"
 
    # Set Redis Master and Replica server IP addresses
    REDIS_MASTER_SERVER_ADDRESS="${ETH0_LAN_NET}.1"
@@ -872,7 +882,7 @@ function SelectNodeTemplate() {
       INPUT_TEMPLATE_FILES[j]="$i"
       j+=1
    done
-   echo -e "\n${GR}Select Template file${WH}"
+   echo -e "\nSelect Template file${BLA}"
    select fav in "${INPUT_TEMPLATE_FILES[@]}"; do
       # Read and parse input file
       INPUT_TEMPLATE=$fav
@@ -884,7 +894,7 @@ function SelectNodeTemplate() {
 function ConfigureInternalNetwork() {
    #  # Configure ETH0 LAN (Manager & Worker)
    echo -e "\n"
-   read -e -p "${GR}Type ETH0 Lan${RD}${BO} default=[${ETH0_NETWORK_ADDRESS}] ${WH}> "
+   read -e -p "Type ETH0 Lan${RD}${BO} default=[${ETH0_NETWORK_ADDRESS}] ${BLA}> "
    if [[ -z "$REPLY" ]]; then
       echo -e -n "${ETH0_NETWORK_ADDRESS}"
    else
@@ -895,7 +905,7 @@ function ConfigureInternalNetwork() {
 
    #  # Configure ETH0 IP Address (Manager & Worker)
    echo -e "\n"
-   read -e -p "${GR}Type ETH0 IP address${RD}${BO} default=[${ETH0_IP_ADDRESS}] ${WH}> "
+   read -e -p "Type ETH0 IP address${RD}${BO} default=[${ETH0_IP_ADDRESS}] ${BLA}> "
    if [[ -z "$REPLY" ]]; then
       echo -e -n "${ETH0_IP_ADDRESS}"
    else
@@ -915,7 +925,7 @@ function ConfigureInternalNetwork() {
 
    # # Configure ETH0 DNS Servers (Manager & Worker)
    echo -e "\n"
-   read -e -p "${GR}Type ETH0 DNS Servers${RD}${BO} default=[${ETH0_DNS_SERVERS}] ${WH}> "
+   read -e -p "Type ETH0 DNS Servers${RD}${BO} default=[${ETH0_DNS_SERVERS}] ${BLA}> "
    if [[ -z "$REPLY" ]]; then
       echo -e -n "${ETH0_DNS_SERVERS}"
    else
@@ -1015,10 +1025,10 @@ function ConfigureUSBDrives() {
    # So we must verify the USB stick on RaspberryPI, and
    # Type in the UUID here.
    echo -e "\n"
-   read -e -p "${GR}Mount USB Drive ? ${WH}y | n > " -n 1 -r
+   read -e -p "Mount USB Drive ? ${BLA}y | n > " -n 1 -r
    if [[ $REPLY =~ ^[Yy]$ ]]; then
       echo -e "\n"
-      read -e -p "${GR}Type USB UUID ${WH}> "
+      read -e -p "Type USB UUID ${BLA}> "
       #USB_MOUNT_COMMAND = ${USB_MOUNT_COMMAND#USB_UUID#$REPLY}
       USB_MOUNT_COMMAND=$(echo "$USB_MOUNT_COMMAND" | sed "s/USB_UUID/$REPLY/")
       echo -e ""
@@ -1031,16 +1041,23 @@ function ConfigureDNS() {
    # Configure External domain name (Manager)
    # An external domain is essential, so this is a must.
    echo -e "\n"
-   GETDOM=true
-   while $GETDOM; do
-      read -e -p "${GR}Type External domain name ${BL}> "
-      if [[ -z "$REPLY" ]]; then
-         echo -e -n "You must supply external domain name"
+   GETDOM=false
+   while [ $GETDOM = false ]; do
+      read -e -p "Type External domain name ${RD}${BO} default=[${EXTERNAL_DOMAIN_NAME}] ${BLA}> "
+      if [[ ! -z "$REPLY" ]]; then
+         TEMP_EXTERNAL_DOMAIN_NAME=$REPLY
       else
-         EXTERNAL_DOMAIN_NAME=$REPLY
-         echo -e -n "${EXTERNAL_DOMAIN_NAME}"
-         GETDOM=FALSE
+         TEMP_EXTERNAL_DOMAIN_NAME=$EXTERNAL_DOMAIN_NAME
       fi
+
+      if [[ "$TEMP_EXTERNAL_DOMAIN_NAME" =~ ^[a-zA-Z0-9]+\.[a-zA-Z]+$ ]]; then
+         EXTERNAL_DOMAIN_NAME=$TEMP_EXTERNAL_DOMAIN_NAME
+         GETDOM=true
+         echo -e -n "External domain: ${EXTERNAL_DOMAIN_NAME}"
+      else
+         echo "Domain name $REPLY is invalid."
+      fi
+
       # Now set internal domain name
       IFS='.'
       read -ra DOM <<<"$EXTERNAL_DOMAIN_NAME"
@@ -1048,27 +1065,37 @@ function ConfigureDNS() {
       IFS=' '
    done
 
-   # Set Swarm Node internal DNS Url
+   # Set Swarm Node internal DNS Url. These URL's are written to /etc/hosts file
    DNS_URLS[0]="${ETH0ADDR[0]}.${ETH0ADDR[1]}.${ETH0ADDR[2]}.1 ${SWARM_NODES[0]} ${SWARM_NODES[0]}.${INTERNAL_DOMAIN_NAME}"
    DNS_URLS[1]="${ETH0ADDR[0]}.${ETH0ADDR[1]}.${ETH0ADDR[2]}.2 ${SWARM_NODES[1]} ${SWARM_NODES[1]}.${INTERNAL_DOMAIN_NAME}"
    DNS_URLS[2]="${ETH0ADDR[0]}.${ETH0ADDR[1]}.${ETH0ADDR[2]}.3 ${SWARM_NODES[2]} ${SWARM_NODES[2]}.${INTERNAL_DOMAIN_NAME}"
    DNS_URLS[3]="${ETH0ADDR[0]}.${ETH0ADDR[1]}.${ETH0ADDR[2]}.4 ${SWARM_NODES[3]} ${SWARM_NODES[3]}.${INTERNAL_DOMAIN_NAME}"
 
-   #  # Configure LetsEncrype Certificate ACME Email Address (Manager)
-   # This E-mail adddress must be registere by LetsEncrype together with
-   # the external domain name. Must be a valid mail address.
-   echo -e "\n"
-   read -e -p "${GR}Type LetsEncrypt ACME Email Address${RD}${BO} default=[${ACME_EMAIL_ADDRESS}] ${BL}> "
-   if [[ -z "$REPLY" ]]; then
-      echo -e -n "${ACME_EMAIL_ADDRESS}"
-   else
-      ACME_EMAIL_ADDRESS=$REPLY
-      echo -e -n "${ACME_EMAIL_ADDRESS}"
-   fi
+   # # Configure LetsEncrype Certificate ACME Email Address (Manager)
+   # This E-mail adddress must must be a valid mail address, and be registere by
+   # LetsEncrypt, together with the external domain name.
+
+   EMAILOK=false
+   while [ $EMAILOK = false ]; do
+      echo -e "\n"
+      read -e -p "Type LetsEncrypt ACME Email Address${RD}${BO} default=[${ACME_EMAIL_ADDRESS}] ${BLA}> "
+      if [[ ! -z "$REPLY" ]]; then
+         TEMP_ACME_EMAIL_ADDRESS=$REPLY
+      else
+         TEMP_ACME_EMAIL_ADDRESS=$ACME_EMAIL_ADDRESS
+      fi
+      if [[ "$TEMP_ACME_EMAIL_ADDRESS" =~ ^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$ ]]; then
+         ACME_EMAIL_ADDRESS=$REPLY
+         EMAILOK=true
+         echo -e "LetsEncrypt registered Email address ${ACME_EMAIL_ADDRESS}."
+      else
+         echo "Email address $email is invalid."
+      fi
+   done
 
    #  # Configure Dynamic DNS (Manager)
    echo -e "\n"
-   read -e -p "${GR}Use Dynamic DNS ? ${BL}y | n > " -n 1 -r
+   read -e -p "Use Dynamic DNS ? ${BLA}y | n > " -n 1 -r
    if [[ $REPLY =~ ^[Yy]$ ]]; then
       echo -e "\n"
       DYNCOUNT=${#DNS_PROVIDER_LIST[@]}    # Get length of array
@@ -1092,7 +1119,7 @@ function ConfigureDNS() {
       echo -e "\n"
       GETUSR=true
       while $GETUSR; do
-         read -e -p "${GR}Type ${DYNAMIC_DNS_PROVIDER} User Name ${BL}> "
+         read -e -p "Type ${DYNAMIC_DNS_PROVIDER} User Name ${BLA}> "
          if [[ -z "$REPLY" ]]; then
             echo -e -n "You must provide DNS user name"
          else
@@ -1106,7 +1133,7 @@ function ConfigureDNS() {
       echo -e "\n"
       GETPW=true
       while $GETPW; do
-         read -e -p "${GR}Type ${DYNAMIC_DNS_PROVIDER} User Password${RD}${BO} default=[${DYNAMIC_DNS_PASSWD}] ${BL}> "
+         read -e -p "Type ${DYNAMIC_DNS_PROVIDER} User Password${RD}${BO} default=[${DYNAMIC_DNS_PASSWD}] ${BLA}> "
          if [[ -z "$REPLY" ]]; then
             echo -e -n "${DYNAMIC_DNS_PASSWD}"
             GETPW=false
@@ -1130,6 +1157,48 @@ function GetNodeName() {
    echo -e "\n$NODE_NAME"
 }
 
+function SelectNodeName() {
+   #
+   # Select Node Name Menu
+   #
+
+   NODENAME_MENU=("${SWARM_NODES[0]}"
+      "${SWARM_NODES[1]}"
+      "${SWARM_NODES[2]}"
+      "${SWARM_NODES[3]}"
+      "Quit")
+
+   select fav in "${NODENAME_MENU[@]}"; do
+      case $fav in
+      "${SWARM_NODES[0]}")
+         NODE_NAME=$fav
+         break
+         ;;
+      "${SWARM_NODES[1]}")
+         NODE_NAME=$fav
+         break
+         ;;
+      "${SWARM_NODES[2]}")
+         NODE_NAME=$fav
+         break
+         ;;
+      "${SWARM_NODES[3]}")
+         NODE_NAME=$fav
+         break
+         ;;
+      esac
+   done
+
+}
+
+# function SelectNodeName() {
+#    echo -e "\n"
+#    #read -p "${GR}Select node by typing ${RD}${BO}ws02, ws03 ${GR}or ${RD}ws04 ${EC}${WH}> " -n 4 -r
+#    read -p "${GR}Select node by typing ${RD}${BO}${SWARM_NODES[1]}, ${SWARM_NODES[2]} ${GR}or ${RD}${SWARM_NODES[3]} ${EC}${WH}> " -n 4 -r
+#    NODE_NAME=$REPLY
+#    echo -e "\n$NODE_NAME"
+# }
+
 function GetUSBUUID() {
    # USB stick UUID and PARTUUID are different on Mac and RaspberryPI
    # So we must verify the USB stick on RaspberryPI, and
@@ -1151,7 +1220,7 @@ function GenerateSSHKey() {
    #user=$(logname)
    #userHome=$(awk -F: -v u=$user '$1 == u {print $6}' /etc/passwd)
    # Execute: ssh-keygen -t ecdsa -b 256
-   
+
    # Temp Key file
    #SSH_KEY_FILE="$(echo ~)/.ssh/id_ecdsa"
    # SSH_KEY_FILE="id_ecdsa"
@@ -1160,7 +1229,7 @@ function GenerateSSHKey() {
    read -r -p "Generate new SSH key? y/n " -n 1
    if [[ $REPLY =~ ^[Yy]$ ]]; then
       echo ""
-      ssh-keygen -q -t ecdsa -b 256 -f "$SSH_KEY_FILE"  -N '' <<< ""$'\n'"y" 2>&1 >/dev/null
+      ssh-keygen -q -t ecdsa -b 256 -f "$SSH_KEY_FILE" -N '' <<<""$'\n'"y" 2>&1 >/dev/null
       #ssh-keygen -t ecdsa -b 256 -f "$SSH_KEY_FILE"
    fi
    #AUTHORIZED_SSH_KEY=$(<id_ecdsa.pub)
@@ -1221,7 +1290,8 @@ function MainMenu() {
             ;;
          "Configure_Worker_Node")
             echo "$fav"
-            GetNodeName
+            #GetNodeName
+            SelectNodeName
             EditProperties $NODE_NAME
             EDIT_DONE=$CHECK_DONE
             WORKER_DONE=$CHECK_DONE
@@ -1356,7 +1426,7 @@ function ConfigCheckMenu() {
    echo -e "_____________________________________________ Visited Menu's ______________________________________________________________________\n"
    echo -e " | WLan0[$WLAN0_DONE] | Eth0 [$ETH0_DONE] | Manager[$MANAGER_DONE] | USB[$USB_DONE] | EDIT[$EDIT_DONE] | DATE[$DATE_DONE]\
  | ManagerNode[$MANAGER_DONE] | WorkerNode[$WORKER_DONE] \n | DNS Strings[$DNS_DONE] | NodeNames[$NODENAME_DONE] | SSH[$SSH_DONE]"
- echo -e "___________________________________________________________________________________________________________________________________\n"
+   echo -e "___________________________________________________________________________________________________________________________________\n"
 }
 
 function FlashSD() {
@@ -1368,28 +1438,25 @@ function FlashSD() {
 
    diskutil list
    echo -e "\n"
-   read -e -p "Look at the Disk list, and type the Disk to flash the image to, example /dev/disk7 > "
+   read -e -p "Look at the Disk list, and type the Disk to flash the image to, example: /dev/disk7 > "
 
    echo -e "You have choosen" $REPLY "which will be overridden!!!!"
    echo -e "\n"
    DISK=$REPLY
 
-   read -e -p "Select Node to flash  > "
-   echo -e "You have choosen $REPLY"
-   echo -e "\n"
-   NODE_NAME=$REPLY
-
-   #EditPasswordProperties $NODE_NAME
+   SelectNodeName
 
    read -e -p "Are you ready for Flashing $NODE_NAME? y/n " -n 1 -r
    if [[ $REPLY =~ ^[Yy]$ ]]; then
       cd $NODE_NAME
       echo -e "Node: $NODE_NAME\n"
       echo -e "$(ls -l)"
+      
       # Copy SSH Key to keyfile.txt
       pwd
       echo -e "Keyfile: $SSH_KEY_FILE"
       cp "../$SSH_KEY_FILE".pub keyfile.txt
+      
       # Set DateTime for Fake HW Clock
       sed -i -n "s#ISO-DATE#$ISO_DATE#" user-data
       ../flash --force --userdata user-data --metadata meta-data --file keyfile.txt -d $DISK https://github.com/hypriot/image-builder-rpi/releases/download/v1.12.3/hypriotos-rpi-v1.12.3.img.zip
@@ -1408,4 +1475,3 @@ echo -e "${RD}${BO}This utility will prepare a Flash configuration file for a"
 echo -e "single swarm node, by prompting for configuration parameters.${BLA}\n"
 
 MainMenu
-
