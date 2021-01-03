@@ -174,6 +174,7 @@ function EditProperties() {
       # API Server
       sed -i -n "s#API-SERVER-ADDRESS#$API_SERVER_ADDRESS#" new-user-data
       sed -i -n "s#API-SERVER-PORT#$API_SERVER_PORT#" new-user-data
+      sed -i -n "s#SWARM-SECRET#$SWARM_SECRET#" new-user-data
 
       # SnakeApi Version
       sed -i -n "s#SNAKEAPI-VERSION#$SNAKEAPI_VERSION#" new-user-data
@@ -206,7 +207,7 @@ function EditProperties() {
       sed -i -n "s#SWARM-MAIL-PATH#$SWARM_MAIL_PATH#" new-user-data
 
       # SQL Templates
-      sed -i -n "s#SQL-TEMPLATE#$SQL_TEMPLATE#" new-user-data
+      sed -i -n "s#SQL-TEMPLATE-DEFAULT#$SQL_TEMPLATE_DEFAULT#" new-user-data
       sed -i -n "s#SQL-TEMPLATE-LOOKUP-USER#$SQL_TEMPLATE_LOOKUP_USER#" new-user-data
       sed -i -n "s#SQL-TEMPLATE-CREATE-USER#$SQL_TEMPLATE_CREATE_USER#" new-user-data
       sed -i -n "s#SQL-TEMPLATE-GRANT-PRIVILEGES#$SQL_TEMPLATE_GRANT_PRIVILEGES#" new-user-data
@@ -330,8 +331,7 @@ function EditProperties() {
    sed -i -n "s/NODE-NAME/$NODE_NAME/g" new-user-data
 
    # USB Drive mount command
-   sed -i -n "s#USB-MOUNT-COMMAND#$USB_MOUNT_COMMAND#" new-user-data
-   #sed -i -n "s#USB-UUID#$USB_UUID#" new-user-data
+   sed -i -n "s#USB-MOUNT-COMMAND#$USB_RESULT_STRING#" new-user-data
 
    # Meta Data
    sed -i -n "s/INSTANCE-ID/$NODE_NAME/g" new-meta-data
@@ -583,6 +583,7 @@ function ReadProperties() {
    MANAGER_PASSWORD=$MANAGER_PASSWORD
    MANAGER_EMAIL=$MANAGER_EMAIL
    AUTHORIZED_SSH_KEY=$AUTHORIZED_SSH_KEY
+   SWARM_SECRET=$SWARM_SECRET
    #MANAGER_PASSWORD=$MANAGER_PASSWORD
    #MANAGER_ENCRYPTED_PASSWORD=$MANAGER_ENCRYPTED_PASSWORD
 
@@ -679,7 +680,7 @@ function ReadProperties() {
    SWARM_MAIL_SUBJECT=$SWARM_MAIL_SUBJECT
    SWARM_MAIL_BODY=$SWARM_MAIL_BODY
    SWARM_MAIL_PATH=$SWARM_MAIL_PATH
-   SQL_TEMPLATE=$SQL_TEMPLATE
+   SQL_TEMPLATE_DEFAULT=$SQL_TEMPLATE_DEFAULT
    SQL_TEMPLATE_LOOKUP_USER=$SQL_TEMPLATE_LOOKUP_USER
    SQL_TEMPLATE_CREATE_USER=$SQL_TEMPLATE_CREATE_USER
    SQL_TEMPLATE_GRANT_PRIVILEGES=$SQL_TEMPLATE_GRANT_PRIVILEGES
@@ -1213,7 +1214,11 @@ function GetUSBUUID() {
    # So ask for the UUID string, we have to check for an empty answer!
    read -p "Paste USB UUID here: "
    UUID_STR="$REPLY"
+
+   USB_RESULT_STRING=$(echo | sed "s/USB_UUID/$UUID_STR/g" <<<"$USB_MOUNT_COMMAND")
+
    echo "$UUID_STR"
+   echo "$RESULT_STRING"
 }
 
 function GenerateSSHKey() {

@@ -94,7 +94,7 @@ write_files:
               "UsersDB":"SQL-USERS-DB-NAME",
               "CollectionsDB":"SQL-COLLECTIONS-DB-NAME",
               "SwarmManager":"MANAGER-NAME",
-              "ManagerEmail":"MANAGER_EMAIL",
+              "ManagerEmail":"MANAGER-EMAIL",
               "DBAdmin":"SQL-DB-ADMIN",
               "SwarmSecret":"SWARM-SECRET"
           }
@@ -140,7 +140,7 @@ write_files:
               "SwarmMailSubject":"SWARM-MAIL-SUBJECT",
               "SwarmMailBody":"SWARM-MAIL-BODY",
               "SwarmMailPath":"SWARM-MAIL-PATH",
-              "Template":"SQL-TEMPLATE",
+              "Template":"SQL-TEMPLATE-DEFAULT",
               "TemplateLookupUser":"SQL-TEMPLATE-LOOKUP-USER",
               "TemplateCreateUser":"SQL-TEMPLATE-CREATE-USER",
               "TemplateGrantPrivileges":"SQL-TEMPLATE-GRANT-PRIVILEGES",
@@ -157,7 +157,7 @@ write_files:
               "SwarmMailSubject":"SWARM-MAIL-SUBJECT",
               "SwarmMailBody":"SWARM-MAIL-BODY",
               "SwarmMailPath":"SWARM-MAIL-PATH",
-              "Template":"SQL-TEMPLATE",
+              "Template":"SQL-TEMPLATE-DEFAULT",
               "TemplateLookupUser":"SQL-TEMPLATE-LOOKUP-USER",
               "TemplateCreateUser":"SQL-TEMPLATE-CREATE-USER",
               "TemplateGrantPrivileges":"SQL-TEMPLATE-GRANT-PRIVILEGES",

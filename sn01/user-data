@@ -63,6 +63,8 @@ write_files:
       {
       "Swarm": {
           "Development": {
+              "PortainerServer":"192.168.1.220",
+              "PortainerServerPort":"9000",
               "APIServer":"192.168.1.220",
               "APIServerPort":"80",
               "MqttServer":"192.168.1.220",
@@ -77,7 +79,7 @@ write_files:
               "SwarmManager":"manager",
               "ManagerEmail":"manager@swarm.local",
               "DBAdmin":"root",
-              "SwarmSecret":"SWARM-SECRET"
+              "SwarmSecret":"This is a secret string used to generate user tokens"
           },
           "Production": {
               "APIServer":"192.168.1.220",
@@ -92,9 +94,9 @@ write_files:
               "UsersDB":"users",
               "CollectionsDB":"collections",
               "SwarmManager":"manager",
-              "ManagerEmail":"MANAGER_EMAIL",
+              "ManagerEmail":"manager@swarm.local",
               "DBAdmin":"root",
-              "SwarmSecret":"SWARM-SECRET"
+              "SwarmSecret":"This is a secret string used to generate user tokens"
           }
         }
       "Redis": {
@@ -139,11 +141,11 @@ write_files:
               "SwarmMailBody":"This is your new SnakeApi account",
               "SwarmMailPath":"/tmp/mail/msg.txt",
               "Template":"server={0}; port={1}; database={2}; user={3}; password={4}",
-              "TemplateLookupUser":"server={0}; port={1}; database={2}; user={3}; password={4}-LOOKUP-USER",
-              "TemplateCreateUser":"server={0}; port={1}; database={2}; user={3}; password={4}-CREATE-USER",
-              "TemplateGrantPrivileges":"server={0}; port={1}; database={2}; user={3}; password={4}-GRANT-PRIVILEGES",
-              "TemplateFindUser":"server={0}; port={1}; database={2}; user={3}; password={4}-FIND-USER",
-              "TemplateGrantAllPrivileges":"server={0}; port={1}; database={2}; user={3}; password={4}-GRANT-ALL-PRIVILEGES",
+              "TemplateLookupUser":"server={0}; port={1}; Uid={2}; Pwd={3}",
+              "TemplateCreateUser":"CREATE USER '{0}'@'%' IDENTIFIED BY '{1}';",
+              "TemplateGrantPrivileges":"GRANT ALL PRIVILEGES ON {0}.* TO '{1}'@'%';",
+              "TemplateFindUser":"SELECT count(*) FROM mysql.user WHERE user = '{0}';",
+              "TemplateGrantAllPrivileges":"GRANT ALL PRIVILEGES ON *.* TO '{0}'@'%' WITH GRANT OPTION;",
               "RuleTypes":"accessory, group",
               "AccessoryTypes":"TempSensor,TempHumSensor,GateController,Relay,Switch,GasBurner",
               "ServiceTypes":"Temperature,Humidity,Sketch,UpTime,OpenClose,OnOff",
@@ -156,11 +158,11 @@ write_files:
               "SwarmMailBody":"This is your new SnakeApi account",
               "SwarmMailPath":"/tmp/mail/msg.txt",
               "Template":"server={0}; port={1}; database={2}; user={3}; password={4}",
-              "TemplateLookupUser":"server={0}; port={1}; database={2}; user={3}; password={4}-LOOKUP-USER",
-              "TemplateCreateUser":"server={0}; port={1}; database={2}; user={3}; password={4}-CREATE-USER",
-              "TemplateGrantPrivileges":"server={0}; port={1}; database={2}; user={3}; password={4}-GRANT-PRIVILEGES",
-              "TemplateFindUser":"server={0}; port={1}; database={2}; user={3}; password={4}-FIND-USER",
-              "TemplateGrantAllPrivileges":"server={0}; port={1}; database={2}; user={3}; password={4}-GRANT-ALL-PRIVILEGES",
+              "TemplateLookupUser":"server={0}; port={1}; Uid={2}; Pwd={3}",
+              "TemplateCreateUser":"CREATE USER '{0}'@'%' IDENTIFIED BY '{1}';",
+              "TemplateGrantPrivileges":"GRANT ALL PRIVILEGES ON {0}.* TO '{1}'@'%';",
+              "TemplateFindUser":"SELECT count(*) FROM mysql.user WHERE user = '{0}';",
+              "TemplateGrantAllPrivileges":"GRANT ALL PRIVILEGES ON *.* TO '{0}'@'%' WITH GRANT OPTION;",
               "RuleTypes":"accessory, group",
               "AccessoryTypes":"TempSensor,TempHumSensor,GateController,Relay,Switch,GasBurner",
               "ServiceTypes":"Temperature,Humidity,Sketch,UpTime,OpenClose,OnOff",
@@ -172,9 +174,9 @@ write_files:
             "Version":"1.2.0",
             "ExternalDomainName":"wavesnake.dk",
             "DnsProviderList":"GratisDNS CloudFlare OneCom",
-            "DnsProviderName":"GratisDNS",
+            "DnsProviderName":"",
             "DnsProviderId":"DNS-PROVIDER-ID",
-            "DnsProviderUrl":"https://admin.gratisdns.com/ddns.php",
+            "DnsProviderUrl":"",
             "DnsProviderUser":"jagdriver",
             "DnsProviderPassword":"32a88235d7dfb08e11"
           },
@@ -182,13 +184,13 @@ write_files:
             "Version":"1.2.0",
             "ExternalDomainName":"wavesnake.dk",
             "DnsProviderList":"GratisDNS CloudFlare OneCom",
-            "DnsProviderName":"GratisDNS",
+            "DnsProviderName":"",
             "DnsProviderId":"DNS-PROVIDER-ID",
-            "DnsProviderUrl":"https://admin.gratisdns.com/ddns.php",
+            "DnsProviderUrl":"",
             "DnsProviderUser":"jagdriver",
             "DnsProviderPassword":"32a88235d7dfb08e11"
           }
-        },        
+        },
         "SnakeTimer": {
           "Development": {
             "Version":"1.2.0"
@@ -228,7 +230,7 @@ write_files:
   # Authorized SSH Keys
   #
   - content: |
-      ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBHYLIUDFKrhs1WTpdrkWGThkTindIGSHHTK87Vr7+t2Cx+BvYk7Qrosrcopcdv6CWxRY+TSyi4dXCojiRine7j0= nielsjorgennielsen@snakemacpro.local
+      
     path:  /home/manager/.ssh/authorized_keys
 
   #
@@ -276,7 +278,7 @@ write_files:
       user manager
       topic readwrite #
       topic read $SYS/broker/#
-    path: /opt/containers/mosquitto/config/config.d/acl
+    path: /opt/containers/mosquitto/config/conf.d/acl
   
   #
   # Mosquitto PW file
@@ -289,8 +291,8 @@ write_files:
   # and run a container with Debian.
   #
   - content: |
-      manager:$6$j19T9qw+0bgraWS+$xgiBXXpoICm7bE5iIqNSiudOySQuDIgvHzW2HsBdoL/ahSAwoBLUlkYNkLE/X/a6lHgiQv2yQ2d6AEFiOEwb5g==
-    path: /opt/containers/mosquitto/config/config.d/pw
+      manager:$6$vyZqE+UcjJmI5unr$K3GCmE+wk9PoXxGcuxd98CtgjAmTsG7XOMqqaM+GQtYBGKjeFelKawQ5OZcJq+M2NEVD6iOfs08eRiqJE/Lf1w==
+    path: /opt/containers/mosquitto/config/conf.d/pw
   #
   # NodeName.env ( Should this be a json file?)
   #
@@ -669,7 +671,7 @@ runcmd:
   - 'logger !!! wavesnake !!!'
   - 'logger !!! wavesnake !!! Workaround for Buster Fake Time error initializing date/time'
   - 'logger !!! wavesnake !!!'
-  - sudo date -s '27 Dec 2020  17:41'
+  - sudo date -s 'ISO-DATE'
   - 'sudo service ntp --full-restart'
   - 'sudo sleep 15'
   - 'sudo date'
@@ -772,7 +774,7 @@ runcmd:
   - 'logger !!! wavesnake !!! Setup Cron job to start NFS after reboot'
   - 'logger !!! wavesnake !!!'
   # - 'sudo chmod +x /home/manager/nfs.sh'
-  # - 'sudo sed  -i "$ a\@reboot	root /home/manager/nfs.sh" /etc/crontab'
+  # # - 'sudo sed  -i "$ a\@reboot	root /home/manager/nfs.sh" /etc/crontab'
 
   # Skip Locale check on User Session Startup
   - 'logger !!! wavesnake !!!'
@@ -897,7 +899,7 @@ runcmd:
   - 'logger !!! wavesnake !!!'
   - 'logger !!! wavesnake !!! Create NFS Exports config'
   - 'logger !!! wavesnake !!!'
-  - 'echo "/dev/sda1/by-uuid/USB_UUID /media/data/mariadb vfat auto,nofail,noatime,users,rw,uid=manager,gid=manager 0 0" >> /etc/fstab'
+  - 'echo "/dev/disk/by-uuid/186C-C1EE /media/data/mariadb vfat auto,nofail,noatime,users,rw,uid=manager,gid=manager 0 0" >> /etc/fstab'
   
   
   - 'logger !!! wavesnake !!!'
