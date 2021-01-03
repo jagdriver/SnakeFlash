@@ -1,0 +1,8 @@
+[ 
+    { "Id":0, "ServiceId":202000, "Type":"Temperature", "Description":"Temperature in degree Celsius", "Value":"", "Range":"-40;+50", "Unit":"3" }, 
+    { "Id":0, "ServiceId":202001, "Type":"Humidity", "Description":"Humidity i percentage", "Value":"", "Range":"0;100", "Unit":"1" }, 
+    { "Id":0, "ServiceId":202002, "Type":"OpenClose", "Description":"State Open/Closed", "Value":"", "Range":"0;1", "Unit":"5" }, 
+    { "Id":0, "ServiceId":202003, "Type":"OnOff", "Description":"State On/Off", "Value":"", "Range":"0;1", "Unit":"5" }, 
+    { "Id":0, "ServiceId":202004, "Type":"Sketch", "Description":"Sketch Version", "Value":"", "Range":"*", "Unit":"4" }, 
+    { "Id":0, "ServiceId":202005, "Type":"UpTime", "Description":"Accessory Uptime", "Value":"", "Range":"5000;3600000", "Unit":"2" }
+]
