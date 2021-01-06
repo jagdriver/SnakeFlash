@@ -33,9 +33,9 @@
         {
             "type": "bashdb",
             "request": "launch",
-            "name": "Debug test1",
+            "name": "Debug test2",
             "cwd": "${workspaceFolder}",
-            "program": "/Volumes/Samsung_T5/Projects/VSCode/SnakeFlash/test1.zsh",
+            "program": "/Volumes/Samsung_T5/Projects/VSCode/SnakeFlash/test2.zsh",
             "terminalKind": "integrated",
             "args": []
         },

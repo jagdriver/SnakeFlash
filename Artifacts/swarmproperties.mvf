@@ -135,6 +135,8 @@ APPLICATION_LIST="SnakeApi,SnakeHistory,SnakeUtil,SnakeConfig,SnakeTimer,SnakeCo
 ENVIRONMENT_LIST="Development,Test,Production"
 REDIS_SYNC_KEY="SEMSYNC"
 REDIS_SYNC_PATH="/opt/containers"
+COMPOSE_FILE_NAME="docker-compose.yml"
+REPOSITORY_URL="https://github.com/jagdriver/Stacks"
 
 # SnakeHistory properties
 SNAKEHISTORY_VERSION="1.2.0"

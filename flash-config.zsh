@@ -232,6 +232,8 @@ function EditProperties() {
       sed -i -n "s#ENVIRONMENT-LIST#$ENVIRONMENT_LIST#" new-user-data
       sed -i -n "s#REDIS-SYNC-KEY#$REDIS_SYNC_KEY#" new-user-data
       sed -i -n "s#REDIS-SYNC-PATH#$REDIS_SYNC_PATH#" new-user-data
+      sed -i -n "s#STACK-LIST#$STACK_LIST#" new-user-data
+
 
       # SnakeUtil
       sed -i -n "s#SNAKEUTIL-VERSION#$SNAKEUTIL_VERSION#" new-user-data
@@ -706,6 +708,8 @@ function ReadProperties() {
    ENVIRONMENT_LIST=$ENVIRONMENT_LIST
    REDIS_SYNC_KEY=$REDIS_SYNC_KEY
    REDIS_SYNC_PATH=$REDIS_SYNC_PATH
+   COMPOSE_FILE_NAME=$COMPOSE_FILE_NAME
+   REPOSITORY_URL=$REPOSITORY_URL
 
    # SnakeHistory properties
    SNAKEHISTORY_VERSION=$SNAKEHISTORY_VERSION
@@ -1249,6 +1253,25 @@ function GenerateSSHKey() {
    # done <"$SSH_KEY_FILE_PUB"
 }
 
+function CreateStackList()
+{
+IFS=','
+read -ra APPS <<<"$APPLICATION_LIST"
+local APPCOUNT=${#APPS[@]}
+echo -e "\nStart\n"
+local RESULT_LIST="["
+
+for ((i = 0; i < $APPCOUNT; i++)) do
+    if [ $i -gt 0 ]
+    then
+        RESULT_LIST="${RESULT_LIST},"
+    fi
+    printf -v RESULT '{"name":"%s","value":"%s/%s"}' "${APPS[$i]}" "${APPS[$i]}" "$COMPOSE_FILE_NAME"
+    RESULT_LIST="${RESULT_LIST}$RESULT"
+done
+STACK_LIST="${RESULT_LIST}]"
+}
+
 function MainMenu() {
    #
    # Main menu
@@ -1282,6 +1305,7 @@ function MainMenu() {
             DNS_DONE=$CHECK_DONE_DEFAULT
             SetDateTime
             DATE_DONE=$CHECK_DONE_DEFAULT
+            GenerateStackList;
             break
             ;;
          "Configure_Manager_Node")

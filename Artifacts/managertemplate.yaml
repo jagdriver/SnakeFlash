@@ -205,14 +205,16 @@ write_files:
             "RedisSynchKey":"REDIS-SYNC-KEY",
             "RedisSyncPath":"REDIS-SYNC-PATH",
             "ApplicationList":"APPLICATION-LIST",
-            "EnvironmentList":"ENVIRONMENT-LIST"
+            "EnvironmentList":"ENVIRONMENT-LIST",
+            "StackList":"STACK-LIST"
           },
           "Production": {
             "Version":"SNAKECONFIG-VERSION",
             "RedisSynchKey":"REDIS-SYNC-KEY",
             "RedisSyncPath":"REDIS-SYNC-PATH",
             "ApplicationList":"APPLICATION-LIST",
-            "EnvironmentList":"ENVIRONMENT-LIST"
+            "EnvironmentList":"ENVIRONMENT-LIST",
+            "StackList":"STACK-LIST"
           }
         },
         "SnakeHistory": {

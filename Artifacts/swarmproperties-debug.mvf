@@ -127,6 +127,7 @@ ENVIRONMENT_LIST="Development,Test,Production"
 REDIS_SYNC_KEY="SEMSYNC"
 REDIS_SYNC_PATH="/opt/containers"
 
+
 # SnakeHistory properties
 SNAKEHISTORY_VERSION="1.2.0"
 HISTORY_DB_NAME="history"
