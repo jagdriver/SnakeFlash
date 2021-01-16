@@ -229,6 +229,18 @@ write_files:
     path:  /opt/containers/configuration/globalconfig.json
   
   #
+  # SwarmSecret
+  #
+  - content: |
+      {
+        "ManagerPassword":"MANAGER-PASSWORD",
+        "RootPassword":"ROOT-PASSWORD",
+        "GlobalConfigPath":"MANAGER-PASSWORD",
+
+      }
+    path:  /opt/containers/configuration/swarmsecret.json
+
+  #
   # Authorized SSH Keys
   #
   - content: |
