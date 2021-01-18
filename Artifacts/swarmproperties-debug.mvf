@@ -127,6 +127,8 @@ ENVIRONMENT_LIST="Development,Test,Production"
 REDIS_SYNC_KEY="SEMSYNC"
 REDIS_SYNC_PATH="/opt/containers"
 
+# SnakeConsole Server
+SNAKE_CONSOLE_SERVER="consoleapi.wavesnake.local"
 
 # SnakeHistory properties
 SNAKEHISTORY_VERSION="1.2.0"

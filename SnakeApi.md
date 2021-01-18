@@ -5,7 +5,7 @@
 2. [Network Setup](#network)
 
 ## SnakeApi Intro<a name="introduction"></a>
-SnakeApi Rraefik Proxy setup shown below.
+SnakeApi Traefik Proxy setup shown below.
 
 ## SnakeApi Network<a name="network"></a>
 ![SnakeApi Network](/Artifacts/SnakeApi.jpeg)

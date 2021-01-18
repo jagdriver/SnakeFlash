@@ -114,6 +114,7 @@ SWARM_MAIL_USER="wavesnakeapi@gmail.com"
 SWARM_MAIL_SUBJECT="Wavesnake API Account"
 SWARM_MAIL_BODY="This is your new SnakeApi account"
 SWARM_MAIL_PATH="/tmp/mail/msg.txt"
+GLOBAL_CONFIG_PATH="/opt/containers/configuration/globalconfig.json"
 
 # Traefik properties
 TRAEFIK_ENTRYPOINT_ADDRESS="192.168.1.230"
@@ -147,6 +148,9 @@ SNAKETIMER_VERSION="1.2.0"
 
 # SnakeUtil properties
 SNAKEUTIL_VERSION="1.2.0"
+
+# SnakeConsole Server
+SNAKE_CONSOLE_SERVER="consoleapi.wavesnake.local"
 
 # Redis properties
 REDIS_MASTER_SERVER_ADDRESS="redis.wavesnake.local"

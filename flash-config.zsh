@@ -147,6 +147,7 @@ function EditProperties() {
       #
       # Global application properties, only manager node
       #
+      sed -i -n "s#GLOBAL_CONFIG_PATH#$GLOBAL-CONFIG-PATH#" new-user-data
 
       # Redis Master and Replica Server
       sed -i -n "s#REDIS-MASTER-SERVER-ADDRESS#$REDIS_MASTER_SERVER_ADDRESS#" new-user-data
@@ -234,6 +235,8 @@ function EditProperties() {
       sed -i -n "s#REDIS-SYNC-PATH#$REDIS_SYNC_PATH#" new-user-data
       sed -i -n "s#STACK-LIST#$STACK_LIST#" new-user-data
 
+      # SnakeConsole
+      sed -i -n "s#SNAKE-CONSOLE-SERVER#$SNAKE-CONSOLE-SERVER#" new-user-data
 
       # SnakeUtil
       sed -i -n "s#SNAKEUTIL-VERSION#$SNAKEUTIL_VERSION#" new-user-data
@@ -661,6 +664,7 @@ function ReadProperties() {
 
    # Global application properties
    APPLICATION_LOG_PATH=$APPLICATION_LOG_PATH
+   GLOBAL_CONFIG_PATH=$GLOBAL_CONFIG_PATH
 
    # Traefik properties
    TRAEFIK_ENTRYPOINT_ADDRESS=$TRAEFIK_ENTRYPOINT_ADDRESS
@@ -724,6 +728,9 @@ function ReadProperties() {
    SNAKETIMER_VERSION=$SNAKETIMER_VERSION
    SNAKETIMER_LOG_FILE=$SNAKETIMER_LOG_FILE
 
+   # SnakeConsole properties
+   SNAKE_CONSOLE_SERVER=$SNAKE_CONSOLE_SERVER
+   
    # Redis properties
    REDIS_MASTER_SERVER_ADDRESS=$REDIS_MASTER_SERVER_ADDRESS
    REDIS_MASTER_SERVER_PORT=$REDIS_MASTER_SERVER_PORT

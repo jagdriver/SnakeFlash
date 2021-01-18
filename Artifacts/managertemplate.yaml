@@ -225,6 +225,16 @@ write_files:
               "Version":"SNAKEHISTORY-VERSION"
             }
           }
+        "SnakeConsole": {
+            "Development" : {
+              "Version":"SNAKECONSOLE-VERSION",
+              "SnakeConsoleServer":"SNAKE-CONSOLE-SERVER"
+            },
+            "Production": {
+              "Version":"SNAKECONSOLE-VERSION",
+              "SnakeConsoleServer":"SNAKE-CONSOLE-SERVER"
+            }
+          }
       }
     path:  /opt/containers/configuration/globalconfig.json
   
@@ -235,8 +245,7 @@ write_files:
       {
         "ManagerPassword":"MANAGER-PASSWORD",
         "RootPassword":"ROOT-PASSWORD",
-        "GlobalConfigPath":"MANAGER-PASSWORD",
-
+        "GlobalConfigPath":"GLOBAL-CONFIG-PATH"
       }
     path:  /opt/containers/configuration/swarmsecret.json
 
@@ -671,6 +680,18 @@ write_files:
       sudo exportfs -r
       sudo mount --bind /opt/containers /mnt/config
     path: /home/manager/nfs.sh
+  #
+  # Swarm Secret 
+  #
+  - content: |
+      {
+        "SwarmManager":"manager",
+        "SwarmManagerPassword":"wavesnake",
+        "SqlManager":"root",
+        "SqlManagerPassword":"wavesnake",
+        "GlobalConfigPath":"/opt/containers/configuration/globalconfig.json"
+      }
+    path: /opt/containers/configuration/swarmsecret.json
 #
 # These commands will be run once on first boot only
 #
@@ -891,10 +912,6 @@ runcmd:
        "--compose-file", "/opt/containers/portainer/docker-compose.yml",
        "portainer"
     ]
-  # Create NFS File system mount
-  - 'logger !!! wavesnake !!!'
-  - 'logger !!! wavesnake !!! Configure fstab file system mounts for NFS'
-  - 'logger !!! wavesnake !!!'
 
   # Create exports for NFS, will only work after a reboot
   # We exports only /mnt/config
@@ -903,9 +920,21 @@ runcmd:
   - 'logger !!! wavesnake !!!'
   - 'sudo sed  -i "$ a\/mnt/config 192.168.230.0/24(rw,nohide,insecure,no_subtree_check,async)" /etc/exports'
   
+  #
   # Create NFS Mount Command in /etc/fstab
   # To locally mount /opt/container to /mnt/config
+  - 'logger !!! wavesnake !!!'
+  - 'logger !!! wavesnake !!! Create NFS Mount command in fstab'
+  - 'logger !!! wavesnake !!!'
   - 'sudo sed  -i "$ a\/opt/containers /mnt/config none bind  0  0" /etc/fstab'
+ 
+  #
+  # Add SwarmSecret to Docker Swarm
+  #
+  - 'logger !!! wavesnake !!!'
+  - 'logger !!! wavesnake !!! Execute Docker Add SwarmSecret'
+  - 'logger !!! wavesnake !!!'
+  - 'docker secret create SwarmSecret /opt/containers/configuration/swarmsecret.json'
 
   #
   # Craete USB Mount command in /etc/fstab
