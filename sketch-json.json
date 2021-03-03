@@ -1,0 +1,217 @@
+{
+    "Swarm": {
+      "Development": {
+        "PortainerServer": "192.168.1.220",
+        "PortainerServerPort": "9000",
+        "ApiServer": "localhost",
+        "ApiServerPort": "5000",
+        "MqttServer": "mqt.wavesnake.dk",
+        "MqttServerPort": "8210",
+        "DbServer": "localhost",
+        "DbServerPort": "3308",
+        "SketchServer": "sketch.wavesnake.local",
+        "SketchServerPort": "80",
+        "HomesDBName": "homes",
+        "UsersDB": "users",
+        "CollectionsDB": "collections",
+        "SwarmManager": "manager",
+        "ManagerEmail": "manager@swarm.local",
+        "DBAdmin": "root",
+        "UnitTypes":"byte,sbyte,short,ushort,int,uint,long,ulong,float,double",
+        "SwarmSecret": "This is a secret string used to generate user tokens"
+      },
+      "Production": {
+        "PortainerServer": "192.168.1.220",
+        "PortainerServerPort": "9000",
+        "ApiServer": "api.wavesnake.local",
+        "ApiServerPort": "80",
+        "MqttServer": "mqt.wavesnake.dk",
+        "MqttServerPort": "1883",
+        "DbServer": "localhost",
+        "DbServerPort": "3306",
+        "SketchServer": "sketch.wavesnake.local",
+        "SketchServerPort": "80",
+        "HomesDBName": "homes",
+        "UsersDB": "users",
+        "CollectionsDB": "collections",
+        "SwarmManager": "manager",
+        "ManagerEmail": "manager@swarm.local",
+        "DBAdmin": "root",
+        "UnitTypes":"byte,sbyte,short,ushort,int,uint,long,ulong,float,double",
+        "SwarmSecret": "This is a secret string used to generate user tokens"
+      }
+    },
+    "Redis": {
+      "Development": {
+        "RedisConfiguration": "development",
+        "RedisMasterServerAddress": "localhost",
+        "RedisMasterServerPort": "6379",
+        "redisReplicaServerAddress": "192.168.230.4",
+        "RedisReplicaServerPort": "6379"
+      },
+      "Production": {
+        "RedisConfiguration": "production",
+        "RedisMasterServerAddress": "redis.wavesnake.local",
+        "RedisMasterServerPort": "6379",
+        "redisReplicaServerAddress": "192.168.230.4",
+        "RedisReplicaServerPort": "6379"
+      }
+    },
+    "Logging": {
+      "Development": {
+        "ApplicationLogPath": "/var/snakelogs/",
+        "SnakeUtilLogFile": "snakeutil.log",
+        "SnakeApiLogFile": "snakeapi.log",
+        "SnakeHistoryLogFile": "snakehistory.log",
+        "SnakeConfigLogFile": "snakeconfig.log",
+        "SnakeTimerLogFile": "snaketimer.log",
+    "SnakeConsoleLogFile": "snakeconsole.log"
+      },
+      "Production": {
+        "ApplicationLogPath": "/var/log/snakelogs/",
+        "SnakeUtilLogFile": "snakeutil.log",
+        "SnakeApiLogFile": "snakeapi.log",
+        "SnakeHistoryLogFile": "snakehistory.log",
+        "SnakeConfigLogFile": "snakeconfig.log",
+        "SnakeTimerLogFile": "snaketimer.log",
+        "SnakeConsoleLogFile": "snakeconsole.log"
+      }
+    },
+    "SnakeApi": {
+      "Development": {
+        "Version": "1.2.0",
+        "DBAdmin": "root",
+        "UsersDB": "users",
+        "HomesDBName": "homes",
+        "CollectionsDB": "collection",
+        "DBServer": "localhost",
+        "DBServerPort": "3308",
+        "MqttServer": "192.168.1.220",
+        "MqttServerPort": "6379",
+        "SketchServer": "192.168.1.220",
+        "SketchServerPort": "80",
+        "SwarmMailUser": "wavesnakeapi@gmail.com",
+        "SwarmMailSubject": "Wavesnake API Account",
+        "SwarmMailBody": "This is your new SnakeApi account",
+        "SwarmMailPath": "/tmp/mail/msg.txt",
+        "Template":"server={0}; port={1}; database={2}; user={3}; password={4}",
+        "TemplateLookupUser":"server={0}; port={1}; Uid={2}; Pwd={3}",
+        "TemplateCreateUser":"CREATE USER '{0}'@'%' IDENTIFIED BY '{1}';",
+        "TemplateGrantPrivileges":"GRANT ALL PRIVILEGES ON {0}.* TO '{1}'@'%';",
+        "TemplateFindUser":"SELECT count(*) FROM mysql.user WHERE user = '{0}';",
+        "TemplateGrantAllPrivileges":"GRANT ALL PRIVILEGES ON *.* TO '{0}'@'%' WITH GRANT OPTION;",
+        "RuleTypes": "accessory, group",
+        "UnitTypes":"byte,sbyte,short,ushort,int,uint,long,ulong,float,double",
+        "AccessoryTypes": "TempSensor,TempHumSensor,GateController,Relay,Switch,GasBurner",
+        "ServiceTypes": "Temperature, Humidity,Sketch,UpTime,OpenClose,OnOff",
+        "Services": "[ { 'Id':0, 'ServiceType':0, 'Description':'Temperature in degree Celsius', 'Value':'', 'Range':'-40;+50', 'Unit':1 }, { 'Id':0, 'ServiceType':0, 'Description':'Humidity i percentage', 'Value':'', 'Range':'0;100', 'Unit':1 }, { 'Id':0,'ServiceType':0, 'Description':'State Open/Closed', 'Value':'', 'Range':'0;1', 'Unit':5 }, { 'Id':0, 'ServiceType':0, 'Description':'State On/Off', 'Value':'', 'Range':'0;1', 'Unit':5 }, { 'Id':0, 'ServiceType':0, 'Description':'Sketch Version', 'Value':'', 'Range':'*', 'Unit':4 }, { 'Id':0, 'ServiceType':0, 'Description':'Accessory Uptime', 'Value':'', 'Range':'5000;3600000', 'Unit':0 } ]",
+        "Boards": "[ {'ChipId':'1458376','Model':'ESP8266-12F-DEVKIT-v3', 'Vendor':'ShenZhen Doctors of Intelligence & Technology Co., Ltd','Description':'Development board from China'}, {'ChipId':'1458400','Model':'ESP8266-ESP12E-Module','Vendor':'AI-THINKER','Description':'AI-Thinker development board'}, {'ChipId':'99359','Model':'SparkFun-ESP8266-Thing-Dev','Vendor':'SparkFun','Description':'SparkFun development board'} ]",
+        "Sketches":"[ {'Name':'WSTempSensor01', 'Version':'1.2.1', 'BaseDir':'/sketches', 'SketchBin':'wstempsensor01.bin', 'Description':'Temperature measurement & reporting, with attached Display'},    {'Name':'WSTempHumSensor01', 'Version':'1.2.1', 'BaseDir':'/sketches', 'SketchBin':'wstemphumsensor01.bin', 'Description':'Temperature & Humidity measurement & reporting, with attached Display'},    {'Name':'WSTempSensor', 'Version':'1.2.1', 'BaseDir':'/sketches', 'SketchBin':'wstempsensor.bin', 'Description':'Temperature measurement & reporting'},    {'Name':'WSTempHumSensor', 'Version':'1.2.1', 'BaseDir':'/sketches', 'SketchBin':'wstemphumsensor.bin', 'Description':'Temperature & Humidity measurement & reporting'},    {'Name':'WSGateSensor', 'Version':'1.2.1', 'BaseDir':'/sketches', 'SketchBin':'wsgate.bin', 'Description':'Relay (NonLatching) for Open/Close Garage ports'},    {'Name':'WSGasBurner', 'Version':'1.2.1', 'BaseDir':'/sketches', 'SketchBin':'wsgasburner.bin', 'Description':'Relay (Latching) for switcing On/Off Gas Burner circulation pump'} ]"
+
+      },
+      "Production": {
+        "Version": "1.2.0",
+        "DBAdmin": "root,",
+        "UsersDB": "users",
+        "HomesDBName": "homes",
+        "CollectionsDB": "collections",
+        "DBServer": "sql.wavesnake.local",
+        "DBServerPort": "3308",
+        "MqttServer": "192.168.1.220",
+        "MqttServerPort": "6379",
+        "SketchServer": "192.168.1.220",
+        "SketchServerPort": "80",
+        "SwarmMailUser": "wavesnakeapi@gmail.com",
+        "SwarmMailSubject": "Wavesnake API Account",
+        "SwarmMailBody": "This is your new SnakeApi account",
+        "SwarmMailPath": "/tmp/mail/msg.txt",
+        "Template":"server={0}; port={1}; database={2}; user={3}; password={4}",
+        "TemplateLookupUser":"server={0}; port={1}; Uid={2}; Pwd={3}",
+        "TemplateCreateUser":"CREATE USER '{0}'@'%' IDENTIFIED BY '{1}';",
+        "TemplateGrantPrivileges":"GRANT ALL PRIVILEGES ON {0}.* TO '{1}'@'%';",
+        "TemplateFindUser":"SELECT count(*) FROM mysql.user WHERE user = '{0}';",
+        "TemplateGrantAllPrivileges":"GRANT ALL PRIVILEGES ON *.* TO '{0}'@'%' WITH GRANT OPTION;",
+        "RuleTypes": "accessory, group",
+        "UnitTypes":"byte,sbyte,short,ushort,int,uint,long,ulong,float,double",
+        "AccessoryTypes": "TempSensor,TempHumSensor,GateController,Relay,Switch,GasBurner",
+        "ServiceTypes": "Temperature, Humidity,Sketch,UpTime,OpenClose,OnOff",
+        "Services": "[ { 'Id':0, 'ServiceType':0, 'Description':'Temperature in degree Celsius', 'Value':'', 'Range':'-40;+50', 'Unit':1 }, { 'Id':0, 'ServiceType':0, 'Description':'Humidity i percentage', 'Value':'', 'Range':'0;100', 'Unit':1 }, { 'Id':0,'ServiceType':0, 'Description':'State Open/Closed', 'Value':'', 'Range':'0;1', 'Unit':5 }, { 'Id':0, 'ServiceType':0, 'Description':'State On/Off', 'Value':'', 'Range':'0;1', 'Unit':5 }, { 'Id':0, 'ServiceType':0, 'Description':'Sketch Version', 'Value':'', 'Range':'*', 'Unit':4 }, { 'Id':0, 'ServiceType':0, 'Description':'Accessory Uptime', 'Value':'', 'Range':'5000;3600000', 'Unit':0 } ]",
+        "Boards": "[ {'ChipId':'1458376','Model':'ESP8266-12F-DEVKIT-v3', 'Vendor':'ShenZhen Doctors of Intelligence & Technology Co., Ltd','Description':'Development board from China'}, {'ChipId':'1458400','Model':'ESP8266-ESP12E-Module','Vendor':'AI-THINKER','Description':'AI-Thinker development board'}, {'ChipId':'99359','Model':'SparkFun-ESP8266-Thing-Dev','Vendor':'SparkFun','Description':'SparkFun development board'} ]",
+	    "Sketches":"[ {'Name':'WSTempSensor01', 'Version':'1.2.1', 'BaseDir':'/sketches', 'SketchBin':'wstempsensor01.bin', 'Description':'Temperature measurement & reporting, with attached Display'},    {'Name':'WSTempHumSensor01', 'Version':'1.2.1', 'BaseDir':'/sketches', 'SketchBin':'wstemphumsensor01.bin', 'Description':'Temperature & Humidity measurement & reporting, with attached Display'},    {'Name':'WSTempSensor', 'Version':'1.2.1', 'BaseDir':'/sketches', 'SketchBin':'wstempsensor.bin', 'Description':'Temperature measurement & reporting'},    {'Name':'WSTempHumSensor', 'Version':'1.2.1', 'BaseDir':'/sketches', 'SketchBin':'wstemphumsensor.bin', 'Description':'Temperature & Humidity measurement & reporting'},    {'Name':'WSGateSensor', 'Version':'1.2.1', 'BaseDir':'/sketches', 'SketchBin':'wsgate.bin', 'Description':'Relay (NonLatching) for Open/Close Garage ports'},    {'Name':'WSGasBurner', 'Version':'1.2.1', 'BaseDir':'/sketches', 'SketchBin':'wsgasburner.bin', 'Description':'Relay (Latching) for switcing On/Off Gas Burner circulation pump'} ]"
+	 }
+    },
+    "SnakeUtil": {
+      "Development": {
+        "Version": "1.2.0",
+        "ExternalDomainName": "wavesnake.dk",
+        "DnsProviderList": "GratisDNS",
+        "DnsProviderName": "GRATISDNS",
+        "DnsProviderId": "DNS-PROVIDER-ID",
+        "DnsProviderUrl": "https://admin.gratisdns.com/ddns.php",
+        "DnsProviderUser": "jagdriver",
+        "DnsProviderPassword": "fis"
+      },
+      "Production": {
+        "Version": "1.2.0",
+        "ExternalDomainName": "wavesnake.dk",
+        "DnsProviderList": "GratisDNS",
+        "DnsProviderName": "GRATISDNS",
+        "DnsProviderId": "DNS-PROVIDER-ID",
+        "DnsProviderUrl": "https://admin.gratisdns.com/ddns.php",
+        "DnsProviderUser": "jagdriver",
+        "DnsProviderPassword": "fis"
+      }
+    },
+    "SnakeTimer": {
+      "Development": {
+        "Version": "1.2.0"
+      },
+      "Production": {
+        "Version": "1.2.0"
+      }
+    },
+    "SnakeConfig": {
+      "Development": {
+        "Version": "1.2.0",
+        "RedisSynchKey": "SEMSYNC",
+        "RedisSyncPath": "/opt/containers",
+        "ApplicationList": "Swarm:Swarm,SnakeApi:SnakeApi,SnakeHistory:SnakeHistory,SnakeUtil:SnakeUtil,SnakeConfig:SnakeConfig,SnakeTimer:SnakeTimer,SnakeConsole:SnakeConsole",
+        "EnvironmentList": "Development:Development,Test:Test,Production:Production",
+        "StackList": "[ {'name':'SnakeUtil','value':'SnakeUtil/docker-compose.yml'},{'name':'SnakeTimer','value':'SnakeTimer/docker-compose.yml'}]"
+      },
+      "Production": {
+        "Version": "1.2.0",
+        "RedisSynchKey": "SEMSYNC",
+        "RedisSyncPath": "/opt/containers",
+        "ApplicationList": "Swarm:Swarm,SnakeApi:SnakeApi,SnakeHistory:SnakeHistory,SnakeUtil:SnakeUtil,SnakeConfig:SnakeConfig,SnakeTimer:SnakeTimer,SnakeConsole:SnakeConsole",
+        "EnvironmentList": "Development:Development,Test:Test,Production:Production",
+        "StackList": "[ {'name':'SnakeUtil','value':'SnakeUtil/docker-compose.yml'},{'name':'SnakeTimer','value':'SnakeTimer/docker-compose.yml'}]"
+      }
+    },
+    "SnakeHistory": {
+      "Development": {
+        "Version": "1.2.0",
+        "APIServer": "192.168.1.220",
+        "APIServerPort": "80",
+        "MqttServer": "192.168.1.220",
+        "MqttServerPort": "6379",
+        "ManagerEmail": "manager@swarm.local"
+      },
+      "Production": {
+        "Version": "1.2.0",
+        "APIServer": "192.168.1.220",
+        "APIServerPort": "80",
+        "MqttServer": "192.168.1.220",
+        "MqttServerPort": "6379",
+        "ManagerEmail": "manager@swarm.local"
+      }
+    },
+    "SnakeConsole": {
+      "Development": {
+        "Version": "1.2.0"
+      },
+      "Production": {
+        "Version": "1.2.0"
+      }
+    }
+  }

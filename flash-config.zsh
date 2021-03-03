@@ -2,7 +2,7 @@
 #
 # WaveSnake Swarm Flash Configuration script
 # This script must be executed in the Flashing directory
-# You can choose to edit properties in swarmconfig.txt
+# You can choose to edit properties in swarmconfig.mvf
 # or be prompted for properties.
 # WaveSnake Technologies
 # 2020-02-20 Niels Jørgen Nielsen
@@ -50,7 +50,8 @@ PROPERTY_FILE_EXT="mvf"
 # Config Check Menu
 CHECK_DONE_DEFAULT="\xE2\x9C\x94"
 CHECK_DONE="$GR\xE2\x9C\x94$BLA"
-CHECK_UNDONE="\xE2\x9D\x8C"
+#CHECK_UNDONE="\xE2\x9D\x8C"
+CHECK_UNDONE="-"
 
 WLAN0_DONE=$CHECK_UNDONE
 NODENAME_DONE=$CHECK_UNDONE
@@ -63,6 +64,8 @@ MANAGER_DONE=$CHECK_UNDONE
 WORKER_DONE=$CHECK_UNDONE
 SSH_DONE=$CHECK_UNDONE
 DATE_DONE=$CHECK_UNDONE
+DYNDNS_DONE=$CHECK_UNDONE
+WIFI_DONE=$CHECK_UNDONE
 
 # Noded names
 SWARM_NODES=()
@@ -105,11 +108,19 @@ function EditProperties() {
       sed -i -n "s/DNS-PROVIDER-USER/$DYNAMIC_DNS_USER/" new-user-data
       sed -i -n "s/DNS-PROVIDER-PASSWD/$DYNAMIC_DNS_PASSWD/" new-user-data
 
-      # ACME
+      # TRAEFIK ACME
       sed -i -n "s/ACME-EMAIL-ADDRESS/$ACME_EMAIL_ADDRESS/" new-user-data
 
       # Traefik
       sed -i -n "s/TRAEFIK-ENTRYPOINT-ADDRESS/$TRAEFIK_ENTRYPOINT_ADDRESS/" new-user-data
+
+      # TRAEFIK Ports
+      sed -i -n "s#MQTT-INTERNAL-TCP-PORT#$MQTT_INTERNAL_TCP_PORT#" new-user-data
+      sed -i -n "s#MQTT-EXTERNAL-TCP-PORT#$MQTT_EXTERNAL_TCP_PORT#" new-user-data
+
+      # ZigBee2MQTT
+      sed -i -n "s#ZIGBEE-VENDOR#$ZIGBEE_VENDOR#" new-user-data
+      sed -i -n "s#ZIGBEE-PRODUCT#$ZIGBEE_PRODUCT#" new-user-data
 
       # WLAN0
       sed -i -n "s#WLAN0-NETWORK-ADDRESS#$WLAN0_NETWORK_ADDRESS#" new-user-data
@@ -216,6 +227,8 @@ function EditProperties() {
       sed -i -n "s#SQL-TEMPLATE-GRANT-ALL-PRIVILEGES#$SQL_TEMPLATE_GRANT_ALL_PRIVILEGES#" new-user-data
 
       # Types
+      sed -i -n "s#SKETCH-RECORDS#$SKETCH_RECORDS#" new-user-data 
+      sed -i -n "s#BOARD-TYPES#$BOARD_TYPES#" new-user-data
       sed -i -n "s#RULE-TYPES#$RULE_TYPES#" new-user-data
       sed -i -n "s#ACCESSORY-TYPES#$ACCESSORY_TYPES#" new-user-data
       sed -i -n "s#SERVICE-TYPES#$SERVICE_TYPES#" new-user-data
@@ -260,6 +273,12 @@ function EditProperties() {
       sed -i -n "s#DNS-STRING2#${DNS_URLS[2]}#" new-user-data
       sed -i -n "s#DNS-STRING3#${DNS_URLS[3]}#" new-user-data
 
+      # ZigBee2MQTT
+      sed -i -n "s#ZIGBEE-VENDOR#$ZIGBEE_VENDOR#" new-user-data
+      sed -i -n "s#ZIGBEE-PRODUCT#$ZIGBEE_PRODUCT#" new-user-data
+
+
+
       ;;
    "${SWARM_NODES[2]}")
       cp ../Artifacts/$WORKER_TEMPLATE_FILE_NAME.$TEMPLATE_FILE_EXT new-user-data
@@ -297,7 +316,7 @@ function EditProperties() {
    esac
 
    # Swarm Common properties
-   echo -n "Editing GLOBAL Properties"
+   echo -n "\nEditing GLOBAL Properties"
 
    # Redis properties
    #sed -i -n "s#REDIS-DEFAULT-CONFIG#$REDIS_DEFAULT_CONFIG#" new-user-data
@@ -325,6 +344,9 @@ function EditProperties() {
    # Domains
    sed -i -n "s/INTERNAL-DOMAIN-NAME/$INTERNAL_DOMAIN_NAME/" new-user-data
    sed -i -n "s/EXTERNAL-DOMAIN-NAME/$EXTERNAL_DOMAIN_NAME/" new-user-data
+   
+   # SQL Root
+   sed -i -n "s/ROOT-PASSWORD/$ROOT_PASSWORD/" new-user-data
 
    # Swarm Manager
    sed -i -n "s/MANAGER-PASSWORD/$MANAGER_PASSWORD/" new-user-data
@@ -400,7 +422,9 @@ function PromptForInput() {
          echo -e -n "You must supply password\n"
       else
          #MANAGER_PASSWORD=$(python3 ./Artifacts/Hidepw.py $REPLY)
+         # Manager & Root password are the same
          MANAGER_PASSWORD=$REPLY
+         ROOT_PASSWORD=$REPLY
          GETPW=false
       fi
 
@@ -668,6 +692,12 @@ function ReadProperties() {
 
    # Traefik properties
    TRAEFIK_ENTRYPOINT_ADDRESS=$TRAEFIK_ENTRYPOINT_ADDRESS
+   MQTT_INTERNAL_TCP_PORT=$MQTT_INTERNAL_TCP_PORT
+   MQTT_EXTERNAL_TCP_PORT=$MQTT_EXTERNAL_TCP_PORT
+
+   # ZigBee2Mqtt properties
+   ZIGBEE_VENDOR=$ZIGBEE_VENDOR
+   ZIGBEE_PRODUCT=$ZIGBEE_PRODUCT
 
    # SnakeApi properties
    SNAKEAPI_VERSION=$SNAKEAPI_VERSION
@@ -696,6 +726,8 @@ function ReadProperties() {
    ACCESSORY_TYPES=$ACCESSORY_TYPES
    SERVICE_TYPES=$SERVICE_TYPES
    ACCESSORY_SERVICES=$ACCESSORY_SERVICES
+   BOARD_TYPES=$BOARD_TYPES
+   SKETCH_RECORDS=$SKETCH_RECORDS
 
    # Not used in SnakeApi
    API_SERVER_ADDRESS=$API_SERVER_ADDRESS
@@ -730,7 +762,7 @@ function ReadProperties() {
 
    # SnakeConsole properties
    SNAKE_CONSOLE_SERVER=$SNAKE_CONSOLE_SERVER
-   
+
    # Redis properties
    REDIS_MASTER_SERVER_ADDRESS=$REDIS_MASTER_SERVER_ADDRESS
    REDIS_MASTER_SERVER_PORT=$REDIS_MASTER_SERVER_PORT
@@ -1029,6 +1061,8 @@ function ConfigureWiFiNetwork() {
          GETPW=FALSE
       fi
    done
+   WLAN0_DONE=$CHECK_DONE
+   WIFI_DONE=$CHECK_DONE
 }
 
 function ConfigureUSBDrives() {
@@ -1156,6 +1190,7 @@ function ConfigureDNS() {
             GETPW=false
          fi
       done
+      DYNDNS_DONE=$CHECK_DONE
    else
       echo -e -n "No Dynamic DNS"
    fi
@@ -1262,21 +1297,21 @@ function GenerateSSHKey() {
 
 function CreateStackList()
 {
-IFS=','
-read -ra APPS <<<"$APPLICATION_LIST"
-local APPCOUNT=${#APPS[@]}
-echo -e "\nStart\n"
-local RESULT_LIST="["
+   IFS=','
+   read -ra APPS <<<"$APPLICATION_LIST"
+   local APPCOUNT=${#APPS[@]}
+   echo -e "\nStart\n"
+   local RESULT_LIST="["
 
-for ((i = 0; i < $APPCOUNT; i++)) do
-    if [ $i -gt 0 ]
-    then
-        RESULT_LIST="${RESULT_LIST},"
-    fi
-    printf -v RESULT '{"name":"%s","value":"%s/%s"}' "${APPS[$i]}" "${APPS[$i]}" "$COMPOSE_FILE_NAME"
-    RESULT_LIST="${RESULT_LIST}$RESULT"
-done
-STACK_LIST="${RESULT_LIST}]"
+   for ((i = 0; i < $APPCOUNT; i++)) do
+      if [ $i -gt 0 ]
+      then
+         RESULT_LIST="${RESULT_LIST},"
+      fi
+      printf -v RESULT '{"name":"%s","value":"%s/%s"}' "${APPS[$i]}" "${APPS[$i]}" "$COMPOSE_FILE_NAME"
+      RESULT_LIST="${RESULT_LIST}$RESULT"
+   done
+   STACK_LIST="${RESULT_LIST}]"
 }
 
 function MainMenu() {
@@ -1460,7 +1495,7 @@ function DetailMenu() {
 function ConfigCheckMenu() {
    echo -e "\n"
    echo -e "_____________________________________________ Visited Menu's ______________________________________________________________________\n"
-   echo -e " | WLan0[$WLAN0_DONE] | Eth0 [$ETH0_DONE] | Manager[$MANAGER_DONE] | USB[$USB_DONE] | EDIT[$EDIT_DONE] | DATE[$DATE_DONE]\
+   echo -e " | Eth0 [$ETH0_DONE] | WLan0[$WLAN0_DONE] | WiFi[$WIFI_DONE] | DynDns[$DYNDNS_DONE] | Manager[$MANAGER_DONE] | USB[$USB_DONE] | EDIT[$EDIT_DONE] | DATE[$DATE_DONE]\
  | ManagerNode[$MANAGER_DONE] | WorkerNode[$WORKER_DONE] \n | DNS Strings[$DNS_DONE] | NodeNames[$NODENAME_DONE] | SSH[$SSH_DONE]"
    echo -e "___________________________________________________________________________________________________________________________________\n"
 }

@@ -1,0 +1,12 @@
+
+[
+    {"Name":"WSTempSensor01", "Version":"1.2.1", "BaseDir":"/sketches", "SketchBin":"wstempsensor01.bin", "Description":"Temperature measurement & reporting, with attached Display"},
+    {"Name":"WSTempHumSensor01", "Version":"1.2.1", "BaseDir":"/sketches", "SketchBin":"wstemphumsensor01.bin", "Description":"Temperature & Humidity measurement & reporting, with attached Display"},
+    {"Name":"WSTempSensor", "Version":"1.2.1", "BaseDir":"/sketches", "SketchBin":"wstempsensor.bin", "Description":"Temperature measurement & reporting"},
+    {"Name":"WSTempHumSensor", "Version":"1.2.1", "BaseDir":"/sketches", "SketchBin":"wstemphumsensor.bin", "Description":"Temperature & Humidity measurement & reporting"},
+    {"Name":"WSGateSensor", "Version":"1.2.1", "BaseDir":"/sketches", "SketchBin":"wsgate.bin", "Description":"Relay (NonLatching) for Open/Close Garage ports"},
+    {"Name":"WSGasBurner", "Version":"1.2.1", "BaseDir":"/sketches", "SketchBin":"wsgasburner.bin", "Description":"Relay (Latching) for switcing On/Off Gas Burner circulation pump"}
+
+]
+
+"[ {'Name':'WSTempSensor01', 'Version':'1.2.1', 'BaseDir':'/sketches', 'SketchBin':'wstempsensor01.bin', 'Description':'Temperature measurement & reporting, with attached Display'},    {'Name':'WSTempHumSensor01', 'Version':'1.2.1', 'BaseDir':'/sketches', 'SketchBin':'wstemphumsensor01.bin', 'Description':'Temperature & Humidity measurement & reporting, with attached Display'},    {'Name':'WSTempSensor', 'Version':'1.2.1', 'BaseDir':'/sketches', 'SketchBin':'wstempsensor.bin', 'Description':'Temperature measurement & reporting'},    {'Name':'WSTempHumSensor', 'Version':'1.2.1', 'BaseDir':'/sketches', 'SketchBin':'wstemphumsensor.bin', 'Description':'Temperature & Humidity measurement & reporting'},    {'Name':'WSGateSensor', 'Version':'1.2.1', 'BaseDir':'/sketches', 'SketchBin':'wsgate.bin', 'Description':'Relay (NonLatching) for Open/Close Garage ports'}, {'Name':'WSGasBurner', 'Version':'1.2.1', 'BaseDir':'/sketches', 'SketchBin':'wsgasburner.bin', 'Description':'Relay (Latching) for switcing On/Off Gas Burner circulation pump'} ]"

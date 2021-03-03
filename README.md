@@ -36,6 +36,11 @@
 ## SnakeHome <a name="introduction"></a>
 SnakeHome is the platform for hobbyist, who want the possibility to create their own IoT devices, but lack the background infrastructure, to integrate these devices into a manageable platform. I've put together some of the best tools available, written som apps, services, sketches and scripts, tested a lot, out came the SnakeHome management system, and it's free.
 
+I would like to thank:
+Matt Williams for creating Flash utility.
+All people at Hypriot for creating the Hypriot Docker Image for Raspberry Pi.
+
+
 The system consists of:
 - Sketches for initializing/configuring ESP8266/ESP32.
 - Sketches for Temperature, Humidity, Gate ontroller, Gas Burner ontroller and Water Pump controller.

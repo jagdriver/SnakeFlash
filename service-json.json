@@ -1,0 +1,10 @@
+[ 
+    { 'Name':'SvcTemperature', 'Description':'Temperature in degree Celsius', 'Value':'', 'Range':'-40;+50', 'Unit':'3' }, 
+    { 'Name':'SvcHumidity', 'Description':'Humidity i percentage', 'Value':'', 'Range':'0;100', 'Unit':'1' },
+    { 'Name':'SvcOpenClose', 'Description':'State Open/Closed', 'Value':'', 'Range':'0;1', 'Unit':'5' },
+    { 'Name':'SvcOnOff', 'Description':'State On/Off', 'Value':'', 'Range':'0;1', 'Unit':'5' },
+    { 'Name':'SvcSketch', 'Description':'Sketch Version', 'Value':'', 'Range':'*', 'Unit':'4' }, 
+    { 'Name':'SvcUpTime', 'Description':'Accessory Uptime', 'Value':'', 'Range':'5000;3600000', 'Unit':'2' }
+ ]
+
+ [     { 'Name':'SvcTemperature', 'Description':'Temperature in degree Celsius', 'Value':'', 'Range':'-40;+50', 'Unit':'3' },     { 'Name':'SvcHumidity', 'Description':'Humidity i percentage', 'Value':'', 'Range':'0;100', 'Unit':'1' },    { 'Name':'SvcOpenClose', 'Description':'State Open/Closed', 'Value':'', 'Range':'0;1', 'Unit':'5' },    { 'Name':'SvcOnOff', 'Description':'State On/Off', 'Value':'', 'Range':'0;1', 'Unit':'5' },    { 'Name':'SvcSketch', 'Description':'Sketch Version', 'Value':'', 'Range':'*', 'Unit':'4' },     { 'Name':'SvcUpTime', 'Description':'Accessory Uptime', 'Value':'', 'Range':'5000;3600000', 'Unit':'2' } ]

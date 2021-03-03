@@ -118,6 +118,9 @@ GLOBAL_CONFIG_PATH="/opt/containers/configuration/globalconfig.json"
 
 # Traefik properties
 TRAEFIK_ENTRYPOINT_ADDRESS="192.168.1.230"
+# Traefik Application Ports
+MQTT_INTERNAL_TCP_PORT="8213"
+MQTT_EXTERNAL_TCP_PORT="8210"
 
 # Portainer properties
 PORTAINER_SERVER_ADDRESS="192.168.1.230"
@@ -184,7 +187,14 @@ SQL_TEMPLATE_GRANT_ALL_PRIVILEGES="GRANT ALL PRIVILEGES ON *.* TO '{0}'@'%' WITH
 RULE_TYPES="accessory,group"
 ACCESSORY_TYPES="TempSensor,TempHumSensor,GateController,Relay,Switch,GasBurner"
 SERVICE_TYPES="Temperature,Humidity,Sketch,UpTime,OpenClose,OnOff"
+SKETCH_TYPES='[ { "Name":"WSTempSensor", "Board":"ESP8266-ESP12E-Module", "Version":"2.1.12", "BaseDir":"/sketches", "SketchBin":"wstempsensor.bin", "Description":"Temp & Humidity Sensor"}, {"Name":"WSTempSensor01", "Board":"ESP8266-ESP12E-Module", "Version":"2.1.12", "BaseDir":"/sketches", "SketchBin":"wstempsensor01.bin", "Description":"Temp Sensor"}, {"Name":"WSRelay01", "Board":"ESP8266-ESP12E-Module", "Version":"2.1.12", "BaseDir":"/sketches", "SketchBin":"wsrelay01.bin", "Description":"Latching Relay Switch"}, {"Name":"WSRelay02", "Board":"ESP8266-ESP12E-Module", "Version":"2.1.12", "BaseDir":"/sketches", "SketchBin":"wsrelay02.bin", "Description":"Non Latching Relay Switch"} ]'
+UNIT_TYPES="byte,sbyte,short,ushort,int,uint,long,ulong,float,double"
+BOARD_TYPES='[ {"ChipId":"1458376", "Model":"ESP8266-12F-DEVKIT-v3", "Vendor":"ShenZhen Doctors of Intelligence & Technology Co., Ltd", "Description":"Preferred Dev board" }, {"ChipId":"1458400","Model":"ESP8266-ESP12E-Module","Vendor":"AI-THINKER", "Description":"Preferred ESP Chip"} }, {"ChipId":"99359","Model":"SparkFun-ESP8266-Thing-Dev","Vendor":"SparkFun", "Description":"Older Dev board" } ]'
+SKETCH_RECORDS='[ {"Name":"WSTempSensor01", "Version":"1.2.1", "BaseDir":"Sketch", "SketchBin":"wstempsensor01.bin", "BoardId":2, "Description":"Temperature measurement & reporting, with attached Display"},    {"Name":"WSTempHumSensor01", "Version":"1.2.1", "BaseDir":"Sketch", "SketchBin":"wstemphumsensor01.bin", "BoardId":2, "Description":"Temperature & Humidity measurement & reporting, with attached Display"},    {"Name":"WSTempSensor", "Version":"1.2.1", "BaseDir":"Sketch", "SketchBin":"wstempsensor.bin", "BoardId":2, "Description":"Temperature measurement & reporting"},    {"Name":"WSTempHumSensor", "Version":"1.2.1", "BaseDir":"Sketch", "SketchBin":"wstemphumsensor.bin", "BoardId":2, "Description":"Temperature & Humidity measurement & reporting"},    {"Name":"WSGateSensor", "Version":"1.2.1", "BaseDir":"Sketch", "SketchBin":"wsgate.bin","BoardId":2, "Description":"Relay (NonLatching) for Open/Close Garage ports"}, {"Name":"WSGasBurner", "Version":"1.2.1", "BaseDir":"Sketch", "SketchBin":"wsgasburner.bin", "BoardId":2, "Description":"Relay (Latching) for switcing On/Off Gas Burner circulation pump"} ]'
 
 # USB Drive mount Command (/dev/sda1: UUID="3FFB-6CC8")
-USB_MOUNT_COMMAND="echo \"/dev/disk/by-uuid/USB_UUID /media/data/mariadb vfat auto,nofail,noatime,users,rw,uid=manager,gid=manager 0 0\" >> /etc/fstab"
+USB_MOUNT_COMMAND='echo "/dev/disk/by-uuid/USB_UUID /media/data/mariadb vfat auto,nofail,noatime,users,rw,uid=manager,gid=manager 0 0" >> /etc/fstab'
 
+# Zigbee2Mqtt properties
+ZIGBEE_VENDOR="0451"
+ZIGBEE_PRODUCT="16a8"
