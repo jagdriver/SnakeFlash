@@ -20,7 +20,8 @@ users:
     sudo: ALL=(ALL) NOPASSWD:ALL
     shell: /bin/bash
     groups: users,docker,video,input
-    plain_text_passwd: MANAGER-PASSWORD
+    passwd: MANAGER-ENCRYPTED-PASSWORD
+    #plain_text_passwd: MANAGER-PASSWORD
     lock_passwd: false
     ssh_pwauth: true
     chpasswd: { expire: false }

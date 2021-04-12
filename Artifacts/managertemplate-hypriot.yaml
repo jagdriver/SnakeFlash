@@ -1,0 +1,1210 @@
+#cloud-config
+# vim: syntax=yaml
+#
+
+# This file is the !! SWARM MANAGER NODE !! Default Flash config.
+# Version: 1.12.3 
+# The version are paired with Hypriot OS version 1.12.13.
+# You can change the configuration directly in the file or
+# run ./flash-config.zsh in the flash directory to be guided
+# thru the setup.
+
+# Cloud_Init Documentation: http://cloudinit.readthedocs.io/en/0.7.9/index.html
+
+# TODO: Remove sudo from all commands
+
+# Set your hostname here, the manage_etc_hosts will update the hosts file entries as well
+hostname: NODE-NAME
+manage_etc_hosts: false
+
+# You could modify this for your own user information
+users:
+  - name: MANAGER-NAME
+    gecos: "Wavesnake Manager"
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+    groups: users,docker,video,input
+    passwd: MANAGER-ENCRYPTED-PASSWORD
+    # plain_text_passwd: MANAGER-PASSWORD
+    lock_passwd: false
+    ssh_pwauth: true
+    chpasswd: { expire: false }
+
+# # Set the locale of the system
+locale: "SWARM-LOCALE"
+
+# # Set the timezone
+# # Value of 'timezone' must exist in /usr/share/zoneinfo
+timezone: "TIME-ZONE"
+
+# # Update apt packages on first boot
+package_update: false
+package_reboot_if_required: true
+package_upgrade: false
+
+# # Install any additional apt packages you need here
+# # OBS! This is done in RUNCMD section caused by an
+# # error in debian Buster NTP time.
+# packages:
+#   - sshfs
+#   - acl
+#   - dnsmasq
+#   - dnsutils
+
+# TODO: WiFi connect to HotSpot
+# - use `wpa_passphrase SSID PASSWORD` to encrypt the psk
+#
+
+#
+# Write Files section is where we create all configuration files
+# and bash scripts to be run after reboot
+#
+write_files:
+  #
+  # Global Application Config
+  #
+  - content: |
+      {
+      "Swarm": {
+          "Development": {
+              "PortainerServer":"PORTAINER-SERVER-ADDRESS",
+              "PortainerServerPort":"PORTAINER-SERVER-PORT",
+              "APIServer":"API-SERVER-ADDRESS",
+              "APIServerPort":"API-SERVER-PORT",
+              "MqttServer":"MQTT-SERVER-ADDRESS",
+              "MqttServerPort":"MQTT-SERVER-PORT",
+              "DBServer":"SQL-SERVER-ADDRESS",
+              "DBServerPort":"SQL-SERVER-PORT",
+              "SketchServer":"SKETCH-SERVER-ADDRESS",
+              "SketchServerPort":"SKETCH-SERVER-PORT",
+              "HomesDBName":"SQL-HOMES-DB-NAME",
+              "UsersDB":"SQL-USERS-DB-NAME",
+              "CollectionsDB":"SQL-COLLECTIONS-DB-NAME",
+              "SwarmManager":"MANAGER-NAME",
+              "ManagerEmail":"MANAGER-EMAIL",
+              "DBAdmin":"SQL-DB-ADMIN",
+              "SwarmSecret":"SWARM-SECRET"
+          },
+          "Production": {
+              "APIServer":"API-SERVER-ADDRESS",
+              "APIServerPort":"API-SERVER-PORT",
+              "MqttServer":"MQTT-SERVER-ADDRESS",
+              "MqttServerPort":"MQTT-SERVER-PORT",
+              "DBServer":"SQL-SERVER-ADDRESS",
+              "DBServerPort":"SQL-SERVER-PORT",
+              "SketchServer":"SKETCH-SERVER-ADDRESS",
+              "SketchServerPort":"SKETCH-SERVER-PORT",
+              "HomesDBName":"SQL-HOMES-DB-NAME",
+              "UsersDB":"SQL-USERS-DB-NAME",
+              "CollectionsDB":"SQL-COLLECTIONS-DB-NAME",
+              "SwarmManager":"MANAGER-NAME",
+              "ManagerEmail":"MANAGER-EMAIL",
+              "DBAdmin":"SQL-DB-ADMIN",
+              "SwarmSecret":"SWARM-SECRET"
+          }
+        }
+      "Redis": {
+        "Development": {
+            "RedisConfiguration":"development",
+            "RedisMasterServerAddress":"REDIS-MASTER-SERVER-ADDRESS",
+            "RedisMasterServerPort":"REDIS-MASTER-SERVER-PORT",
+            "redisReplicaServerAddress":"REDIS-REPLICA-SERVER-ADDRESS",
+            "RedisReplicaServerPort":"REDIS-REPLICA-SERVER-PORT"
+        },
+        "Production": {
+            "RedisConfiguration":"production",
+            "RedisMasterServerAddress":"REDIS-MASTER-SERVER-ADDRESS",
+            "RedisMasterServerPort":"REDIS-MASTER-SERVER-PORT",
+            "redisReplicaServerAddress":"REDIS-REPLICA-SERVER-ADDRESS",
+            "RedisReplicaServerPort":"REDIS-REPLICA-SERVER-PORT"
+        }
+      },
+      "Logging": {
+        "Development": {
+            "ApplicationLogPath":"APPLICATION-LOG-PATH",
+            "SnakeUtilLogFile":"SNAKEUTIL-LOG-FILE",
+            "SnakeApiLogFile":"SNAKEAPI-LOG-FILE",
+            "SnakeHistoryLogFile":"SNAKEHISTORY-LOG-FILE",
+            "SnakeConfigLogFile":"SNAKECONFIG-LOG-FILE",
+            "SnakeTimerLogFile":"SNAKETIMER-LOG-FILE"
+        },
+        "Production": {
+            "ApplicationLogPath":"APPLICATION-LOG-PATH",
+            "SnakeUtilLogFile":"SNAKEUTIL-LOG-FILE",
+            "SnakeApiLogFile":"SNAKEAPI-LOG-FILE",
+            "SnakeHistoryLogFile":"SNAKEHISTORY-LOG-FILE",
+            "SnakeConfigLogFile":"SNAKECONFIG-LOG-FILE",
+            "SnakeTimerLogFile":"SNAKETIMER-LOG-FILE"
+        }
+      },
+      "SnakeApi": {
+          "Development" : {
+              "Version":"SNAKEAPI-VERSION",
+              "SwarmMailUser":"SWARM-MAIL-USER",
+              "SwarmMailSubject":"SWARM-MAIL-SUBJECT",
+              "SwarmMailBody":"SWARM-MAIL-BODY",
+              "SwarmMailPath":"SWARM-MAIL-PATH",
+              "Template":"SQL-TEMPLATE-DEFAULT",
+              "TemplateLookupUser":"SQL-TEMPLATE-LOOKUP-USER",
+              "TemplateCreateUser":"SQL-TEMPLATE-CREATE-USER",
+              "TemplateGrantPrivileges":"SQL-TEMPLATE-GRANT-PRIVILEGES",
+              "TemplateFindUser":"SQL-TEMPLATE-FIND-USER",
+              "TemplateGrantAllPrivileges":"SQL-TEMPLATE-GRANT-ALL-PRIVILEGES",
+              "RuleTypes":"RULE-TYPES",
+              "AccessoryTypes":"ACCESSORY-TYPES",
+              "ServiceTypes":"SERVICE-TYPES",
+              "Services":"ACCESSORY-SERVICES",
+              "Boards":"BOARD-TYPES",   
+              "Sketches":"SKETCH-RECORDS"       
+          },
+          "Production" : {
+              "Version":"SNAKEAPI-VERSION",
+              "SwarmMailUser":"SWARM-MAIL-USER",
+              "SwarmMailSubject":"SWARM-MAIL-SUBJECT",
+              "SwarmMailBody":"SWARM-MAIL-BODY",
+              "SwarmMailPath":"SWARM-MAIL-PATH",
+              "Template":"SQL-TEMPLATE-DEFAULT",
+              "TemplateLookupUser":"SQL-TEMPLATE-LOOKUP-USER",
+              "TemplateCreateUser":"SQL-TEMPLATE-CREATE-USER",
+              "TemplateGrantPrivileges":"SQL-TEMPLATE-GRANT-PRIVILEGES",
+              "TemplateFindUser":"SQL-TEMPLATE-FIND-USER",
+              "TemplateGrantAllPrivileges":"SQL-TEMPLATE-GRANT-ALL-PRIVILEGES",
+              "RuleTypes":"RULE-TYPES",
+              "AccessoryTypes":"ACCESSORY-TYPES",
+              "ServiceTypes":"SERVICE-TYPES",
+              "Services":"ACCESSORY-SERVICES",
+              "Boards":"BOARD-TYPES",
+              "Sketches":"SKETCH-RECORDS"          
+          }
+        },
+        "SnakeUtil": {
+          "Development": {
+            "Version":"SNAKEUTIL-VERSION",
+            "ExternalDomainName":"EXTERNAL-DOMAIN-NAME",
+            "DnsProviderList":"DNS-PROVIDER-LIST",
+            "DnsProviderName":"DNS-PROVIDER-NAME",
+            "DnsProviderId":"DNS-PROVIDER-ID",
+            "DnsProviderUrl":"DNS-PROVIDER-URL",
+            "DnsProviderUser":"DNS-PROVIDER-USER",
+            "DnsProviderPassword":"DNS-PROVIDER-PASSWD"
+          },
+          "Production": {
+            "Version":"SNAKEUTIL-VERSION",
+            "ExternalDomainName":"EXTERNAL-DOMAIN-NAME",
+            "DnsProviderList":"DNS-PROVIDER-LIST",
+            "DnsProviderName":"DNS-PROVIDER-NAME",
+            "DnsProviderId":"DNS-PROVIDER-ID",
+            "DnsProviderUrl":"DNS-PROVIDER-URL",
+            "DnsProviderUser":"DNS-PROVIDER-USER",
+            "DnsProviderPassword":"DNS-PROVIDER-PASSWD"
+          }
+        },
+        "SnakeTimer": {
+          "Development": {
+            "Version":"SNAKETIMER-VERSION"
+          },
+          "Production": {
+            "Version":"SNAKETIMER-VERSION"
+          }
+        },
+        "SnakeConfig": {
+          "Development": {
+            "Version":"SNAKECONFIG-VERSION",
+            "RedisSynchKey":"REDIS-SYNC-KEY",
+            "RedisSyncPath":"REDIS-SYNC-PATH",
+            "ApplicationList":"APPLICATION-LIST",
+            "EnvironmentList":"ENVIRONMENT-LIST",
+            "StackList":"STACK-LIST"
+          },
+          "Production": {
+            "Version":"SNAKECONFIG-VERSION",
+            "RedisSynchKey":"REDIS-SYNC-KEY",
+            "RedisSyncPath":"REDIS-SYNC-PATH",
+            "ApplicationList":"APPLICATION-LIST",
+            "EnvironmentList":"ENVIRONMENT-LIST",
+            "StackList":"STACK-LIST"
+          }
+        },
+        "SnakeHistory": {
+            "Development" : {
+              "Version":"SNAKEHISTORY-VERSION"
+            },
+            "Production": {
+              "Version":"SNAKEHISTORY-VERSION"
+            }
+          }
+        "SnakeConsole": {
+            "Development" : {
+              "Version":"SNAKECONSOLE-VERSION",
+              "SnakeConsoleServer":"SNAKE-CONSOLE-SERVER"
+            },
+            "Production": {
+              "Version":"SNAKECONSOLE-VERSION",
+              "SnakeConsoleServer":"SNAKE-CONSOLE-SERVER"
+            }
+          }
+      }
+    path:  /opt/containers/configuration/globalconfig.json
+  
+  #
+  # SwarmSecret
+  #
+  - content: |
+      {
+        "ManagerPassword":"MANAGER-PASSWORD",
+        "RootPassword":"ROOT-PASSWORD",
+        "GlobalConfigPath":"GLOBAL-CONFIG-PATH"
+      }
+    path:  /opt/containers/configuration/swarmsecret.json
+
+  #
+  # Authorized SSH Keys
+  #
+  - content: |
+      AUTHORIZED-SSH-KEY
+    path:  /home/manager/.ssh/authorized_keys
+
+  #
+  # Mosquitto config file
+  #  
+  - content: |
+      # Place your local configuration in /mqtt/config/conf.d/
+      #
+      # A full description of the configuration file is at
+      # /usr/share/doc/mosquitto/examples/mosquitto.conf.example
+      # ---  WaveSnake Technologies --------
+
+      pid_file /var/run/mosquitto.pid
+
+      persistence true
+      persistence_location /mosquitto/data/
+
+      log_dest file /mosquitto/log/mosquitto.log
+      log_dest topic
+      log_timestamp true
+
+      log_type error
+      log_type warning
+      log_type notice
+      log_type information
+
+      connection_messages true
+
+      sys_interval 60
+
+      include_dir /mosquitto/config/conf.d
+      password_file /mosquitto/config/conf.d/pw
+      acl_file /mosquitto/config/conf.d/acl
+
+      allow_anonymous false
+
+      port 1883
+
+    path: /opt/containers/mosquitto/config/mosquitto.conf
+  
+  #
+  # Mosquitto ACL file
+  #
+  - content: |
+      user manager
+      topic readwrite #
+      topic read $SYS/broker/#
+    path: /opt/containers/mosquitto/config/conf.d/acl
+  
+  #
+  # Mosquitto PW file
+  # Build a DotNet Console app
+  # How to get hash key?
+  # Build a DotNet Console app that outputs the admin users hashed password.
+  # For that to work we must have the DotNet Runtime installed. Or could we make a
+  # self contained App? 
+  # We could also try to use docker desktop
+  # and run a container with Debian.
+  #
+  - content: |
+      MANAGER-ENCRYPTED-PASSWORD
+    path: /opt/containers/mosquitto/config/conf.d/pw
+  #
+  # NodeName.env ( Should this be a json file?)
+  #
+  - content: |
+      NODE_NAME=NODE-NAME
+    path:  /opt/containers/environment/nodename.env
+  
+  #
+  # ETH0 interface setup
+  #
+  - content: |
+      auto eth0
+      iface eth0 inet static
+      address ETH0-IP-ADDRESS
+      network ETH0-NETWORK-ADDRESS
+      netmask ETH0-NETWORK-NETMASK
+      dns-nameservers ETH0-DNS-SERVERS
+    path: /etc/network/interfaces.d/eth0
+  
+  #
+  # WiFi interface setup
+  #
+  - content: |
+      auto wlan0
+      iface wlan0 inet static
+      address WLAN0-IP-ADDRESS
+      network WLAN0-NETWORK-ADDRESS
+      netmask WLAN0-NETWORK-NETMASK
+      gateway WLAN0-STATIC-ROUTERS
+      dns-nameservers WLAN0-DNS-SERVERS
+      wpa-conf /etc/wpa_supplicant/wpa_supplicant.conf
+    path: /etc/network/interfaces.d/wlan0
+ 
+  #
+  # WiFi properties setup
+  #
+  - content: |
+      country=COUNTRY-CODE
+      ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+      update_config=1
+      network={
+        ssid="WIFI-SSID"
+        psk="WIFI-PASSWD"
+      }
+    path: /etc/wpa_supplicant/wpa_supplicant.conf
+  
+  #
+  # Interfaces (Recommended content)
+  #
+  - content: |
+      # Please note that this file is written to be used with dhcpcd
+      # For static IP, consult /etc/dhcpcd.conf and 'man dhcpcd.conf'
+      # Include files from /etc/network/interfaces.d:
+      source-directory /etc/network/interfaces.d
+    path: /etc/network/interfaces
+ 
+  #
+  # DHCPCD dhcpcd.conf static network setup
+  #
+  - content: |
+      interface wlan0
+      static ip_address=WLAN0-IP-ADDRESS/24
+      static routers=WLAN0-STATIC-ROUTERS
+      static domain_name_servers=WLAN0-DNS-SERVERS
+
+    path: /etc/dhcpcd.conf
+ 
+  #
+  # Hosts
+  #
+  - content: |
+      127.0.1.1 NODE-NAME NODE-NAME.INTERNAL-DOMAIN-NAME
+      127.0.0.1 localhost
+      DNS-STRING1
+      DNS-STRING2
+      DNS-STRING3
+    path: /etc/hosts
+  
+  #
+  # Bash script to mount USB Stick
+  # Script must be run on RPI with sudo
+  # and requires reboot 
+  #
+  - content: |
+      #!/bin/bash
+      #
+      # Mount USB Stick
+      #
+      echo -e  "\n"
+      read -p "Type USB Stick Label>"
+      if [ $REPLY != "" ]; then
+        DISKUUID=$(lsblk -f | sed -n -e "s/^.*$REPLY //p" | xargs)
+        echo "/dev/disk/by-uuid/$DISKUUID /media/data vfat auto,nofail,noatime,users,rw,uid=manager,gid=manager 0 0" >> /etc/fstab
+      else
+        echo -e "No label given"
+      fi
+    path: /home/manager/usbmount.sh
+  
+  #
+  # Portainer Docker Compose (Version 2.0)
+  #
+  - content: |
+      version: '3.7'
+
+      services:
+        agent:
+          image: portainer/agent
+          volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+            - /var/lib/docker/volumes:/var/lib/docker/volumes
+          networks:
+            - traefik-public
+          deploy:
+            mode: global
+            restart_policy:
+              condition: any
+              delay: 20s
+              max_attempts: 3
+              window: 120s
+            placement:
+              constraints: [node.platform.os == linux]
+
+        portainer:
+          image: portainer/portainer-ce
+          command: -H tcp://tasks.agent:9001 --tlsskipverify --admin-password "$$2y$$05$$/.uo0TOISIA0iObDNskHkuGHlb/74AhYeDSccTs1V.mzRC8iAYUbm"
+          ports:
+            - "9000:9000"
+            - "8000:8000"
+
+          volumes:
+            - /etc/localtime:/etc/localtime:ro
+            - /opt/containers/portainer/data:/data
+
+
+          networks:
+            - traefik-public
+
+          deploy:
+            mode: replicated
+            replicas: 1
+            restart_policy:
+              condition: any
+              delay: 5s
+              max_attempts: 3
+              window: 120s
+            placement:
+              constraints: [node.role == manager]
+
+            labels:
+              - "traefik.enable=true"
+    
+              # This section is for local http access ( at this moment this does not work )
+              - "traefik.http.routers.portainer-local.entrypoints=web"
+              - "traefik.http.routers.portainer-local.rule=Host(`portainer.wavesnake.local`)"
+              - "traefik.http.routers.portainer-local.service=portainer-local"
+              - "traefik.http.services.portainer-local.loadbalancer.server.port=9000"
+
+              # This section is for external http access
+              - "traefik.http.routers.portainer-external.entrypoints=web"
+              - "traefik.http.routers.portainer-external.rule=Host(`adm.wavesnake.dk`)"
+              - "traefik.http.routers.portainer-external.service=portainer-external"
+              - "traefik.http.services.portainer-external.loadbalancer.server.port=9000"
+              - "traefik.http.middlewares.portainer-https-redirect.redirectscheme.scheme=https"
+              - "traefik.http.middlewares.portainer-https-redirect.redirectscheme.permanent=true"
+              - "traefik.http.routers.portainer-external.middlewares=portainer-https-redirect"
+
+              # This section is for external https access
+              - "traefik.http.routers.portainer-secure.entrypoints=secure"
+              - "traefik.http.routers.portainer-secure.rule=Host(`adm.wavesnake.dk`)"
+              - "traefik.http.routers.portainer-secure.tls=true"
+              - "traefik.http.routers.portainer-secure.tls.certresolver=http"
+              - "traefik.http.routers.portainer-secure.service=portainer-secure"
+              - "traefik.http.services.portainer-secure.loadbalancer.server.port=9000"
+
+      networks:
+        traefik-public:
+          external: true
+          attachable: true
+    path: /opt/containers/portainer/docker-compose.yml
+
+  #
+  # Traefik docker-compose.yml
+  #
+  - content: |
+      version: '3.7'
+
+      services:
+        traefik:
+          image: traefik:v2.4.5
+
+          ports:
+            - 80:80
+            - 443:443
+            - 8080:8080
+            - 8210:8210
+            - 8211:8211
+            - 8213:8213
+            - 8214:8214
+            - 2202:2202
+            - 2203:2203
+            - 2204:2204
+
+          volumes:
+            - /opt/containers/traefik/data/traefik.yml:/traefik.yml:ro
+            - /opt/containers/traefik/data/ssh.yml:/ssh.yml:ro
+            - /opt/containers/traefik/data/acme.json:/acme.json
+            - /var/log/snakelogs/traefik:/log
+            - /var/run/docker.sock:/var/run/docker.sock:ro
+
+          networks:
+            - traefik-public
+
+          labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.dashboard.rule=PathPrefix(`/api`) || PathPrefix(`/dashboard`)"
+            - "traefik.http.routers.dashboard.entrypoints=traefik"
+            - "traefik.http.routers.dashboard.service=api@internal"
+
+          deploy:
+            placement:
+              constraints:
+                - node.role == manager
+            restart_policy:
+              condition: any
+              delay: 5s
+              max_attempts: 3
+              window: 120s
+
+      networks:
+        traefik-public:
+          external: true
+    path: /opt/containers/traefik/docker-compose.yml
+  
+  #
+  # Traefik traefik.yml
+  #
+  - content: |
+
+      api:
+        dashboard: true
+        insecure: true
+
+      log:
+        filePath: "log/traefik.log"
+        level: DEBUG
+
+      accessLog:
+        filePath: "log/access.log"
+
+      entryPoints:
+        traefik:
+          address: ":8080"
+        ssh2:
+          address: ":2202"
+        ssh3:
+          address: ":2203"
+        ssh4:
+          address: ":2204"          
+        web:
+          address: ":80"
+        secure:
+          address: ":443"
+        mosquitto:
+          address: ":8210"
+        mariadb:
+          address: ":8211"
+        mqtinternal:
+          address: ":8213"
+        redis:
+          address: ":8214"
+
+      providers:
+        docker:
+          endpoint: "unix:///var/run/docker.sock"
+          exposedByDefault: false
+          swarmMode: true
+        file:
+          filename: "ssh.yml"
+          watch: true
+
+      certificatesResolvers:
+        http:
+          acme:
+            email: ACME-EMAIL-ADDRESS
+            storage: acme.json
+            httpChallenge:
+              entryPoint: web
+    path: /opt/containers/traefik/data/traefik.yml
+
+  #
+  # Traefik Dynamic Configuration file ssh.yml 
+  # Setup Traefik API routes and proxy SSH thru Traefik
+  # 
+  - content: |
+      http:
+        routers:
+          local:
+            rule: "Host(`traefik.wavesnake.local`)"
+            entrypoints: web
+            service: api@internal
+            middleware: traefik-auth
+
+          external:
+            rule: "Host(`traefik.wavesnake.dk`)"
+            entrypoint: web
+            middleware: traefik-auth
+            middleware: traefik-redirect
+            service: api@internal
+
+          secure:
+            rule: "Host(`traefik.wavesnake.dk`)"
+            middleware: traefik-auth
+            entrypoint: secure
+            service: api@internal
+            certresolver: http
+
+        middlewares:
+          traefik-auth:
+            basicauth:
+              users:
+                - manager:$$apr1$$ktr40m5i$$IPyM/4bfex8WbfpmsNl.9.
+
+          traefik-redirect:
+            redirectScheme:
+              scheme: https
+              permanent: true
+
+      tcp:
+        services:
+          ssh-ws02:
+            loadBalancer:
+              servers:
+                - address: "WS02-IP-ADDRESS:22"
+          ssh-ws03:
+            loadBalancer:
+              servers:
+                - address: "WS03-IP-ADDRESS:22"
+          ssh-ws04:
+            loadBalancer:
+              servers:
+                - address: "WS04-IP-ADDRESS:22"
+        routers:
+          ssh-route-ws02:
+            entryPoints:
+              - "ssh2"
+            rule: "HostSNI(`*`)"
+            service: "ssh-ws02"
+      
+          ssh-route-ws03:
+            entryPoints:
+              - "ssh3"
+            rule: "HostSNI(`*`)"
+            service: "ssh-ws03"
+      
+          ssh-route-ws04:
+            entryPoints:
+              - "ssh4"
+            rule: "HostSNI(`*`)"
+            service: "ssh-ws04"
+    path: /opt/containers/traefik/data/ssh.yml
+  
+   #
+
+  #
+  # Redis docker-compose.yml
+  #
+  #
+  - content: |
+      version: '3.7'
+      #
+      # Docker Compose file for Redis
+      # This solution are deployed from Portainer
+      # as a Swarm Stack Service.
+      #
+      services:
+        redis:
+          image: jagdriver/wavesnake:redis
+
+          volumes:
+            - /var/log/snakelogs/redis:/var/snakelogs
+            - /opt/containers/redis/data:/data
+            - /opt/containers/redis/conf:/etc/redis
+
+          ports:
+            - target: 6379
+              protocol: tcp
+              mode: host
+
+          networks:
+            - traefik-public
+
+          deploy:
+            restart_policy:
+              condition: any
+              delay: 5s
+              max_attempts: 3
+              window: 120s
+            placement:
+              constraints:
+                - node.role == manager
+            labels:
+              - "traefik.enable=true"
+
+              # This section id for local http access
+              - "traefik.tcp.routers.redisint.entrypoints=redis"
+              - "traefik.tcp.routers.redisint.rule=HostSNI(`*`)"
+              - "traefik.tcp.routers.redisint.service=redisinternal"
+              - "traefik.tcp.services.redisinternal.loadBalancer.server.port=6379"
+
+      networks:
+        traefik-public:
+          external: true
+
+    path: /opt/containers/redis/docker-compose.yml
+  
+  #
+  # Redis configuration
+  #
+  - content: |
+      #
+      # Redis Configuration file
+      # WaveSnake
+      # 2019-11-26 Niels J. Nielsen
+      #  
+
+      protected-mode no
+      port 6379
+      tcp-backlog 511
+      timeout 0
+      tcp-keepalive 300
+      daemonize no
+      supervised no
+      pidfile /var/run/redis_6379.pid
+      loglevel verbose
+      logfile "/var/snakelogs/redislog.log"
+      databases 16
+      always-show-logo yes
+      save 900 1
+      save 300 10
+      save 60 10000
+      stop-writes-on-bgsave-error yes
+      rdbcompression yes
+      rdbchecksum yes
+      dbfilename dump.rdb
+      dir /data
+      replica-serve-stale-data yes
+      replica-read-only yes
+      repl-diskless-sync no
+      repl-diskless-sync-delay 5
+      repl-disable-tcp-nodelay no
+      replica-priority 100
+      maxmemory 50000000
+      lazyfree-lazy-eviction no
+      lazyfree-lazy-expire no
+      lazyfree-lazy-server-del no
+      replica-lazy-flush no
+      appendonly yes
+      appendfilename "appendonly.aof"
+      appendfsync everysec
+      no-appendfsync-on-rewrite no
+      auto-aof-rewrite-percentage 100
+      auto-aof-rewrite-min-size 64mb
+      aof-load-truncated yes
+      aof-use-rdb-preamble yes
+      lua-time-limit 5000
+      slowlog-log-slower-than 10000
+      slowlog-max-len 128
+      latency-monitor-threshold 0
+      notify-keyspace-events ""
+      hash-max-ziplist-entries 512
+      hash-max-ziplist-value 64
+      list-max-ziplist-size -2
+      list-compress-depth 0
+      set-max-intset-entries 512
+      zset-max-ziplist-entries 128
+      zset-max-ziplist-value 64
+      hll-sparse-max-bytes 3000
+      stream-node-max-bytes 4096
+      stream-node-max-entries 100
+      activerehashing yes
+      client-output-buffer-limit normal 0 0 0
+      client-output-buffer-limit replica 256mb 64mb 60
+      client-output-buffer-limit pubsub 32mb 8mb 60
+      hz 10
+      dynamic-hz yes
+      aof-rewrite-incremental-fsync yes
+      rdb-save-incremental-fsync yes
+    path: /opt/containers/redis/conf/redis.conf
+
+  # 
+  # Bridge Script to be run after each reboot
+  #
+  - content: |
+      sudo iptables -t nat -A POSTROUTING -o wlan0 -j MASQUERADE
+      sudo iptables -A FORWARD -i wlan0 -o eth0 -m state --state RELATED,ESTABLISHED -j ACCEPT
+      sudo iptables -A FORWARD -i eth0 -o wlan0 -j ACCEPT
+    path: /home/manager/bridge.sh
+ 
+  # 
+  # NFS startup script
+  #
+  - content: |
+      sudo exportfs -r
+      sudo mount --bind /opt/containers /mnt/config
+    path: /home/manager/nfs.sh
+  
+  #
+  # Swarm Secret 
+  #
+  - content: |
+      {
+        "SwarmManager":"manager",
+        "SwarmManagerPassword":"wavesnake",
+        "SqlManager":"root",
+        "SqlManagerPassword":"wavesnake",
+        "GlobalConfigPath":"/opt/containers/configuration/globalconfig.json"
+      }
+    path: /opt/containers/configuration/swarmsecret.json
+  
+  #
+  # Zigbee Configuration file
+  #
+  - content: |
+      # Home Assistant integration (MQTT discovery)
+      homeassistant: false
+
+      # allow new devices to join
+      permit_join: true
+
+      # MQTT settings
+      mqtt:
+        # MQTT base topic for zigbee2mqtt MQTT messages
+        base_topic: zigbee2mqtt
+        # MQTT server URL
+        server: 'mqtt://WLAN0-IP-ADDRESS:MQTT-INTERNAL-PORT'
+        # MQTT server authentication, uncomment if required:
+        user: manager
+        password: wavesnake
+
+      # Serial settings
+      serial:
+        # Location of CC2531 USB sniffer
+        port: /dev/cc2531
+    path: /opt/containers/snakezig/data/configuration.yaml
+ 
+  #
+  # Zigbee Docker Setup script
+  #
+  - content: |
+      #!/bin/bash
+      USBDEV=`readlink -f /dev/cc2531`
+      read minor major < <(stat -c '%T %t' $USBDEV)
+      if [[ -z $minor || -z $major ]]; then
+          echo 'Device not found'
+          exit
+      fi
+      dminor=$((0x${minor}))
+      dmajor=$((0x${major}))
+      CID=`docker ps -a --no-trunc | grep jagdriver/wavesnake:snakezig | head -1 |  awk '{print $1}'`
+      if [[ -z $CID ]]; then
+          echo 'CID not found'
+          exit
+      fi
+      echo 'Setting permissions'
+      echo "c $dmajor:$dminor rwm" > /sys/fs/cgroup/devices/docker/$CID/devices.allow
+    path: /home/manager/docker-setup-cc2531.sh
+  
+  #
+  # Zigbee Docker Event Listener script
+  #
+  - content: |
+      #!/bin/bash
+      docker events --filter 'event=start'| \
+      while read line; do
+          /home/manager/docker-setup-cc2531.sh
+      done
+    path: /home/manager/docker-event-listener.sh
+ 
+  #
+  # Zigbee Docker Event Listener Service
+  #
+  - content: |
+      [Unit]
+      Description=Docker Event Listener for TI CC2531 device
+      After=network.target
+      StartLimitIntervalSec=0
+      [Service]
+      Type=simple
+      Restart=always
+      RestartSec=1
+      User=root
+      ExecStart=/bin/bash /home/manager/docker-event-listener.sh
+
+      [Install]
+      WantedBy=multi-user.target
+    path: /etc/systemd/system/docker-event-listener.service
+  
+#
+#  These commands will be run once on first boot only
+#
+runcmd:
+  # Restart Avahi daemon
+  - 'logger !!! wavesnake !!!'
+  - 'logger !!! wavesnake !!! Restart avahi-deamon'
+  - 'logger !!! wavesnake !!!'
+  - 'systemctl restart avahi-daemon'
+  
+  # Start WLAN0 interface and wait 15 sec.
+  - 'logger !!! wavesnake !!!'
+  - 'logger !!! wavesnake !!! Start WiFi Interface' 
+  - 'logger !!! wavesnake !!!'
+  - 'sudo ifup wlan0'
+  - 'sudo ifup eth0'
+  - 'sudo sleep 15'
+
+  # Start ETH0 interface
+  - 'sudo ip addr flush dev eth0'
+  - 'sudo ifdown eth0'
+  - 'sudo ifup eth0'
+  - 'sudo sleep 15'
+
+  # Workaround for Hypriot initial date/time setting
+  - 'logger !!! wavesnake !!!'
+  - 'logger !!! wavesnake !!! Workaround for Hypriot OS time skew'
+  - 'logger !!! wavesnake !!!'
+  - date
+  - service ntp --full-restart
+  - sleep 15
+  - date
+
+  # Create IP route between ETH0 & WLAN0
+  - 'logger !!! wavesnake !!!'
+  - 'logger !!! wavesnake !!! Create bidirectional Route between WLAN0 network and ETH0 network'
+  - 'logger !!! wavesnake !!!'
+  - 'sudo ip route delete default via ETH0-IP-ADDRESS'
+  - 'sudo ip route delete default via WLAN0-STATIC-ROUTERS'
+  - 'sudo ip route add default via WLAN0-STATIC-ROUTERS dev wlan0 src WLAN0-IP-ADDRESS metric 100'
+  
+  # Directories for NFS
+  - 'sudo mkdir -p /mnt/nfs'
+  - 'sudo mkdir -p /mnt/config'
+  - 'sudo chown -R manager:manager /mnt/nfs'
+  - 'sudo chown -R manager:manager /mnt/config'
+  - 'sudo chmod 755 /mnt/nfs'
+  - 'sudo chmod 755 /mnt/config'
+  - 'sudo chmod +x /home/manager/nfs.sh'
+
+  # Update package index and allow for release info change
+  - 'logger !!! wavesnake !!!'
+  - 'logger !!! wavesnake !!! Update Package list'
+  - 'logger !!! wavesnake !!!'
+  - 'sudo apt-get update --allow-releaseinfo-change'
+
+  # Install packages
+  - 'logger !!! wavesnake !!!'
+  - 'logger !!! wavesnake !!! Install packages'
+  - 'logger !!! wavesnake !!!'
+  - 'sudo apt-get -y install acl'
+  - 'sudo apt-get -y install sshfs'
+  - 'sudo apt-get -y install nfs-kernel-server'
+
+  #  Docker Swarm Initialization
+  - 'logger !!! wavesnake !!!'
+  - 'logger !!! wavesnake !!! Docker Swarm Init with listen and advertise interface'
+  - 'logger !!! wavesnake !!!'
+  - 'docker swarm init --listen-addr SWARM-INTERFACE:SWARM-PORT --advertise-addr SWARM-INTERFACE:SWARM-PORT'
+  
+  #  Docker Node label
+  - 'logger !!! wavesnake !!!'
+  - 'logger !!! wavesnake !!! Docker Node Label'
+  - 'logger !!! wavesnake !!!'
+  - 'docker node update --label-add wsnode=NODE-NAME NODE-NAME'
+
+  # Setup manager
+  - 'logger !!! wavesnake !!!'
+  - 'logger !!! wavesnake !!! Set manager as owner and set rights on home directory'
+  - 'logger !!! wavesnake !!!'
+  - 'sudo chown manager:manager /home/manager'
+  - 'sudo chmod -R u+rwX,go+rX-w /home/manager'
+  - 'sudo usermod -aG docker $(whoami)'
+
+  # Create SSH keys
+  - 'logger !!! wavesnake !!!'
+  - 'logger !!! wavesnake !!! Create ssh private/public keys'
+  - 'logger !!! wavesnake !!!'
+  - 'sudo mkdir -p /home/manager/.ssh'
+  - 'sudo chown manager:manager /home/manager/.ssh'
+  - 'sudo touch /home/manager/.ssh/authorized_keys'
+  - 'sudo chmod 700 /home/manager/.ssh'
+  - 'sudo cp -P /boot/keyfile.txt /home/manager/.ssh/authorized_keys'
+  - 'sudo chown manager:manager /home/manager/.ssh/authorized_keys'
+  - 'sudo chmod 600 /home/manager/.ssh/authorized_keys'
+
+  # Setup Bridging between eth0 and wlan0
+  - 'logger !!! wavesnake !!!'
+  - 'logger !!! wavesnake !!! Setup Routing table'
+  - 'logger !!! wavesnake !!!'
+  - 'sudo sed -i -n "s/#net.ipv4.ip_forward=1/net.ipv4.ip_forward=1/" /etc/sysctl.conf'
+  - 'sudo iptables -t nat -A POSTROUTING -o wlan0 -j MASQUERADE'
+  - 'sudo iptables -A FORWARD -i wlan0 -o eth0 -m state --state RELATED,ESTABLISHED -j ACCEPT'
+  - 'sudo iptables -A FORWARD -i eth0 -o wlan0 -j ACCEPT'
+
+  # Setup cron job to add bridge rules to iptables after reboot
+  - 'logger !!! wavesnake !!!'
+  - 'logger !!! wavesnake !!! Setup Cron job to start Bridging after reboot'
+  - 'logger !!! wavesnake !!!'
+  - 'sudo chmod +x /home/manager/bridge.sh'
+  - 'sudo sed  -i "$ a\@reboot	root /home/manager/bridge.sh" /etc/crontab'
+
+  # Skip Locale check on User Session Startup
+  - 'logger !!! wavesnake !!!'
+  - 'logger !!! wavesnake !!! Skip Locale check'
+  - 'logger !!! wavesnake !!!'
+  - 'sudo touch /var/lib/cloud/instance/locale-check.skip'
+
+  # Create Container directories
+  - 'logger !!! wavesnake !!!'
+  - 'logger !!! wavesnake !!! Create container directories and files'
+  - 'logger !!! wavesnake !!!'
+  - 'sudo mkdir -p /opt/containers'
+
+  # Traefik
+  - 'sudo mkdir -p /opt/containers/traefik'
+  - 'sudo mkdir -p /opt/containers/traefik/data'
+  - 'sudo mkdir -p /opt/containers/traefik/config'
+  - 'sudo touch /opt/containers/traefik/data/acme.json'
+  # Portainer
+  - 'sudo mkdir -p /opt/containers/portainer'
+  - 'sudo mkdir -p /opt/containers/portainer/data'
+  # Apache
+  - 'sudo mkdir -p /opt/containers/apache'
+  - 'sudo mkdir -p /opt/containers/apache/data'
+  # Redis
+  - 'sudo mkdir -p /opt/containers/redis'
+  - 'sudo mkdir -p /opt/containers/redis/data'
+  - 'sudo mkdir -p /opt/containers/redis/conf'
+  # Mosquitto
+  - 'sudo mkdir -p /opt/containers/mosquitto'
+  - 'sudo mkdir -p /opt/containers/mosquitto/config'
+  - 'sudo mkdir -p /opt/containers/mosquitto/config/conf.d'
+  - 'sudo mkdir -p /opt/containers/mosquitto/data'
+  # SnakeApi
+  - 'sudo mkdir -p /opt/containers/snakeapi'
+  - 'sudo mkdir -p /opt/containers/snakeapi/data'
+  # SnakeConfig
+  - 'sudo mkdir -p /opt/containers/swarmconfig'
+  - 'sudo mkdir -p /opt/containers/swarmconfig/data'
+  # MariaDB
+  - 'sudo mkdir -p /opt/containers/mariadb'
+  - 'sudo mkdir -p /opt/containers/mariadb/data'
+  # Environment
+  - 'sudo mkdir -p /opt/containers/environment'
+  # Synchronization
+  - 'sudo mkdir -p /opt/containers/synchronization'
+  
+  # Set rights on container files
+  - 'logger !!! wavesnake !!!'
+  - 'logger !!! wavesnake !!! Set rights on Container files'
+  - 'logger !!! wavesnake !!!'
+  - 'sudo chgrp -R manager /opt/containers'
+  - 'chown -R manager /opt/containers'
+  - 'sudo chmod ug+rw /opt/containers -R'
+
+  # set special rights on ACME file
+  - 'logger !!! wavesnake !!!'
+  - 'logger !!! wavesnake !!! Set rights on ACME file'
+  - 'logger !!! wavesnake !!!'
+  - 'sudo chmod 600 /opt/containers/traefik/data/acme.json'
+  
+  # Create log directories
+  - 'logger !!! wavesnake !!!'
+  - 'logger !!! wavesnake !!! Create log files'
+  - 'logger !!! wavesnake !!!'
+  - 'sudo mkdir -p /var/log/snakelogs'
+  - 'sudo mkdir -p /var/log/snakelogs/traefik'
+  - 'sudo mkdir -p /var/log/snakelogs/redis'
+  - 'sudo mkdir -p /var/log/snakelogs/mosquitto'
+  - 'sudo mkdir -p /var/log/mosquitto'
+  #- 'sudo mkdir -p /var/log/redis'
+
+  # Set Owner and rights on log files
+  - 'logger !!! wavesnake !!!'
+  - 'logger !!! wavesnake !!! Set rights on log files'
+  - 'logger !!! wavesnake !!!'
+  - 'sudo chmod ugo+rw /var/log/snakelogs -R'
+  #- 'sudo chown -R manager /var/log/snakelogs'
+  #- 'sudo chown -R manager /var/log/traefik'
+  #- 'sudo chown -R manager /var/log/mosquitto'
+  #- 'sudo chown -R manager /var/log/redis'
+
+  # Create Docker network
+  - 'logger !!! wavesnake !!!'
+  - 'logger !!! wavesnake !!! Create Traefik network'
+  - 'logger !!! wavesnake !!!'
+  - 'docker network create --driver overlay --attachable traefik-public'
+
+  # Create Traefik Docker stack
+  - 'logger !!! wavesnake !!!'
+  - 'logger !!! wavesnake !!! Instantiate Traefik Container'
+  - 'logger !!! wavesnake !!!'
+  - [
+       docker, stack, deploy,
+       "--compose-file", "/opt/containers/traefik/docker-compose.yml",
+       "Traefik"
+    ]
+  # Create Portainer Docker stack
+  - 'logger !!! wavesnake !!!'
+  - 'logger !!! wavesnake !!! Instantiate Portainer Container'
+  - 'logger !!! wavesnake !!!'
+  - [
+       docker, stack, deploy,
+       "--compose-file", "/opt/containers/portainer/docker-compose.yml",
+       "Portainer"
+    ]
+
+  # Create Redis Docker stack
+  - 'logger !!! wavesnake !!!'
+  - 'logger !!! wavesnake !!! Instantiate Redis Container'
+  - 'logger !!! wavesnake !!!'
+  - [
+      docker, stack, deploy,
+      "--compose-file", "/opt/containers/redis/docker-compose.yml",
+      "Redis"
+    ]
+
+
+  # Create exports for NFS, will only work after a reboot
+  # We exports only /mnt/config
+  - 'logger !!! wavesnake !!!'
+  - 'logger !!! wavesnake !!! Create NFS Exports config'
+  - 'logger !!! wavesnake !!!'
+  - 'sudo sed  -i "$ a\/mnt/config 192.168.230.0/24(rw,nohide,insecure,no_subtree_check,async)" /etc/exports'
+  
+  #
+  # Create NFS Mount Command in /etc/fstab
+  # To locally mount /opt/container to /mnt/config
+  - 'logger !!! wavesnake !!!'
+  - 'logger !!! wavesnake !!! Create NFS Mount command in fstab'
+  - 'logger !!! wavesnake !!!'
+  - 'sudo sed  -i "$ a\/opt/containers /mnt/config none bind  0  0" /etc/fstab'
+ 
+  #
+  # Add SwarmSecret to Docker Swarm
+  #
+  - 'logger !!! wavesnake !!!'
+  - 'logger !!! wavesnake !!! Execute Docker Add SwarmSecret'
+  - 'logger !!! wavesnake !!!'
+  - 'docker secret create SwarmSecret /opt/containers/configuration/swarmsecret.json'
+
+  #
+  # Craete USB Mount command in /etc/fstab
+  #
+  - 'logger !!! wavesnake !!!'
+  - 'logger !!! wavesnake !!! Create NFS Exports config'
+  - 'logger !!! wavesnake !!!'
+  - 'USB-MOUNT-COMMAND'
+  #
+  # Create Zigbee2Mqtt configuration
+  #
+  - 'echo "SUBSYSTEM==\"tty\", ATTRS{idVendor}==\"ZIGBEE-VENDOR\", ATTRS{idProduct}==\"ZIGBEE-PRODUCT\", SYMLINK+=\"cc2531\",  RUN+=\"/home/manager/docker-setup-cc2531.sh\"" | sudo tee /etc/udev/rules.d/99-cc2531.rules'
+  - 'sudo udevadm control --reload-rules'
+  - 'sudo chmod 744 /home/manager/docker-setup-cc2531.sh'
+  - 'sudo chmod 744 /home/manager/docker-event-listener.sh'
+  - 'sudo chmod 744 /etc/systemd/system/docker-event-listener.service'
+  - 'sudo systemctl daemon-reload'
+  - 'sudo systemctl start docker-event-listener.service'
+  - 'sudo systemctl status docker-event-listener.service'
+  - 'sudo systemctl enable docker-event-listener.service'
+
+
+  - 'logger !!! wavesnake !!!'
+  - 'logger !!! wavesnake !!! End of RUNCMD'
+  - 'logger !!! wavesnake !!!'
+
+  #
+  # Below command requires that we know the UUID of the mounted USB stick
+  # and then append a line for each USB stick
+  # Also this must be done on the DB Node
+  #- 'echo "/dev/disk/by-uuid/3433-3231 /media/data vfat auto,nofail,noatime,users,rw,uid=manager,gid=manager 0 0" >> /etc/fstab'
+  #- 'mount nfs disk !!!!' Must be done on the WS01 Node
+
+  # !!! There must be a newline after this line
+
+

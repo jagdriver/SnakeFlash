@@ -3,8 +3,8 @@
 #
 
 # This file is the !! SWARM MANAGER NODE !! Default Flash config.
-# Version: 1.12.3 
-# The version are paired with Hypriot OS version 1.12.13.
+# Version: 1.12.4
+# The version are paired with SnakeOS version v1.1.0.
 # You can change the configuration directly in the file or
 # run ./flash-config.zsh in the flash directory to be guided
 # thru the setup.
@@ -12,9 +12,20 @@
 # Cloud_Init Documentation: http://cloudinit.readthedocs.io/en/0.7.9/index.html
 
 # TODO: Remove sudo from all commands
-# TODO: Docker label must be set
-# TODO: Docker port must be set
-# TODO: Keep 2.4G radio
+
+# PowerState
+power_state:
+  delay: "+2"
+  mode: reboot
+  message: Bye Bye
+  timeout: 30
+  condition: True
+
+# Disk partition management
+growpart:
+  mode: off
+  devices: ['/dev/mmcblk0p2']
+  ignore_growroot_disabled: false
 
 # Set your hostname here, the manage_etc_hosts will update the hosts file entries as well
 hostname: sn01
@@ -27,6 +38,7 @@ users:
     sudo: ALL=(ALL) NOPASSWD:ALL
     shell: /bin/bash
     groups: users,docker,video,input
+    # passwd: $6$re1cGWnTEMlOb2BF$bOhaKj62ayhIBQsRDtGXiYLmXD1blt32vgCIyfJFnNTRoFayNOwhuVhOaK2mlfpygsQiY8UMBMic1qGIYo9a7A==
     plain_text_passwd: wavesnake
     lock_passwd: false
     ssh_pwauth: true
@@ -47,14 +59,17 @@ package_upgrade: false
 # # Install any additional apt packages you need here
 # # OBS! This is done in RUNCMD section caused by an
 # # error in debian Buster NTP time.
-# packages:
-#   - sshfs
-#   - acl
-#   - dnsmasq
-#   - dnsutils
+#packages:
+#  - dnsmasq
 
-# # WiFi connect to HotSpot
-# # - use `wpa_passphrase SSID PASSWORD` to encrypt the psk
+# TODO: WiFi connect to HotSpot
+# - use `wpa_passphrase SSID PASSWORD` to encrypt the psk
+#
+
+#
+# Write Files section is where we create all configuration files
+# and bash scripts to be run after reboot
+#
 write_files:
   #
   # Global Application Config
@@ -63,15 +78,15 @@ write_files:
       {
       "Swarm": {
           "Development": {
-              "PortainerServer":"192.168.1.240",
+              "PortainerServer":"192.168.1.235",
               "PortainerServerPort":"9000",
-              "APIServer":"192.168.1.240",
+              "APIServer":"192.168.1.235",
               "APIServerPort":"80",
-              "MqttServer":"192.168.1.240",
+              "MqttServer":"192.168.1.235",
               "MqttServerPort":"8213",
               "DBServer":"sql.wavesnake.local",
               "DBServerPort":"8211",
-              "SketchServer":"192.168.1.240",
+              "SketchServer":"192.168.1.235",
               "SketchServerPort":"80",
               "HomesDBName":"homes",
               "UsersDB":"users",
@@ -82,13 +97,15 @@ write_files:
               "SwarmSecret":"This is a secret string used to generate user tokens"
           },
           "Production": {
-              "APIServer":"192.168.1.240",
+              "PortainerServer":"192.168.1.235",
+              "PortainerServerPort":"9000",
+              "APIServer":"192.168.1.235",
               "APIServerPort":"80",
-              "MqttServer":"192.168.1.240",
+              "MqttServer":"192.168.1.235",
               "MqttServerPort":"8213",
               "DBServer":"sql.wavesnake.local",
               "DBServerPort":"8211",
-              "SketchServer":"192.168.1.240",
+              "SketchServer":"192.168.1.235",
               "SketchServerPort":"80",
               "HomesDBName":"homes",
               "UsersDB":"users",
@@ -98,20 +115,20 @@ write_files:
               "DBAdmin":"root",
               "SwarmSecret":"This is a secret string used to generate user tokens"
           }
-        }
+        },
       "Redis": {
         "Development": {
             "RedisConfiguration":"development",
-            "RedisMasterServerAddress":"192.168.230.1",
+            "RedisMasterServerAddress":"172.16.1.1",
             "RedisMasterServerPort":"8214",
-            "redisReplicaServerAddress":"192.168.230.4",
+            "redisReplicaServerAddress":"172.16.1.4",
             "RedisReplicaServerPort":"8214"
         },
         "Production": {
             "RedisConfiguration":"production",
-            "RedisMasterServerAddress":"192.168.230.1",
+            "RedisMasterServerAddress":"172.16.1.1",
             "RedisMasterServerPort":"8214",
-            "redisReplicaServerAddress":"192.168.230.4",
+            "redisReplicaServerAddress":"172.16.1.4",
             "RedisReplicaServerPort":"8214"
         }
       },
@@ -148,10 +165,11 @@ write_files:
               "TemplateGrantAllPrivileges":"GRANT ALL PRIVILEGES ON *.* TO '{0}'@'%' WITH GRANT OPTION;",
               "RuleTypes":"accessory,group",
               "AccessoryTypes":"TempSensor,TempHumSensor,GateController,Relay,Switch,GasBurner",
+              "UnitTypes":"byte,sbyte,short,ushort,int,uint,long,ulong,float,double",
               "ServiceTypes":"Temperature,Humidity,Sketch,UpTime,OpenClose,OnOff",
               "Services":"[ { 'Id':0, 'ServiceId':0, 'Type':'Temperature', 'Description':'Temperature in degree Celsius', 'Value':'', 'Range':'-40;+50', 'Unit':'3' }, { 'Id':0, 'ServiceId':0, 'Type':'Humidity', 'Description':'Humidity i percentage', 'Value':'', 'Range':'0;100', 'Unit':'1' }, { 'Id':0, 'ServiceId':0, 'Type':'OpenClose', 'Description':'State Open/Closed', 'Value':'', 'Range':'0;1', 'Unit':'5' }, { 'Id':0, 'ServiceId':0, 'Type':'OnOff', 'Description':'State On/Off', 'Value':'', 'Range':'0;1', 'Unit':'5' }, { 'Id':0, 'ServiceId':0, 'Type':'Sketch', 'Description':'Sketch Version', 'Value':'', 'Range':'*', 'Unit':'4' }, { 'Id':0, 'ServiceId':0, 'Type':'UpTime', 'Description':'Accessory Uptime', 'Value':'', 'Range':'5000;3600000', 'Unit':'2' } ]",
-              "Boards":"[ {"ChipId":"1458376", "Model":"ESP8266-12F-DEVKIT-v3", "Vendor":"ShenZhen Doctors of Intelligence BOARD-TYPES Technology Co., Ltd", "Description":"Preferred Dev board" }, {"ChipId":"1458400","Model":"ESP8266-ESP12E-Module","Vendor":"AI-THINKER", "Description":"Preferred ESP Chip"} }, {"ChipId":"99359","Model":"SparkFun-ESP8266-Thing-Dev","Vendor":"SparkFun", "Description":"Older Dev board" } ]",   
-              "Sketches":"[ {"Name":"WSTempSensor01", "Version":"1.2.1", "BaseDir":"Sketch", "SketchBin":"wstempsensor01.bin", "BoardId":2, "Description":"Temperature measurement SKETCH-RECORDS reporting, with attached Display"},    {"Name":"WSTempHumSensor01", "Version":"1.2.1", "BaseDir":"Sketch", "SketchBin":"wstemphumsensor01.bin", "BoardId":2, "Description":"Temperature SKETCH-RECORDS Humidity measurement SKETCH-RECORDS reporting, with attached Display"},    {"Name":"WSTempSensor", "Version":"1.2.1", "BaseDir":"Sketch", "SketchBin":"wstempsensor.bin", "BoardId":2, "Description":"Temperature measurement SKETCH-RECORDS reporting"},    {"Name":"WSTempHumSensor", "Version":"1.2.1", "BaseDir":"Sketch", "SketchBin":"wstemphumsensor.bin", "BoardId":2, "Description":"Temperature SKETCH-RECORDS Humidity measurement SKETCH-RECORDS reporting"},    {"Name":"WSGateSensor", "Version":"1.2.1", "BaseDir":"Sketch", "SketchBin":"wsgate.bin","BoardId":2, "Description":"Relay (NonLatching) for Open/Close Garage ports"}, {"Name":"WSGasBurner", "Version":"1.2.1", "BaseDir":"Sketch", "SketchBin":"wsgasburner.bin", "BoardId":2, "Description":"Relay (Latching) for switcing On/Off Gas Burner circulation pump"} ]"       
+              "Boards":"[ {'ChipId':'1458376', 'Model':'ESP8266-12F-DEVKIT-v3', 'Vendor':'ShenZhen Doctors of Intelligence BOARD-TYPES Technology Co., Ltd', 'Description':'Preferred Dev board' }, {'ChipId':'1458400','Model':'ESP8266-ESP12E-Module','Vendor':'AI-THINKER', 'Description':'Preferred ESP Chip'} }, {'ChipId':'99359','Model':'SparkFun-ESP8266-Thing-Dev','Vendor':'SparkFun', 'Description':'Older Dev board' } ]",   
+              "Sketches":"[ {'Name':'WSTempSensor01', 'Version':'1.2.1', 'BaseDir':'Sketch', 'SketchBin':'wstempsensor01.bin', 'BoardId':2, 'Description':'Temperature measurement SKETCH-RECORDS reporting, with attached Display'},    {'Name':'WSTempHumSensor01', 'Version':'1.2.1', 'BaseDir':'Sketch', 'SketchBin':'wstemphumsensor01.bin', 'BoardId':2, 'Description':'Temperature SKETCH-RECORDS Humidity measurement SKETCH-RECORDS reporting, with attached Display'},    {'Name':'WSTempSensor', 'Version':'1.2.1', 'BaseDir':'Sketch', 'SketchBin':'wstempsensor.bin', 'BoardId':2, 'Description':'Temperature measurement SKETCH-RECORDS reporting'},    {'Name':'WSTempHumSensor', 'Version':'1.2.1', 'BaseDir':'Sketch', 'SketchBin':'wstemphumsensor.bin', 'BoardId':2, 'Description':'Temperature SKETCH-RECORDS Humidity measurement SKETCH-RECORDS reporting'},    {'Name':'WSGateSensor', 'Version':'1.2.1', 'BaseDir':'Sketch', 'SketchBin':'wsgate.bin','BoardId':2, 'Description':'Relay (NonLatching) for Open/Close Garage ports'}, {'Name':'WSGasBurner', 'Version':'1.2.1', 'BaseDir':'Sketch', 'SketchBin':'wsgasburner.bin', 'BoardId':2, 'Description':'Relay (Latching) for switcing On/Off Gas Burner circulation pump'} ]"       
           },
           "Production" : {
               "Version":"1.2.0",
@@ -167,10 +185,11 @@ write_files:
               "TemplateGrantAllPrivileges":"GRANT ALL PRIVILEGES ON *.* TO '{0}'@'%' WITH GRANT OPTION;",
               "RuleTypes":"accessory,group",
               "AccessoryTypes":"TempSensor,TempHumSensor,GateController,Relay,Switch,GasBurner",
+              "UnitTypes":"byte,sbyte,short,ushort,int,uint,long,ulong,float,double",
               "ServiceTypes":"Temperature,Humidity,Sketch,UpTime,OpenClose,OnOff",
               "Services":"[ { 'Id':0, 'ServiceId':0, 'Type':'Temperature', 'Description':'Temperature in degree Celsius', 'Value':'', 'Range':'-40;+50', 'Unit':'3' }, { 'Id':0, 'ServiceId':0, 'Type':'Humidity', 'Description':'Humidity i percentage', 'Value':'', 'Range':'0;100', 'Unit':'1' }, { 'Id':0, 'ServiceId':0, 'Type':'OpenClose', 'Description':'State Open/Closed', 'Value':'', 'Range':'0;1', 'Unit':'5' }, { 'Id':0, 'ServiceId':0, 'Type':'OnOff', 'Description':'State On/Off', 'Value':'', 'Range':'0;1', 'Unit':'5' }, { 'Id':0, 'ServiceId':0, 'Type':'Sketch', 'Description':'Sketch Version', 'Value':'', 'Range':'*', 'Unit':'4' }, { 'Id':0, 'ServiceId':0, 'Type':'UpTime', 'Description':'Accessory Uptime', 'Value':'', 'Range':'5000;3600000', 'Unit':'2' } ]",
-              "Boards":"[ {"ChipId":"1458376", "Model":"ESP8266-12F-DEVKIT-v3", "Vendor":"ShenZhen Doctors of Intelligence BOARD-TYPES Technology Co., Ltd", "Description":"Preferred Dev board" }, {"ChipId":"1458400","Model":"ESP8266-ESP12E-Module","Vendor":"AI-THINKER", "Description":"Preferred ESP Chip"} }, {"ChipId":"99359","Model":"SparkFun-ESP8266-Thing-Dev","Vendor":"SparkFun", "Description":"Older Dev board" } ]",
-              "Sketches":"[ {"Name":"WSTempSensor01", "Version":"1.2.1", "BaseDir":"Sketch", "SketchBin":"wstempsensor01.bin", "BoardId":2, "Description":"Temperature measurement SKETCH-RECORDS reporting, with attached Display"},    {"Name":"WSTempHumSensor01", "Version":"1.2.1", "BaseDir":"Sketch", "SketchBin":"wstemphumsensor01.bin", "BoardId":2, "Description":"Temperature SKETCH-RECORDS Humidity measurement SKETCH-RECORDS reporting, with attached Display"},    {"Name":"WSTempSensor", "Version":"1.2.1", "BaseDir":"Sketch", "SketchBin":"wstempsensor.bin", "BoardId":2, "Description":"Temperature measurement SKETCH-RECORDS reporting"},    {"Name":"WSTempHumSensor", "Version":"1.2.1", "BaseDir":"Sketch", "SketchBin":"wstemphumsensor.bin", "BoardId":2, "Description":"Temperature SKETCH-RECORDS Humidity measurement SKETCH-RECORDS reporting"},    {"Name":"WSGateSensor", "Version":"1.2.1", "BaseDir":"Sketch", "SketchBin":"wsgate.bin","BoardId":2, "Description":"Relay (NonLatching) for Open/Close Garage ports"}, {"Name":"WSGasBurner", "Version":"1.2.1", "BaseDir":"Sketch", "SketchBin":"wsgasburner.bin", "BoardId":2, "Description":"Relay (Latching) for switcing On/Off Gas Burner circulation pump"} ]"          
+              "Boards":"[ {'ChipId':'1458376', 'Model':'ESP8266-12F-DEVKIT-v3', 'Vendor':'ShenZhen Doctors of Intelligence BOARD-TYPES Technology Co., Ltd', 'Description':'Preferred Dev board' }, {'ChipId':'1458400','Model':'ESP8266-ESP12E-Module','Vendor':'AI-THINKER', 'Description':'Preferred ESP Chip'} }, {'ChipId':'99359','Model':'SparkFun-ESP8266-Thing-Dev','Vendor':'SparkFun', 'Description':'Older Dev board' } ]",
+              "Sketches":"[ {'Name':'WSTempSensor01', 'Version':'1.2.1', 'BaseDir':'Sketch', 'SketchBin':'wstempsensor01.bin', 'BoardId':2, 'Description':'Temperature measurement SKETCH-RECORDS reporting, with attached Display'},    {'Name':'WSTempHumSensor01', 'Version':'1.2.1', 'BaseDir':'Sketch', 'SketchBin':'wstemphumsensor01.bin', 'BoardId':2, 'Description':'Temperature SKETCH-RECORDS Humidity measurement SKETCH-RECORDS reporting, with attached Display'},    {'Name':'WSTempSensor', 'Version':'1.2.1', 'BaseDir':'Sketch', 'SketchBin':'wstempsensor.bin', 'BoardId':2, 'Description':'Temperature measurement SKETCH-RECORDS reporting'},    {'Name':'WSTempHumSensor', 'Version':'1.2.1', 'BaseDir':'Sketch', 'SketchBin':'wstemphumsensor.bin', 'BoardId':2, 'Description':'Temperature SKETCH-RECORDS Humidity measurement SKETCH-RECORDS reporting'},    {'Name':'WSGateSensor', 'Version':'1.2.1', 'BaseDir':'Sketch', 'SketchBin':'wsgate.bin','BoardId':2, 'Description':'Relay (NonLatching) for Open/Close Garage ports'}, {'Name':'WSGasBurner', 'Version':'1.2.1', 'BaseDir':'Sketch', 'SketchBin':'wsgasburner.bin', 'BoardId':2, 'Description':'Relay (Latching) for switcing On/Off Gas Burner circulation pump'} ]"          
           }
         },
         "SnakeUtil": {
@@ -178,9 +197,9 @@ write_files:
             "Version":"1.2.0",
             "ExternalDomainName":"wavesnake.dk",
             "DnsProviderList":"GratisDNS CloudFlare OneCom",
-            "DnsProviderName":"GratisDNS",
+            "DnsProviderName":"",
             "DnsProviderId":"DNS-PROVIDER-ID",
-            "DnsProviderUrl":"https://admin.gratisdns.com/ddns.php",
+            "DnsProviderUrl":"",
             "DnsProviderUser":"jagdriver",
             "DnsProviderPassword":"32a88235d7dfb08e11"
           },
@@ -188,9 +207,9 @@ write_files:
             "Version":"1.2.0",
             "ExternalDomainName":"wavesnake.dk",
             "DnsProviderList":"GratisDNS CloudFlare OneCom",
-            "DnsProviderName":"GratisDNS",
+            "DnsProviderName":"",
             "DnsProviderId":"DNS-PROVIDER-ID",
-            "DnsProviderUrl":"https://admin.gratisdns.com/ddns.php",
+            "DnsProviderUrl":"",
             "DnsProviderUser":"jagdriver",
             "DnsProviderPassword":"32a88235d7dfb08e11"
           }
@@ -208,17 +227,17 @@ write_files:
             "Version":"1.2.0",
             "RedisSynchKey":"SEMSYNC",
             "RedisSyncPath":"/opt/containers",
-            "ApplicationList":"SnakeApi,SnakeHistory,SnakeUtil,SnakeConfig,SnakeTimer,SnakeConsole",
-            "EnvironmentList":"Development,Test,Production",
-            "StackList":""
+            "ApplicationList":"Swarm:Swarm,SnakeApi:SnakeApi,SnakeHistory:SnakeHistory,SnakeUtil:SnakeUtil,SnakeConfig:SnakeConfig,SnakeTimer:SnakeTimer,SnakeConsole:SnakeConsole",
+            "EnvironmentList":"Development:Development,Test:Test,Production:Production",
+            "StackList":"[{'name':'Swarm:Swarm','value':'Swarm:Swarm/docker-compose.yml'},{'name':'SnakeApi:SnakeApi','value':'SnakeApi:SnakeApi/docker-compose.yml'},{'name':'SnakeHistory:SnakeHistory','value':'SnakeHistory:SnakeHistory/docker-compose.yml'},{'name':'SnakeUtil:SnakeUtil','value':'SnakeUtil:SnakeUtil/docker-compose.yml'},{'name':'SnakeConfig:SnakeConfig','value':'SnakeConfig:SnakeConfig/docker-compose.yml'},{'name':'SnakeTimer:SnakeTimer','value':'SnakeTimer:SnakeTimer/docker-compose.yml'},{'name':'SnakeConsole:SnakeConsole','value':'SnakeConsole:SnakeConsole/docker-compose.yml'}]"
           },
           "Production": {
             "Version":"1.2.0",
             "RedisSynchKey":"SEMSYNC",
             "RedisSyncPath":"/opt/containers",
-            "ApplicationList":"SnakeApi,SnakeHistory,SnakeUtil,SnakeConfig,SnakeTimer,SnakeConsole",
-            "EnvironmentList":"Development,Test,Production",
-            "StackList":""
+            "ApplicationList":"Swarm:Swarm,SnakeApi:SnakeApi,SnakeHistory:SnakeHistory,SnakeUtil:SnakeUtil,SnakeConfig:SnakeConfig,SnakeTimer:SnakeTimer,SnakeConsole:SnakeConsole",
+            "EnvironmentList":"Development:Development,Test:Test,Production:Production",
+            "StackList":"[{'name':'Swarm:Swarm','value':'Swarm:Swarm/docker-compose.yml'},{'name':'SnakeApi:SnakeApi','value':'SnakeApi:SnakeApi/docker-compose.yml'},{'name':'SnakeHistory:SnakeHistory','value':'SnakeHistory:SnakeHistory/docker-compose.yml'},{'name':'SnakeUtil:SnakeUtil','value':'SnakeUtil:SnakeUtil/docker-compose.yml'},{'name':'SnakeConfig:SnakeConfig','value':'SnakeConfig:SnakeConfig/docker-compose.yml'},{'name':'SnakeTimer:SnakeTimer','value':'SnakeTimer:SnakeTimer/docker-compose.yml'},{'name':'SnakeConsole:SnakeConsole','value':'SnakeConsole:SnakeConsole/docker-compose.yml'}]"
           }
         },
         "SnakeHistory": {
@@ -228,15 +247,15 @@ write_files:
             "Production": {
               "Version":"1.2.0"
             }
-          }
+          },
         "SnakeConsole": {
             "Development" : {
               "Version":"SNAKECONSOLE-VERSION",
-              "SnakeConsoleServer":"-CONSOLE-SERVER"
+              "SnakeConsoleServer":"consoleapi.wavesnake.local"
             },
             "Production": {
               "Version":"SNAKECONSOLE-VERSION",
-              "SnakeConsoleServer":"-CONSOLE-SERVER"
+              "SnakeConsoleServer":"consoleapi.wavesnake.local"
             }
           }
       }
@@ -318,7 +337,7 @@ write_files:
   # and run a container with Debian.
   #
   - content: |
-      manager:$6$mSgMnQcEtVABTmph$AB/kxpReLvYOGr6H2hcG5n4aAGYVI8unFx2hs04ocxjW1Nj/2aY32LJc0HB61OTw31ZsGEtcogKD9slaz6DvtQ==
+      $6$re1cGWnTEMlOb2BF$bOhaKj62ayhIBQsRDtGXiYLmXD1blt32vgCIyfJFnNTRoFayNOwhuVhOaK2mlfpygsQiY8UMBMic1qGIYo9a7A==
     path: /opt/containers/mosquitto/config/conf.d/pw
   #
   # NodeName.env ( Should this be a json file?)
@@ -333,8 +352,8 @@ write_files:
   - content: |
       auto eth0
       iface eth0 inet static
-      address 192.168.230.1
-      network 192.168.230.0
+      address 172.16.1.1
+      network 172.16.1.0
       netmask 255.255.255.0
       dns-nameservers 8.8.8.8 8.8.4.4
     path: /etc/network/interfaces.d/eth0
@@ -345,7 +364,7 @@ write_files:
   - content: |
       auto wlan0
       iface wlan0 inet static
-      address 192.168.1.240
+      address 192.168.1.235
       network 192.168.1.0
       netmask 255.255.255.0
       gateway 192.168.1.1
@@ -381,10 +400,14 @@ write_files:
   #
   - content: |
       interface wlan0
-      static ip_address=192.168.1.240/24
+      static ip_address=192.168.1.235/24
       static routers=192.168.1.1
       static domain_name_servers=8.8.8.8 8.8.4.4
 
+      interface eth0
+      static ip_address=172.16.1.1/24
+      static routers=172.16.1.1
+      static domain_name_servers=8.8.8.8 8.8.4.4
     path: /etc/dhcpcd.conf
  
   #
@@ -393,15 +416,16 @@ write_files:
   - content: |
       127.0.1.1 sn01 sn01.wavesnake.local
       127.0.0.1 localhost
-      192.168.230.2 sn02 sn02.wavesnake.local
-      192.168.230.3 sn03 sn03.wavesnake.local
-      192.168.230.4 sn04 sn04.wavesnake.local
+      172.16.1.2 sn02 sn02.wavesnake.local
+      172.16.1.3 sn03 sn03.wavesnake.local
+      172.16.1.4 sn04 sn04.wavesnake.local
     path: /etc/hosts
   
   #
   # Bash script to mount USB Stick
   # Script must be run on RPI with sudo
   # and requires reboot 
+  #
   - content: |
       #!/bin/bash
       #
@@ -416,6 +440,7 @@ write_files:
         echo -e "No label given"
       fi
     path: /home/manager/usbmount.sh
+  
   #
   # Portainer Docker Compose (Version 2.0)
   #
@@ -434,7 +459,7 @@ write_files:
             mode: global
             restart_policy:
               condition: any
-              delay: 5s
+              delay: 20s
               max_attempts: 3
               window: 120s
             placement:
@@ -511,6 +536,7 @@ write_files:
           ports:
             - 80:80
             - 443:443
+            - 8080:8080
             - 8210:8210
             - 8211:8211
             - 8213:8213
@@ -523,11 +549,17 @@ write_files:
             - /opt/containers/traefik/data/traefik.yml:/traefik.yml:ro
             - /opt/containers/traefik/data/ssh.yml:/ssh.yml:ro
             - /opt/containers/traefik/data/acme.json:/acme.json
-            - /var/log/traefik:/log
+            - /var/log/snakelogs/traefik:/log
             - /var/run/docker.sock:/var/run/docker.sock:ro
 
           networks:
             - traefik-public
+
+          labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.dashboard.rule=PathPrefix(`/api`) || PathPrefix(`/dashboard`)"
+            - "traefik.http.routers.dashboard.entrypoints=traefik"
+            - "traefik.http.routers.dashboard.service=api@internal"
 
           deploy:
             placement:
@@ -551,6 +583,7 @@ write_files:
 
       api:
         dashboard: true
+        insecure: true
 
       log:
         filePath: "log/traefik.log"
@@ -560,6 +593,8 @@ write_files:
         filePath: "log/access.log"
 
       entryPoints:
+        traefik:
+          address: ":8080"
         ssh2:
           address: ":2202"
         ssh3:
@@ -640,15 +675,15 @@ write_files:
           ssh-ws02:
             loadBalancer:
               servers:
-                - address: "192.168.230.2:22"
+                - address: "172.16.1.2:22"
           ssh-ws03:
             loadBalancer:
               servers:
-                - address: "192.168.230.3:22"
+                - address: "172.16.1.3:22"
           ssh-ws04:
             loadBalancer:
               servers:
-                - address: "192.168.230.4:22"
+                - address: "172.16.1.4:22"
         routers:
           ssh-route-ws02:
             entryPoints:
@@ -668,6 +703,134 @@ write_files:
             rule: "HostSNI(`*`)"
             service: "ssh-ws04"
     path: /opt/containers/traefik/data/ssh.yml
+  
+   #
+
+  #
+  # Redis docker-compose.yml
+  #
+  #
+  - content: |
+      version: '3.7'
+      #
+      # Docker Compose file for Redis
+      # This solution are deployed from Portainer
+      # as a Swarm Stack Service.
+      #
+      services:
+        redis:
+          image: jagdriver/wavesnake:redis
+
+          volumes:
+            - /var/log/snakelogs/redis:/var/snakelogs
+            - /opt/containers/redis/data:/data
+            - /opt/containers/redis/conf:/etc/redis
+
+          ports:
+            - target: 6379
+              protocol: tcp
+              mode: host
+
+          networks:
+            - traefik-public
+
+          deploy:
+            restart_policy:
+              condition: any
+              delay: 5s
+              max_attempts: 3
+              window: 120s
+            placement:
+              constraints:
+                - node.role == manager
+            labels:
+              - "traefik.enable=true"
+
+              # This section id for local http access
+              - "traefik.tcp.routers.redisint.entrypoints=redis"
+              - "traefik.tcp.routers.redisint.rule=HostSNI(`*`)"
+              - "traefik.tcp.routers.redisint.service=redisinternal"
+              - "traefik.tcp.services.redisinternal.loadBalancer.server.port=6379"
+
+      networks:
+        traefik-public:
+          external: true
+
+    path: /opt/containers/redis/docker-compose.yml
+  
+  #
+  # Redis configuration
+  #
+  - content: |
+      #
+      # Redis Configuration file
+      # WaveSnake
+      # 2019-11-26 Niels J. Nielsen
+      #  
+
+      protected-mode no
+      port 6379
+      tcp-backlog 511
+      timeout 0
+      tcp-keepalive 300
+      daemonize no
+      supervised no
+      pidfile /var/run/redis_6379.pid
+      loglevel verbose
+      logfile "/var/snakelogs/redislog.log"
+      databases 16
+      always-show-logo yes
+      save 900 1
+      save 300 10
+      save 60 10000
+      stop-writes-on-bgsave-error yes
+      rdbcompression yes
+      rdbchecksum yes
+      dbfilename dump.rdb
+      dir /data
+      replica-serve-stale-data yes
+      replica-read-only yes
+      repl-diskless-sync no
+      repl-diskless-sync-delay 5
+      repl-disable-tcp-nodelay no
+      replica-priority 100
+      maxmemory 50000000
+      lazyfree-lazy-eviction no
+      lazyfree-lazy-expire no
+      lazyfree-lazy-server-del no
+      replica-lazy-flush no
+      appendonly yes
+      appendfilename "appendonly.aof"
+      appendfsync everysec
+      no-appendfsync-on-rewrite no
+      auto-aof-rewrite-percentage 100
+      auto-aof-rewrite-min-size 64mb
+      aof-load-truncated yes
+      aof-use-rdb-preamble yes
+      lua-time-limit 5000
+      slowlog-log-slower-than 10000
+      slowlog-max-len 128
+      latency-monitor-threshold 0
+      notify-keyspace-events ""
+      hash-max-ziplist-entries 512
+      hash-max-ziplist-value 64
+      list-max-ziplist-size -2
+      list-compress-depth 0
+      set-max-intset-entries 512
+      zset-max-ziplist-entries 128
+      zset-max-ziplist-value 64
+      hll-sparse-max-bytes 3000
+      stream-node-max-bytes 4096
+      stream-node-max-entries 100
+      activerehashing yes
+      client-output-buffer-limit normal 0 0 0
+      client-output-buffer-limit replica 256mb 64mb 60
+      client-output-buffer-limit pubsub 32mb 8mb 60
+      hz 10
+      dynamic-hz yes
+      aof-rewrite-incremental-fsync yes
+      rdb-save-incremental-fsync yes
+    path: /opt/containers/redis/conf/redis.conf
 
   # 
   # Bridge Script to be run after each reboot
@@ -677,6 +840,7 @@ write_files:
       sudo iptables -A FORWARD -i wlan0 -o eth0 -m state --state RELATED,ESTABLISHED -j ACCEPT
       sudo iptables -A FORWARD -i eth0 -o wlan0 -j ACCEPT
     path: /home/manager/bridge.sh
+ 
   # 
   # NFS startup script
   #
@@ -684,6 +848,7 @@ write_files:
       sudo exportfs -r
       sudo mount --bind /opt/containers /mnt/config
     path: /home/manager/nfs.sh
+  
   #
   # Swarm Secret 
   #
@@ -696,34 +861,36 @@ write_files:
         "GlobalConfigPath":"/opt/containers/configuration/globalconfig.json"
       }
     path: /opt/containers/configuration/swarmsecret.json
-#
-#
-# Zigbee Configuration file
-#
+  
+  #
+  # Zigbee Configuration file
+  #
   - content: |
-  # Home Assistant integration (MQTT discovery)
-    homeassistant: false
+      # Home Assistant integration (MQTT discovery)
+      homeassistant: false
 
-    # allow new devices to join
-    permit_join: true
+      # allow new devices to join
+      permit_join: true
 
-    # MQTT settings
-    mqtt:
-      # MQTT base topic for zigbee2mqtt MQTT messages
-      base_topic: zigbee2mqtt
-      # MQTT server URL
-      server: 'mqtt://192.168.1.240:MQTT-INTERNAL-PORT'
-      # MQTT server authentication, uncomment if required:
-      user: manager
-      password: wavesnake
+      # MQTT settings
+      mqtt:
+        # MQTT base topic for zigbee2mqtt MQTT messages
+        base_topic: zigbee2mqtt
+        # MQTT server URL
+        server: 'mqtt://192.168.1.235:MQTT-INTERNAL-PORT'
+        # MQTT server authentication, uncomment if required:
+        user: manager
+        password: wavesnake
 
-    # Serial settings
-    serial:
-      # Location of CC2531 USB sniffer
-      port: /dev/cc2531
+      # Serial settings
+      serial:
+        # Location of CC2531 USB sniffer
+        port: /dev/cc2531
     path: /opt/containers/snakezig/data/configuration.yaml
-# Zigbee Docker Setup script
-#
+ 
+  #
+  # Zigbee Docker Setup script
+  #
   - content: |
       #!/bin/bash
       USBDEV=`readlink -f /dev/cc2531`
@@ -742,9 +909,10 @@ write_files:
       echo 'Setting permissions'
       echo "c $dmajor:$dminor rwm" > /sys/fs/cgroup/devices/docker/$CID/devices.allow
     path: /home/manager/docker-setup-cc2531.sh
-#
-# Zigbee Docker Event Listener script
-#
+  
+  #
+  # Zigbee Docker Event Listener script
+  #
   - content: |
       #!/bin/bash
       docker events --filter 'event=start'| \
@@ -752,9 +920,10 @@ write_files:
           /home/manager/docker-setup-cc2531.sh
       done
     path: /home/manager/docker-event-listener.sh
-#
-# Zigbee Docker Event Listener Service
-#
+ 
+  #
+  # Zigbee Docker Event Listener Service
+  #
   - content: |
       [Unit]
       Description=Docker Event Listener for TI CC2531 device
@@ -771,58 +940,53 @@ write_files:
       WantedBy=multi-user.target
     path: /etc/systemd/system/docker-event-listener.service
   
-
 #
-# These commands will be run once on first boot only
+#  These commands will be run once on first boot only
 #
 runcmd:
-  # Restart Avahi daemon
-  - 'logger !!! wavesnake !!!'
-  - 'logger !!! wavesnake !!! Restart avahi-deamon'
-  - 'logger !!! wavesnake !!!'
-  - 'systemctl restart avahi-daemon'
-
-  # Set Fake HW Date, Restart NTP, workaround for Debian Buster time initialization
-  - 'logger !!! wavesnake !!!'
-  - 'logger !!! wavesnake !!! Workaround for Buster Fake Time error initializing date/time'
-  - 'logger !!! wavesnake !!!'
-  - sudo date -s 'ISO-DATE'
-  - 'sudo service ntp --full-restart'
-  - 'sudo sleep 15'
-  - 'sudo date'
-  
   # Start WLAN0 interface and wait 15 sec.
   - 'logger !!! wavesnake !!!'
   - 'logger !!! wavesnake !!! Start WiFi Interface' 
   - 'logger !!! wavesnake !!!'
-  - 'sudo ifup wlan0'
-  - 'sudo ifup eth0'
+  - 'sudo ip link set wlan0 up'
   - 'sudo sleep 15'
 
   # Start ETH0 interface
+  - 'logger !!! wavesnake !!!'
+  - 'logger !!! wavesnake !!! Start ETH0 Interface' 
+  - 'logger !!! wavesnake !!!'
   - 'sudo ip addr flush dev eth0'
-  - 'sudo ifdown eth0'
-  - 'sudo ifup eth0'
+  - 'sudo ip link set eth0 up'
   - 'sudo sleep 15'
+
+  # Workaround for Hypriot initial date/time setting
+  # File fake-hwclock.data is set by Flash Utility
+  - 'logger !!! wavesnake !!!'
+  - 'logger !!! wavesnake !!! Workaround for Hypriot OS time skew'
+  - 'logger !!! wavesnake !!!'
+  - date
 
   # Create IP route between ETH0 & WLAN0
   - 'logger !!! wavesnake !!!'
   - 'logger !!! wavesnake !!! Create bidirectional Route between WLAN0 network and ETH0 network'
   - 'logger !!! wavesnake !!!'
-  - 'sudo ip route delete default via 192.168.230.1'
+  - 'sudo ip route delete default via 172.16.1.1'
   - 'sudo ip route delete default via 192.168.1.1'
-  - 'sudo ip route add default via 192.168.1.1 dev wlan0 src 192.168.1.240 metric 100'
+  - 'sudo ip route add default via 192.168.1.1 dev wlan0 src 192.168.1.235 metric 100'
   
   # Directories for NFS
   - 'sudo mkdir -p /mnt/nfs'
   - 'sudo mkdir -p /mnt/config'
+  - 'sudo mkdir -p /mnt/logs'
   - 'sudo chown -R manager:manager /mnt/nfs'
   - 'sudo chown -R manager:manager /mnt/config'
+  - 'sudo chown -R manager:manager /mnt/logs'
   - 'sudo chmod 755 /mnt/nfs'
   - 'sudo chmod 755 /mnt/config'
+  - 'sudo chmod 755 /mnt/logs'
   - 'sudo chmod +x /home/manager/nfs.sh'
 
-  # Update package index
+  # Update package index and allow for release info change
   - 'logger !!! wavesnake !!!'
   - 'logger !!! wavesnake !!! Update Package list'
   - 'logger !!! wavesnake !!!'
@@ -832,9 +996,10 @@ runcmd:
   - 'logger !!! wavesnake !!!'
   - 'logger !!! wavesnake !!! Install packages'
   - 'logger !!! wavesnake !!!'
-  - 'sudo apt-get -y install acl'
-  - 'sudo apt-get -y install sshfs'
-  - 'sudo apt-get -y install nfs-kernel-server'
+  #- 'sudo apt-get -y install acl'
+  #- 'sudo apt-get -y install sshfs'
+  #- 'sudo apt-get -y install nfs-kernel-server'
+  #- 'sudo apt-get -y install dnsmasq'
 
   #  Docker Swarm Initialization
   - 'logger !!! wavesnake !!!'
@@ -884,13 +1049,6 @@ runcmd:
   - 'sudo chmod +x /home/manager/bridge.sh'
   - 'sudo sed  -i "$ a\@reboot	root /home/manager/bridge.sh" /etc/crontab'
 
-  # Setup cron job to startup NFS server on reboot
-  - 'logger !!! wavesnake !!!'
-  - 'logger !!! wavesnake !!! Setup Cron job to start NFS after reboot'
-  - 'logger !!! wavesnake !!!'
-  # - 'sudo chmod +x /home/manager/nfs.sh'
-  # # - 'sudo sed  -i "$ a\@reboot	root /home/manager/nfs.sh" /etc/crontab'
-
   # Skip Locale check on User Session Startup
   - 'logger !!! wavesnake !!!'
   - 'logger !!! wavesnake !!! Skip Locale check'
@@ -917,6 +1075,7 @@ runcmd:
   # Redis
   - 'sudo mkdir -p /opt/containers/redis'
   - 'sudo mkdir -p /opt/containers/redis/data'
+  - 'sudo mkdir -p /opt/containers/redis/conf'
   # Mosquitto
   - 'sudo mkdir -p /opt/containers/mosquitto'
   - 'sudo mkdir -p /opt/containers/mosquitto/config'
@@ -951,22 +1110,22 @@ runcmd:
   - 'sudo chmod 600 /opt/containers/traefik/data/acme.json'
   
   # Create log directories
+  # TODO: Change so all log files are in /var/log/snakelogs
+  # and possibly NFS mounted to /mnt/logs
   - 'logger !!! wavesnake !!!'
   - 'logger !!! wavesnake !!! Create log files'
   - 'logger !!! wavesnake !!!'
-  - 'sudo mkdir -p /var/log/traefik'
   - 'sudo mkdir -p /var/log/snakelogs'
+  - 'sudo mkdir -p /var/log/snakelogs/traefik'
+  - 'sudo mkdir -p /var/log/snakelogs/redis'
+  - 'sudo mkdir -p /var/log/snakelogs/mosquitto'
   - 'sudo mkdir -p /var/log/mosquitto'
-  - 'sudo mkdir -p /var/log/redis'
 
   # Set Owner and rights on log files
   - 'logger !!! wavesnake !!!'
   - 'logger !!! wavesnake !!! Set rights on log files'
   - 'logger !!! wavesnake !!!'
-  - 'sudo chown -R manager /var/log/snakelogs'
-  - 'sudo chown -R manager /var/log/traefik'
-  - 'sudo chown -R manager /var/log/mosquitto'
-  - 'sudo chown -R manager /var/log/redis'
+  - 'sudo chmod ugo+rw /var/log/snakelogs -R'
 
   # Create Docker network
   - 'logger !!! wavesnake !!!'
@@ -981,7 +1140,7 @@ runcmd:
   - [
        docker, stack, deploy,
        "--compose-file", "/opt/containers/traefik/docker-compose.yml",
-       "traefik"
+       "Traefik"
     ]
   # Create Portainer Docker stack
   - 'logger !!! wavesnake !!!'
@@ -990,8 +1149,19 @@ runcmd:
   - [
        docker, stack, deploy,
        "--compose-file", "/opt/containers/portainer/docker-compose.yml",
-       "portainer"
+       "Portainer"
     ]
+
+  # Create Redis Docker stack
+  - 'logger !!! wavesnake !!!'
+  - 'logger !!! wavesnake !!! Instantiate Redis Container'
+  - 'logger !!! wavesnake !!!'
+  - [
+      docker, stack, deploy,
+      "--compose-file", "/opt/containers/redis/docker-compose.yml",
+      "Redis"
+    ]
+
 
   # Create exports for NFS, will only work after a reboot
   # We exports only /mnt/config
@@ -1015,7 +1185,6 @@ runcmd:
   - 'logger !!! wavesnake !!! Execute Docker Add SwarmSecret'
   - 'logger !!! wavesnake !!!'
   - 'docker secret create SwarmSecret /opt/containers/configuration/swarmsecret.json'
-
   #
   # Craete USB Mount command in /etc/fstab
   #
@@ -1035,7 +1204,14 @@ runcmd:
   - 'sudo systemctl start docker-event-listener.service'
   - 'sudo systemctl status docker-event-listener.service'
   - 'sudo systemctl enable docker-event-listener.service'
-
+  #
+  # Resize rootpartition
+  #
+  - 'logger !!! wavesnake !!!'
+  - 'logger !!! wavesnake !!! Execute Resize of Root Partition'
+  - 'logger !!! wavesnake !!!'
+  #- 'sudo resize2fs /dev/mmcblk0p2'
+  - 'sudo raspi-config nonint do_expand_rootfs'
 
   - 'logger !!! wavesnake !!!'
   - 'logger !!! wavesnake !!! End of RUNCMD'
@@ -1049,4 +1225,5 @@ runcmd:
   #- 'mount nfs disk !!!!' Must be done on the WS01 Node
 
   # !!! There must be a newline after this line
+
 

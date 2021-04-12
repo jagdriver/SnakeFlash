@@ -1,0 +1,6 @@
+#cloud-config
+# vim: syntax=yaml
+#
+
+instance-id: base01
+

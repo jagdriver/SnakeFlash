@@ -1,0 +1,51 @@
+version: '3.7'
+#
+# Docker Compose file for SnakeUtil
+# This solution are deployed as a Stack Service
+# from Portainer, and run on every node in the 
+# swarm.
+# 
+#
+services:
+
+  SnakeUtil: 
+    image: jagdriver/wavesnake:snakeutil
+
+    networks:
+      - traefik-public
+    
+    secrets:
+      - SwarmSecret
+
+    environment:
+      DNS_PASSWORD: "${DNS_PASSWORD}"
+
+    volumes:
+      - "/opt/containers/environment:/opt/containers/environment"
+      - "/opt/containers/mosquitto:/opt/containers/mosquitto"
+      - "/var/log/snakelogs:/var/log/snakelogs"
+
+    extra_hosts:
+      - "redis.wavesnake.local:172.16.1.1"
+      - "mqt.wavesnake.local:172.16.1.1"
+      - "api.wavesnake.local:192.168.1.235"
+      - "sql.wavesnake.local:192.168.1.235"
+      - "console.wavesnake.local:192.168.1.235"
+      - "config.wavesnake.local:192.168.1.235"
+      - "sketch.wavesnake.local:192.168.1.235"
+
+    deploy:
+      mode: global
+      restart_policy:
+        condition: any
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+
+secrets:
+  SwarmSecret:
+    external: true
+
+networks:
+  traefik-public:
+    external: true

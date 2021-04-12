@@ -1,0 +1,53 @@
+version: '3.7'
+#
+# Docker Compose file for Redis
+# This solution are deployed from Portainer
+# as a Swarm Stack Service.
+#
+services:
+  redis:
+    image: jagdriver/wavesnake:redis
+
+    volumes:
+      - /var/log/snakelogs:/var/snakelogs
+      - /opt/containers/redis/data:/data
+      - /opt/containers/redis/conf:/etc/redis
+
+    ports:
+      - target: 6379
+        protocol: tcp
+        mode: host
+
+    networks:
+      - traefik-public
+
+    extra_hosts:
+      - "redis.wavesnake.local:172.16.1.1"
+      - "mqt.wavesnake.local:172.16.1.1"
+      - "api.wavesnake.local:192.168.1.235"
+      - "sql.wavesnake.local:192.168.1.235"
+      - "console.wavesnake.local:192.168.1.235"
+      - "config.wavesnake.local:192.168.1.235"
+      - "sketch.wavesnake.local:192.168.1.235"
+      
+    deploy:
+      restart_policy:
+        condition: any
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+      placement:
+        constraints:
+          - node.role == manager
+      labels:
+        - "traefik.enable=true"
+
+        # This section id for local http access
+        - "traefik.tcp.routers.redisint.entrypoints=redis"
+        - "traefik.tcp.routers.redisint.rule=HostSNI(`*`)"
+        - "traefik.tcp.routers.redisint.service=redisinternal"
+        - "traefik.tcp.services.redisinternal.loadBalancer.server.port=6379"
+
+networks:
+  traefik-public:
+    external: true

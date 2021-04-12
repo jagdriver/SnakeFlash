@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Flash Raspberry Pi SD card images on your PC or Mac
 # Stefan Scherer - scherer_stefan@icloud.com
-#
+# Niels Jorgen Nielsen jagdriver@hotmail.com
 # Linux initial version by Matt Williams - matt@matthewkwilliams.com
 # MIT License
 
@@ -44,21 +44,11 @@ If no image is specified, the script will try to configure an existing
 image. This is useful to try several configuration without the need to
 rewrite the image every time.
 
-For HypriotOS < v1.7.0:
-
-The config file device-init.yaml should look like
-
-hostname: black-pearl
-wifi:
-  interfaces:
-    wlan0:
-      ssid: "MyNetwork"
-      password: "secret_password"
-
-For HypriotOS v1.7.0 and higher:
+For SnakeOS v1.1.0 and higher:
 
 The config file user-data config file is the cloud-init configuration.
-See http://cloudinit.readthedocs.io/en/0.7.9/ for more details.
+See https://cloudinit.readthedocs.io/en/latest/ for more details.
+Cloud-init version 20.2-2
 EOF
   exit 1
 }
@@ -757,6 +747,21 @@ fi
       echo "  Set psk=${WIFI_PASSWORD}"
       sed_i -e "/^#/!s/.*psk=.*\$/      psk=\"${WIFI_PASSWORD}\"/" "${boot}/user-data"
     fi
+    # Also create SSH file (without extension) will enable Raspbian SSH by default
+    if [ ! -f "${boot}/ssh" ]; then
+      echo "Creating empty ssh file"
+      touch "${boot}/ssh"
+    fi
+    # Also copy cmdline.txt while we are testing
+    CMDLINE_FILE="cmdline.txt"
+    echo "Copy cmdline.txt"
+    cp "${CMDLINE_FILE}" "${boot}/"
+    
+    # Also copy Stacks directory recursive to /boot
+    mkdir "${boot}/Stacks"
+    for f in ../Stacks/*; do
+    cp -r "$f" "${boot}/Stacks"
+    done
 
     if [ ! -f "${boot}/meta-data" ]; then
       echo "Creating empty meta-data"

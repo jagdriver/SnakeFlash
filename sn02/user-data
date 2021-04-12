@@ -1,0 +1,254 @@
+#cloud-config
+# vim: syntax=yaml
+#
+# This file is the !! SWARM WORKER NODE !! Default Flash config.
+# You can change the configuration directly in the file "default-worker-user-data" 
+# before running ./flash-config.zsh which will prompt you for properties, 
+# and guide you thru the setup.
+# TODO:
+# 1. NFS Mount setup
+# 2. Check SSH setup
+# 3. 
+# Set your hostname here, the manage_etc_hosts will update the hosts file entries as well
+hostname: sn02
+manage_etc_hosts: false
+
+# You could modify this for your own user information
+users:
+  - name: manager
+    gecos: "Wavesnake Manager"
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+    groups: users,docker,video,input
+    plain_text_passwd: your-manager-password
+    lock_passwd: false
+    ssh_pwauth: true
+    chpasswd: { expire: false }
+
+# # Set the locale of the system
+locale: "en_US.UTF-8"
+
+# # Set the timezone
+# # Value of 'timezone' must exist in /usr/share/zoneinfo
+timezone: "Europe/Copenhagen"
+
+# # Update apt packages on first boot
+package_update: false
+package_reboot_if_required: true
+package_upgrade: false
+
+# # Install any additional apt packages you need here
+# # OBS! This is done in RUNCMD section caused by an
+# # error in debian Buster NTP time.
+# packages:
+#   - sshfs
+#   - acl
+#   - dnsmasq
+#   - dnsutils
+
+# # WiFi connect to HotSpot
+# # - use `wpa_passphrase SSID PASSWORD` to encrypt the psk
+write_files:
+  #
+  # NodeName.env
+  #
+  - content: |
+      NODE_NAME=sn02
+    path:  /opt/containers/environment/nodename.env
+  # #
+  # # ETH0 interface setup
+  # #
+  - content: |
+      auto eth0
+      iface eth0 inet static
+      address 172.16.1.2
+      network 172.16.1.0
+      netmask 255.255.255.0
+      gateway 172.16.1.1
+      dns-nameservers 8.8.8.8 8.8.4.4
+    path: /etc/network/interfaces.d/eth0
+  #
+  # Interfaces (Recommended content)
+  #
+  - content: |
+      # Please note that this file is written to be used with dhcpcd
+      # For static IP, consult /etc/dhcpcd.conf and 'man dhcpcd.conf'
+
+      # Include files from /etc/network/interfaces.d:
+      source-directory /etc/network/interfaces.d
+    path: /etc/network/interfaces
+  #
+  # dhcpcd.conf static network setup
+  #
+  - content: |
+      interface eth0
+      static ip_address=172.16.1.2/24
+      static routers=172.16.1.1
+      static domain_name_servers=8.8.8.8 8.8.4.4
+    path: /etc/dhcpcd.conf
+  #
+  # Hosts
+  #
+  - content: |
+      127.0.1.1 sn02 sn02.wavesnake.local
+      127.0.0.1 localhost
+      172.16.1.1 sn01 sn01.wavesnake.local
+      172.16.1.3 sn03 sn03.wavesnake.local
+      172.16.1.4 sn04 sn04.wavesnake.local
+    path: /etc/hosts
+  #
+  # Bash script to mount USB Stick
+  # Script must be run on RPI with sudo
+  # and requires reboot
+  - content: |
+      #!/bin/bash
+      #
+      # Mount USB Stick
+      #
+      echo -e  "\n"
+      read -p "Type USB Stick Label>"
+      if [ $REPLY != "" ]; then
+        DISKUUID=$(lsblk -f | sed -n -e "s/^.*$REPLY //p" | xargs)
+        echo "/dev/disk/by-uuid/$DISKUUID /media/data vfat auto,nofail,noatime,users,rw,uid=manager,gid=manager 0 0" >> /etc/fstab
+      else
+        echo -e "No label given"
+      fi
+    path: /home/manager
+# These commands will be run once on first boot only
+runcmd:
+  # Restart Avahi daemon and sleep 30 seec  - 'logger !!! wavesnake !!!'
+  - 'logger !!! wavesnake !!!' 
+  - 'logger !!! wavesnake !!! Restart avahi-deamon'
+  - 'logger !!! wavesnake !!!' 
+  - 'systemctl restart avahi-daemon'
+ 
+  
+  # Set Fake HW Date, Restart NTP, workaround for Debian Buster time initialization
+  - 'logger !!! wavesnake !!!'
+  - 'logger !!! wavesnake !!! Workaround for Buster Fake Time error initializing date/time'
+  - 'logger !!! wavesnake !!!'
+  - sudo date -s 'ISO-DATE'
+  - 'sudo service ntp --full-restart'
+  - 'sudo sleep 15'
+  - 'sudo date'
+
+  # Start ETH0 interface
+  - 'sudo ip addr flush dev eth0'
+  - 'sudo ifdown eth0'
+  - 'sudo ifup eth0'
+  - 'sudo sleep 15'
+
+  # Update package index
+  - 'logger !!! wavesnake !!! Update Package list'
+  - 'sudo apt-get update --allow-releaseinfo-change'
+
+  # Install packages
+  - 'logger !!! wavesnake !!! Install packages'
+  - 'sudo apt-get -y install acl'
+  - 'sudo apt-get -y install sshfs'
+  - 'sudo apt-get -y install nfs-common'
+
+  # Skip Locale check on User Session Startup
+  - 'sudo touch /var/lib/cloud/instance/locale-check.skip'
+
+  # Setup Manager
+  - 'logger !!! wavesnake !!! Set manager in docker group'
+  - 'sudo chown manager:manager /home/manager'
+  - 'sudo chmod -R u+rwX,go+rX-w /home/manager'
+  - 'sudo usermod -aG docker $(whoami)'
+
+  # Add Node to Swarm
+  - 'logger !!! wavesnake !!! Join Worker Node to swarm'
+  - 'docker swarm join --token  sn02:2377'
+  - 'sudo sleep 5'
+
+  # Create SSH private/public key
+  - 'logger !!! wavesnake !!! Create ssh private/public keys'
+  - 'sudo mkdir -p /home/manager/.ssh'
+  - 'sudo chown manager:manager /home/manager/.ssh'
+  - 'sudo touch /home/manager/.ssh/authorized_keys'
+  - 'sudo chmod 700 /home/manager/.ssh'
+
+  # 'sudo cp -P /boot/keyfile.txt /home/manager/.ssh/authorized_keys'
+  - 'sudo chown manager:manager /home/manager/.ssh/authorized_keys'
+  - 'sudo chmod 600 /home/manager/.ssh/authorized_keys'
+
+  # Create Container directory
+  - 'logger !!! wavesnake !!! Create container directory'
+  - 'sudo mkdir -p /opt/containers'
+
+  # Create Container application directories on each
+  # Node, so we can move applications around.
+  # Apache
+  - 'sudo mkdir -p /opt/containers/apache'
+  - 'sudo mkdir -p /opt/containers/apache/data'
+  # Redis
+  - 'sudo mkdir -p /opt/containers/redis'
+  - 'sudo mkdir -p /opt/containers/redis/data'
+  # Mosquitto
+  - 'sudo mkdir -p /opt/containers/mosquitto'
+  - 'sudo mkdir -p /opt/containers/mosquitto/data' 
+  - 'sudo mkdir -p /opt/containers/mosquitto/config'
+  - 'sudo mkdir -p /opt/containers/mosquitto/config/conf.d'
+  # SnakeApi
+  - 'sudo mkdir -p /opt/containers/snakeapi'
+  - 'sudo mkdir -p /opt/containers/snakeapi/data'
+  # SnakeConfig
+  - 'sudo mkdir -p /opt/containers/swarmconfig'
+  - 'sudo mkdir -p /opt/containers/swarmconfig/data'
+  # SnakeHistory
+  - 'sudo mkdir -p /opt/containers/snakehistory'
+  - 'sudo mkdir -p /opt/containers/snakehistory/data'
+  # SnakeTimer
+  - 'sudo mkdir -p /opt/containers/snaketimer'
+  - 'sudo mkdir -p /opt/containers/snaketimer/data'
+  # SnakeUtil
+  - 'sudo mkdir -p /opt/containers/snakeutil'
+  - 'sudo mkdir -p /opt/containers/snakeutil/data'
+  # MariaDB
+  - 'sudo mkdir -p /opt/containers/mariadb'
+  - 'sudo mkdir -p /opt/containers/mariadb/data'
+  # Environment
+  - 'sudo mkdir -p /opt/containers/environment'
+  # Synchronization
+  - 'sudo mkdir -p /opt/containers/synchronization'
+  
+  # Set manager as owner and give rw permission to users
+  - 'chown -R manager /opt/containers'
+  - 'sudo chmod a+rw /opt/containers -R'
+
+  # Copy Mosquitto files to Container dir
+  - 'sudo cp /var/local/mosquitto.conf /opt/containers/mosquitto/config/'
+  - 'sudo cp /var/local/acl /opt/containers/mosquitto/config/config.d/'
+  - 'sudo cp /var/local/pw /opt/containers/mosquitto/config/config.d/'
+
+  # Create log directories
+  - 'logger !!! wavesnake !!! Create log files'
+  - 'sudo mkdir -p /var/log/snakelogs'
+  - 'sudo mkdir -p /var/log/mosquitto'
+  - 'sudo mkdir -p /var/log/redis'
+  - 'sudo mkdir -p /var/log/mysql'
+  
+  # Set Owner and rights on log files
+  - 'sudo chgrp -R manager /var/log/snakelogs'
+  - 'sudo chgrp -R manager /var/log/mosquitto'
+  - 'sudo chgrp -R manager /var/log/redis'
+  - 'sudo chgrp -R manager /var/log/mysql'
+  
+  - 'sudo chmod a+rw /var/log/snakelogs -R'
+  - 'sudo chmod a+rw /var/log/mosquitto -R'
+  - 'sudo chmod a+rw /var/log/redis -R'
+  - 'sudo chmod a+rw /var/log/mysql -R'
+  
+  # Create Media drive to mysql
+  - 'sudo mkdir -p /media/data' 
+  - 'sudo mkdir -p /media/data/mariadb'
+  - 'sudo chmod a+rw /media/data/mariadb -R'
+
+  # Mount USB Drive, which requires that we know the UUID of the USB stick
+  # Can be obtained on Unix(RPI) with command: sudo blkid -sUUID
+  - ''
+
+  - 'logger !!! wavesnake !!! End of RUNCMD'
+  
+  # !!! There must be a newline after this line

@@ -82,6 +82,215 @@ function Quit() {
    exit
 }
 
+function ReadProperties() {
+   # Keep sections/lines in this function synchronized
+   # with swarmconfig.txt
+   #
+   # Read all properties from swarmconfig.txt
+   # source ./Artifacts/swarmconfig.txt
+   #source "./Artifacts/$PROPERTY_FILE_NAME"
+   #source "$PROPERTY_FILE_NAME"
+   source "$INPUT_FILE"
+   #.$PROPERTY_FILE_EXT"
+   #echo -e "Input File: ./Artifacts/$PROPERTY_FILE_NAME.$PROPERTY_FILE_EXT"
+   echo -e "Selected file: $INPUT_FILE"
+
+   # Script properties
+   NODENAME_PREFIX=$NODENAME_PREFIX
+   NODENAME_COUNT=$NODENAME_COUNT
+   PROPERTY_FILE_NAME=$PROPERTY_FILE_NAME
+   PROPERTY_FILE_EXT=$PROPERTY_FILE_EXT
+   MANAGER_TEMPLATE_FILE_NAME=$MANAGER_TEMPLATE_FILE_NAME
+   WORKER_TEMPLATE_FILE_NAME=$WORKER_TEMPLATE_FILE_NAME
+   TEMPLATE_FILE_EXT=$TEMPLATE_FILE_EXT
+
+   # MANAGER Properties
+   MANAGER_NAME=$MANAGER_NAME
+   MANAGER_PASSWORD=$MANAGER_PASSWORD
+   MANAGER_EMAIL=$MANAGER_EMAIL
+   AUTHORIZED_SSH_KEY=$AUTHORIZED_SSH_KEY
+   SWARM_SECRET=$SWARM_SECRET
+   #MANAGER_PASSWORD=$MANAGER_PASSWORD
+   #MANAGER_ENCRYPTED_PASSWORD=$MANAGER_ENCRYPTED_PASSWORD
+
+   # SSH Properties
+   SSH_KEY_FILE=$SSH_KEY_FILE
+
+   # NODE Properties
+   NODE_NAME=$NODE_NAME
+   SWARM_LOCALE=$SWARM_LOCALE
+   TIME_ZONE=$TIME_ZONE
+
+   # Nodes default IP addresses
+   SN01_DEFAULT_IP_ADDRESS=$SN01_IP_ADDRESS
+   SN02_DEFAULT_IP_ADDRESS=$SN02_IP_ADDRESS
+   SN03_DEFAULT_IP_ADDRESS=$SN03_IP_ADDRESS
+   SN04_DEFAULT_IP_ADDRESS=$SN04_IP_ADDRESS
+
+   # Docker Swarm Properties
+   #SWARM_MANAGER_NODE=$SWARM_MANAGER_NODE
+   SWARM_PORT=$SWARM_PORT
+   #SWARM_INTERFACE=$SWARM_INTERFACE
+   #SWARM_WORKER_TOKEN=$SWARM_WORKER_TOKEN
+   #SWARM_MANAGER_TOKEN=$SWARM_MANAGER_TOKEN
+
+   # Swarm External Application URL's
+   #API_SERVER_URL=$API_SERVER_URL
+   #DB_SERVER_URL=$DB_SERVER_URL
+   #MQTT_SERVER_URL=$MQTT_SERVER_URL
+   #SKETCH_SERVER_URL=$INTERNAL_SKETCH_SERVER_URL
+
+   # Swarm Application DNS Prefix's
+   API_PREFIX=$API_PREFIX
+   DB_PREFIX=$DB_PREFIX
+   MQTT_PREFIX=$MQTT_PREFIX
+   SKETCH_PREFIX=$SKETCH_PREFIX
+
+   # Swarm Internal Application URL's
+   #INTERNAL_API_SERVER_URL=$INTERNAL_API_SERVER_URL
+   #INTERNAL_DB_SERVER_URL=$INTERNAL_DB_SERVER_URL
+   #INTERNAL_MQTT_SERVER_URL=$INTERNAL_MQTT_SERVER_URL
+   #INTERNAL_SKETCH_SERVER_URL=$INTERNAL_SKETCH_SERVER_URL
+
+   # WiFi properties
+   COUNTRY_CODE=$COUNTRY_CODE
+   WIFI_SSID=$WIFI_SSID
+   WIFI_PASSWD=$WIFI_PASSWORD
+
+   # Swarm Node ETH0 properties
+   ETH0_NETWORK_ADDRESS=$ETH0_NETWORK_ADDRESS
+   ETH0_NETWORK_NETMASK=$ETH0_NETWORK_NETMASK
+   ETH0_IP_ADDRESS=$ETH0_IP_ADDRESS
+   ETH0_STATIC_ROUTERS=$ETH0_STATIC_ROUTERS
+   ETH0_DNS_SERVERS=$ETH0_DNS_SERVERS
+
+   # Manager Node WLAN0 properties
+   WLAN0_NETWORK_ADDRESS=$WLAN0_NETWORK_ADDRESS
+   WLAN0_NETWORK_NETMASK=$WLAN0_NETWORK_NETMASK
+   WLAN0_IP_ADDRESS=$WLAN0_IP_ADDRESS
+   WLAN0_STATIC_ROUTERS=$WLAN0_STATIC_ROUTERS
+   WLAN0_DNS_SERVERS=$WLAN0_DNS_SERVERS
+
+   # Domain properties
+   INTERNAL_DOMAIN_NAME=$INTERNAL_DOMAIN_NAME
+   EXTERNAL_DOMAIN_NAME=$EXTERNAL_DOMAIN_NAME
+
+   # Dynamic DNS properties
+   DNS_PROVIDER_LIST=($DNS_PROVIDER_LIST)
+
+   DNS_PROVIDER_NAMES=$DNS_PROVIDER_LIST
+
+   DNS_PROVIDER_URL_LIST=($DNS_PROVIDER_URL_LIST)
+   DYNAMIC_DNS_PROVIDER=$DYNAMIC_DNS_PROVIDER
+   # Must also be lists
+   DYNAMIC_DNS_USER=$DYNAMIC_DNS_USER
+   DYNAMIC_DNS_PASSWD=$DYNAMIC_DNS_PASSWD
+
+   # ACME properties
+   ACME_EMAIL_ADDRESS=$ACME_EMAIL_ADDRESS
+
+   # Global application properties
+   APPLICATION_LOG_PATH=$APPLICATION_LOG_PATH
+   GLOBAL_CONFIG_PATH=$GLOBAL_CONFIG_PATH
+
+   # Traefik properties
+   TRAEFIK_ENTRYPOINT_ADDRESS=$TRAEFIK_ENTRYPOINT_ADDRESS
+   MQTT_INTERNAL_TCP_PORT=$MQTT_INTERNAL_TCP_PORT
+   MQTT_EXTERNAL_TCP_PORT=$MQTT_EXTERNAL_TCP_PORT
+
+   # ZigBee2Mqtt properties
+   ZIGBEE_VENDOR=$ZIGBEE_VENDOR
+   ZIGBEE_PRODUCT=$ZIGBEE_PRODUCT
+
+   # SnakeApi properties
+   SNAKEAPI_VERSION=$SNAKEAPI_VERSION
+   SNAKEAPI_LOG_FILE=$SNAKEAPI_LOG_FILE
+   SQL_DB_ADMIN=$SQL_DB_ADMIN
+   SQL_USERS_DB_NAME=$SQL_USERS_DB_NAME
+   SQL_HOMES_DB_NAME=$SQL_HOMES_DB_NAME
+   SQL_COLLECTIONS_DB_NAME=$SQL_COLLECTIONS_DB_NAME
+   SQL_SERVER_ADDRESS=$SQL_SERVER_ADDRESS
+   SQL_SERVER_PORT=$SQL_SERVER_PORT
+   MQTT_SERVER_ADDRESS=$MQTT_SERVER_ADDRESS
+   MQTT_SERVER_PORT=$MQTT_SERVER_PORT
+   SKETCH_SERVER_ADDRESS=$SKETCH_SERVER_ADDRESS
+   SKETCH_SERVER_PORT=$SKETCH_SERVER_PORT
+   SWARM_MAIL_USER=$SWARM_MAIL_USER
+   SWARM_MAIL_SUBJECT=$SWARM_MAIL_SUBJECT
+   SWARM_MAIL_BODY=$SWARM_MAIL_BODY
+   SWARM_MAIL_PATH=$SWARM_MAIL_PATH
+
+   # SQL 
+   SQL_TEMPLATE_DEFAULT=$SQL_TEMPLATE_DEFAULT
+   SQL_TEMPLATE_LOOKUP_USER=$SQL_TEMPLATE_LOOKUP_USER
+   SQL_TEMPLATE_CREATE_USER=$SQL_TEMPLATE_CREATE_USER
+   SQL_TEMPLATE_GRANT_PRIVILEGES=$SQL_TEMPLATE_GRANT_PRIVILEGES
+   SQL_TEMPLATE_FIND_USER=$SQL_TEMPLATE_FIND_USER
+   SQL_TEMPLATE_GRANT_ALL_PRIVILEGES=$SQL_TEMPLATE_GRANT_ALL_PRIVILEGES
+
+   # Types
+   RULE_TYPES=$RULE_TYPES
+   ACCESSORY_TYPES=$ACCESSORY_TYPES
+   SERVICE_TYPES=$SERVICE_TYPES
+   ACCESSORY_SERVICES=$ACCESSORY_SERVICES
+   BOARD_TYPES=$BOARD_TYPES
+   SKETCH_RECORDS=$SKETCH_RECORDS
+   UNIT_TYPES=$UNIT_TYPES
+
+   # Not used in SnakeApi
+   API_SERVER_ADDRESS=$API_SERVER_ADDRESS
+   API_SERVER_PORT=$API_SERVER_PORT
+
+   # Portainer properties
+   PORTAINER_SERVER_ADDRESS=$PORTAINER_SERVER_ADDRESS
+   PORTAINER_SERVER_PORT=$PORTAINER_SERVER_PORT
+
+   # SnakeConfig properties
+   SNAKECONFIG_VERSION=$SNAKECONFIG_VERSION
+   SNAKECONFIG_LOG_FILE=$SNAKECONFIG_LOG_FILE
+   APPLICATION_LIST=$APPLICATION_LIST
+   ENVIRONMENT_LIST=$ENVIRONMENT_LIST
+   REDIS_SYNC_KEY=$REDIS_SYNC_KEY
+   REDIS_SYNC_PATH=$REDIS_SYNC_PATH
+   COMPOSE_FILE_NAME=$COMPOSE_FILE_NAME
+   REPOSITORY_URL=$REPOSITORY_URL
+
+   # SnakeHistory properties
+   SNAKEHISTORY_VERSION=$SNAKEHISTORY_VERSION
+   SNAKEHISTORY_LOG_FILE=$SNAKEHISTORY_LOG_FILE
+   HISTORY_DB_NAME=$HISTORY_DB_NAME
+
+   # SnakeUtil properties
+   SNAKEUTIL_VERSION=$SNAKEUTIL_VERSION
+   SNAKEUTIL_LOG_FILE=$SNAKEUTIL_LOG_FILE
+
+   # SnakeTimer properties
+   SNAKETIMER_VERSION=$SNAKETIMER_VERSION
+   SNAKETIMER_LOG_FILE=$SNAKETIMER_LOG_FILE
+
+   # SnakeConsole properties
+   SNAKE_CONSOLE_SERVER=$SNAKE_CONSOLE_SERVER
+
+   # Redis properties
+   REDIS_MASTER_SERVER_ADDRESS=$REDIS_MASTER_SERVER_ADDRESS
+   REDIS_MASTER_SERVER_PORT=$REDIS_MASTER_SERVER_PORT
+   REDIS_REPLICA_SERVER_ADDRESS=$REDIS_REPLICA_SERVER_ADDRESS
+   REDIS_REPLICA_SERVER_PORT=$REDIS_REPLICA_SERVER_PORT
+
+   # Sketch properties
+   SKETCH_SERVER_ADDRESS=$SKETCH_SERVER_ADDRESS
+   SKETCH_SERVER_PORT=$SKETCH_SERVER_PORT
+
+   # MQTT properties
+   MQTT_SERVER_ADDRESS=$MQTT_SERVER_ADDRESS
+   MQTT_SERVER_PORT=$MQTT_SERVER_PORT
+
+   # USB Drive mount command
+   USB_MOUNT_COMMAND=$USB_MOUNT_COMMAND
+
+   REDIS_DEFAULT_CONFIG=$REDIS_DEFAULT_CONFIG
+}
+
 function EditProperties() {
    cd $1
    cp ../Artifacts/metadata.yaml new-meta-data
@@ -206,6 +415,7 @@ function EditProperties() {
       # MQTT Server
       sed -i -n "s#MQTT-SERVER-ADDRESS#$MQTT_SERVER_ADDRESS#" new-user-data
       sed -i -n "s#MQTT-SERVER-PORT#$MQTT_SERVER_PORT#" new-user-data
+      # What goes wrong here
       sed -i -n "s#MANAGER-ENCRYPTED-PASSWORD#$MANAGER_ENCRYPTED_PASSWORD#g" new-user-data
 
       # SKETCH Server
@@ -227,11 +437,14 @@ function EditProperties() {
       sed -i -n "s#SQL-TEMPLATE-GRANT-ALL-PRIVILEGES#$SQL_TEMPLATE_GRANT_ALL_PRIVILEGES#" new-user-data
 
       # Types
-      sed -i -n "s#SKETCH-RECORDS#$SKETCH_RECORDS#" new-user-data 
-      sed -i -n "s#BOARD-TYPES#$BOARD_TYPES#" new-user-data
+      local SKETCH_STRING=$(echo | sed "s/\"/\'/g" <<<"$SKETCH_RECORDS")
+      sed -i -n "s#SKETCH-RECORDS#$SKETCH_STRING#" new-user-data 
+      local BOARD_STRING=$(echo | sed "s/\"/\'/g" <<<"$BOARD_TYPES")
+      sed -i -n "s#BOARD-TYPES#$BOARD_STRING#" new-user-data
       sed -i -n "s#RULE-TYPES#$RULE_TYPES#" new-user-data
       sed -i -n "s#ACCESSORY-TYPES#$ACCESSORY_TYPES#" new-user-data
       sed -i -n "s#SERVICE-TYPES#$SERVICE_TYPES#" new-user-data
+      sed -i -n "s#UNIT-TYPES#$UNIT_TYPES#" new-user-data
       local RESULT_STRING=$(echo | sed "s/\"/\'/g" <<<"$ACCESSORY_SERVICES")
       sed -i -n "s#ACCESSORY-SERVICES#$RESULT_STRING#" new-user-data
 
@@ -246,10 +459,11 @@ function EditProperties() {
       sed -i -n "s#ENVIRONMENT-LIST#$ENVIRONMENT_LIST#" new-user-data
       sed -i -n "s#REDIS-SYNC-KEY#$REDIS_SYNC_KEY#" new-user-data
       sed -i -n "s#REDIS-SYNC-PATH#$REDIS_SYNC_PATH#" new-user-data
-      sed -i -n "s#STACK-LIST#$STACK_LIST#" new-user-data
+      local STACK_STRING=$(echo | sed "s/\"/\'/g" <<<"$STACK_LIST")
+      sed -i -n "s#STACK-LIST#$STACK_STRING#" new-user-data
 
       # SnakeConsole
-      sed -i -n "s#SNAKE-CONSOLE-SERVER#$SNAKE-CONSOLE-SERVER#" new-user-data
+      sed -i -n "s#SNAKE-CONSOLE-SERVER#$SNAKE_CONSOLE_SERVER#" new-user-data
 
       # SnakeUtil
       sed -i -n "s#SNAKEUTIL-VERSION#$SNAKEUTIL_VERSION#" new-user-data
@@ -257,8 +471,8 @@ function EditProperties() {
 
       # SnakeTimer
       sed -i -n "s#SNAKETIMER-VERSION#$SNAKETIMER_VERSION#" new-user-data
-
       ;;
+
    "${SWARM_NODES[1]}")
       cp ../Artifacts/$WORKER_TEMPLATE_FILE_NAME.$TEMPLATE_FILE_EXT new-user-data
       # Worker node properties
@@ -276,10 +490,8 @@ function EditProperties() {
       # ZigBee2MQTT
       sed -i -n "s#ZIGBEE-VENDOR#$ZIGBEE_VENDOR#" new-user-data
       sed -i -n "s#ZIGBEE-PRODUCT#$ZIGBEE_PRODUCT#" new-user-data
-
-
-
       ;;
+
    "${SWARM_NODES[2]}")
       cp ../Artifacts/$WORKER_TEMPLATE_FILE_NAME.$TEMPLATE_FILE_EXT new-user-data
       # Worker node properties
@@ -295,6 +507,7 @@ function EditProperties() {
       sed -i -n "s#DNS-STRING2#${DNS_URLS[1]}#" new-user-data
       sed -i -n "s#DNS-STRING3#${DNS_URLS[3]}#" new-user-data
       ;;
+
    "${SWARM_NODES[3]}")
       cp ../Artifacts/$WORKER_TEMPLATE_FILE_NAME.$TEMPLATE_FILE_EXT new-user-data
       # Worker node properties
@@ -429,7 +642,15 @@ function PromptForInput() {
       fi
 
       # Set Mosquitto Manager User and Password string
-      MANAGER_ENCRYPTED_PASSWORD=$(./Utilities/HashUtil $MANAGER_NAME $MANAGER_PASSWORD)
+      # OBS! we have to get two different outputs one for Mosquitto and one for manager user.
+      # It might be better to call below for MQTT_USER_PASSWORD
+      # I dont think that we create the Mqtt users file yet.
+      # Or split name:password string
+
+      MQTT_USER_PASSWORD=$(./Utilities/HashUtil $MANAGER_NAME $MANAGER_PASSWORD MQTT)
+      echo "MQTT: ${MQTT_USER_PASSWORD}"
+      MANAGER_ENCRYPTED_PASSWORD=$(./Utilities/HashUtil $MANAGER_NAME $MANAGER_PASSWORD USER)
+      echo "USER: ${MANAGER_ENCRYPTED_PASSWORD}"
    done
 
    # # Configure Time Zone (Manager & Worker)
@@ -458,7 +679,7 @@ function ListProperties() {
    echo -e "MANAGER_NAME: " $MANAGER_NAME
    echo -e "MANAGER_PASSWORD: " $MANAGER_PASSWORD
    echo -e "MANAGER_ENCRYPTED_PASSWORD: " $MANAGER_ENCRYPTED_PASSWORD
-
+   echo -e "MQTT_USER_PASSWORD: " $MQTT_USER_PASSWORD
    echo -e "\n--- Swarm properties ---"
    echo -e "NODENAME_COUNT: " $NODENAME_COUNT
    echo -e "NODE_NAME_PREFIX: " $NODENAME_PREFIX
@@ -585,204 +806,6 @@ function SaveTemplate() {
    fi
 }
 
-function ReadProperties() {
-   # Keep sections/lines in this function synchronized
-   # with swarmconfig.txt
-   #
-   # Read all properties from swarmconfig.txt
-   # source ./Artifacts/swarmconfig.txt
-   #source "./Artifacts/$PROPERTY_FILE_NAME"
-   #source "$PROPERTY_FILE_NAME"
-   source "$INPUT_FILE"
-   #.$PROPERTY_FILE_EXT"
-   #echo -e "Input File: ./Artifacts/$PROPERTY_FILE_NAME.$PROPERTY_FILE_EXT"
-   echo -e "Selected file: $INPUT_FILE"
-
-   # Script properties
-   NODENAME_PREFIX=$NODENAME_PREFIX
-   NODENAME_COUNT=$NODENAME_COUNT
-   PROPERTY_FILE_NAME=$PROPERTY_FILE_NAME
-   PROPERTY_FILE_EXT=$PROPERTY_FILE_EXT
-   MANAGER_TEMPLATE_FILE_NAME=$MANAGER_TEMPLATE_FILE_NAME
-   WORKER_TEMPLATE_FILE_NAME=$WORKER_TEMPLATE_FILE_NAME
-   TEMPLATE_FILE_EXT=$TEMPLATE_FILE_EXT
-
-   # MANAGER Properties
-   MANAGER_NAME=$MANAGER_NAME
-   MANAGER_PASSWORD=$MANAGER_PASSWORD
-   MANAGER_EMAIL=$MANAGER_EMAIL
-   AUTHORIZED_SSH_KEY=$AUTHORIZED_SSH_KEY
-   SWARM_SECRET=$SWARM_SECRET
-   #MANAGER_PASSWORD=$MANAGER_PASSWORD
-   #MANAGER_ENCRYPTED_PASSWORD=$MANAGER_ENCRYPTED_PASSWORD
-
-   # SSH Properties
-   SSH_KEY_FILE=$SSH_KEY_FILE
-
-   # NODE Properties
-   NODE_NAME=$NODE_NAME
-   SWARM_LOCALE=$SWARM_LOCALE
-   TIME_ZONE=$TIME_ZONE
-
-   # Docker Swarm Properties
-   #SWARM_MANAGER_NODE=$SWARM_MANAGER_NODE
-   SWARM_PORT=$SWARM_PORT
-   #SWARM_INTERFACE=$SWARM_INTERFACE
-   #SWARM_WORKER_TOKEN=$SWARM_WORKER_TOKEN
-   #SWARM_MANAGER_TOKEN=$SWARM_MANAGER_TOKEN
-
-   # Swarm External Application URL's
-   #API_SERVER_URL=$API_SERVER_URL
-   #DB_SERVER_URL=$DB_SERVER_URL
-   #MQTT_SERVER_URL=$MQTT_SERVER_URL
-   #SKETCH_SERVER_URL=$INTERNAL_SKETCH_SERVER_URL
-
-   # Swarm Application DNS Prefix's
-   API_PREFIX=$API_PREFIX
-   DB_PREFIX=$DB_PREFIX
-   MQTT_PREFIX=$MQTT_PREFIX
-   SKETCH_PREFIX=$SKETCH_PREFIX
-
-   # Swarm Internal Application URL's
-   #INTERNAL_API_SERVER_URL=$INTERNAL_API_SERVER_URL
-   #INTERNAL_DB_SERVER_URL=$INTERNAL_DB_SERVER_URL
-   #INTERNAL_MQTT_SERVER_URL=$INTERNAL_MQTT_SERVER_URL
-   #INTERNAL_SKETCH_SERVER_URL=$INTERNAL_SKETCH_SERVER_URL
-
-   # WiFi properties
-   COUNTRY_CODE=$COUNTRY_CODE
-   WIFI_SSID=$WIFI_SSID
-   WIFI_PASSWD=$WIFI_PASSWORD
-
-   # Swarm Node ETH0 properties
-   ETH0_NETWORK_ADDRESS=$ETH0_NETWORK_ADDRESS
-   ETH0_NETWORK_NETMASK=$ETH0_NETWORK_NETMASK
-   ETH0_IP_ADDRESS=$ETH0_IP_ADDRESS
-   ETH0_STATIC_ROUTERS=$ETH0_STATIC_ROUTERS
-   ETH0_DNS_SERVERS=$ETH0_DNS_SERVERS
-
-   # Manager Node WLAN0 properties
-   WLAN0_NETWORK_ADDRESS=$WLAN0_NETWORK_ADDRESS
-   WLAN0_NETWORK_NETMASK=$WLAN0_NETWORK_NETMASK
-   WLAN0_IP_ADDRESS=$WLAN0_IP_ADDRESS
-   WLAN0_STATIC_ROUTERS=$WLAN0_STATIC_ROUTERS
-   WLAN0_DNS_SERVERS=$WLAN0_DNS_SERVERS
-
-   # Domain properties
-   INTERNAL_DOMAIN_NAME=$INTERNAL_DOMAIN_NAME
-   EXTERNAL_DOMAIN_NAME=$EXTERNAL_DOMAIN_NAME
-
-   # Dynamic DNS properties
-   DNS_PROVIDER_LIST=($DNS_PROVIDER_LIST)
-
-   DNS_PROVIDER_NAMES=$DNS_PROVIDER_LIST
-
-   DNS_PROVIDER_URL_LIST=($DNS_PROVIDER_URL_LIST)
-   DYNAMIC_DNS_PROVIDER=$DYNAMIC_DNS_PROVIDER
-   # Must also be lists
-   DYNAMIC_DNS_USER=$DYNAMIC_DNS_USER
-   DYNAMIC_DNS_PASSWD=$DYNAMIC_DNS_PASSWD
-
-   # ACME properties
-   ACME_EMAIL_ADDRESS=$ACME_EMAIL_ADDRESS
-
-   # Global application properties
-   APPLICATION_LOG_PATH=$APPLICATION_LOG_PATH
-   GLOBAL_CONFIG_PATH=$GLOBAL_CONFIG_PATH
-
-   # Traefik properties
-   TRAEFIK_ENTRYPOINT_ADDRESS=$TRAEFIK_ENTRYPOINT_ADDRESS
-   MQTT_INTERNAL_TCP_PORT=$MQTT_INTERNAL_TCP_PORT
-   MQTT_EXTERNAL_TCP_PORT=$MQTT_EXTERNAL_TCP_PORT
-
-   # ZigBee2Mqtt properties
-   ZIGBEE_VENDOR=$ZIGBEE_VENDOR
-   ZIGBEE_PRODUCT=$ZIGBEE_PRODUCT
-
-   # SnakeApi properties
-   SNAKEAPI_VERSION=$SNAKEAPI_VERSION
-   SNAKEAPI_LOG_FILE=$SNAKEAPI_LOG_FILE
-   SQL_DB_ADMIN=$SQL_DB_ADMIN
-   SQL_USERS_DB_NAME=$SQL_USERS_DB_NAME
-   SQL_HOMES_DB_NAME=$SQL_HOMES_DB_NAME
-   SQL_COLLECTIONS_DB_NAME=$SQL_COLLECTIONS_DB_NAME
-   SQL_SERVER_ADDRESS=$SQL_SERVER_ADDRESS
-   SQL_SERVER_PORT=$SQL_SERVER_PORT
-   MQTT_SERVER_ADDRESS=$MQTT_SERVER_ADDRESS
-   MQTT_SERVER_PORT=$MQTT_SERVER_PORT
-   SKETCH_SERVER_ADDRESS=$SKETCH_SERVER_ADDRESS
-   SKETCH_SERVER_PORT=$SKETCH_SERVER_PORT
-   SWARM_MAIL_USER=$SWARM_MAIL_USER
-   SWARM_MAIL_SUBJECT=$SWARM_MAIL_SUBJECT
-   SWARM_MAIL_BODY=$SWARM_MAIL_BODY
-   SWARM_MAIL_PATH=$SWARM_MAIL_PATH
-   SQL_TEMPLATE_DEFAULT=$SQL_TEMPLATE_DEFAULT
-   SQL_TEMPLATE_LOOKUP_USER=$SQL_TEMPLATE_LOOKUP_USER
-   SQL_TEMPLATE_CREATE_USER=$SQL_TEMPLATE_CREATE_USER
-   SQL_TEMPLATE_GRANT_PRIVILEGES=$SQL_TEMPLATE_GRANT_PRIVILEGES
-   SQL_TEMPLATE_FIND_USER=$SQL_TEMPLATE_FIND_USER
-   SQL_TEMPLATE_GRANT_ALL_PRIVILEGES=$SQL_TEMPLATE_GRANT_ALL_PRIVILEGES
-   RULE_TYPES=$RULE_TYPES
-   ACCESSORY_TYPES=$ACCESSORY_TYPES
-   SERVICE_TYPES=$SERVICE_TYPES
-   ACCESSORY_SERVICES=$ACCESSORY_SERVICES
-   BOARD_TYPES=$BOARD_TYPES
-   SKETCH_RECORDS=$SKETCH_RECORDS
-
-   # Not used in SnakeApi
-   API_SERVER_ADDRESS=$API_SERVER_ADDRESS
-   API_SERVER_PORT=$API_SERVER_PORT
-
-   # Portainer properties
-   PORTAINER_SERVER_ADDRESS=$PORTAINER_SERVER_ADDRESS
-   PORTAINER_SERVER_PORT=$PORTAINER_SERVER_PORT
-
-   # SnakeConfig properties
-   SNAKECONFIG_VERSION=$SNAKECONFIG_VERSION
-   SNAKECONFIG_LOG_FILE=$SNAKECONFIG_LOG_FILE
-   APPLICATION_LIST=$APPLICATION_LIST
-   ENVIRONMENT_LIST=$ENVIRONMENT_LIST
-   REDIS_SYNC_KEY=$REDIS_SYNC_KEY
-   REDIS_SYNC_PATH=$REDIS_SYNC_PATH
-   COMPOSE_FILE_NAME=$COMPOSE_FILE_NAME
-   REPOSITORY_URL=$REPOSITORY_URL
-
-   # SnakeHistory properties
-   SNAKEHISTORY_VERSION=$SNAKEHISTORY_VERSION
-   SNAKEHISTORY_LOG_FILE=$SNAKEHISTORY_LOG_FILE
-   HISTORY_DB_NAME=$HISTORY_DB_NAME
-
-   # SnakeUtil properties
-   SNAKEUTIL_VERSION=$SNAKEUTIL_VERSION
-   SNAKEUTIL_LOG_FILE=$SNAKEUTIL_LOG_FILE
-
-   # SnakeTimer properties
-   SNAKETIMER_VERSION=$SNAKETIMER_VERSION
-   SNAKETIMER_LOG_FILE=$SNAKETIMER_LOG_FILE
-
-   # SnakeConsole properties
-   SNAKE_CONSOLE_SERVER=$SNAKE_CONSOLE_SERVER
-
-   # Redis properties
-   REDIS_MASTER_SERVER_ADDRESS=$REDIS_MASTER_SERVER_ADDRESS
-   REDIS_MASTER_SERVER_PORT=$REDIS_MASTER_SERVER_PORT
-   REDIS_REPLICA_SERVER_ADDRESS=$REDIS_REPLICA_SERVER_ADDRESS
-   REDIS_REPLICA_SERVER_PORT=$REDIS_REPLICA_SERVER_PORT
-
-   # Sketch properties
-   SKETCH_SERVER_ADDRESS=$SKETCH_SERVER_ADDRESS
-   SKETCH_SERVER_PORT=$SKETCH_SERVER_PORT
-
-   # MQTT properties
-   MQTT_SERVER_ADDRESS=$MQTT_SERVER_ADDRESS
-   MQTT_SERVER_PORT=$MQTT_SERVER_PORT
-
-   # USB Drive mount command
-   USB_MOUNT_COMMAND=$USB_MOUNT_COMMAND
-
-   REDIS_DEFAULT_CONFIG=$REDIS_DEFAULT_CONFIG
-}
-
 function SetNetAddress() {
    # Lookup current Lan address, and set the Swarm public IP address
    # by setting the last byte "WLAN0_IP_ADDRESS_LAST_BYTE"
@@ -857,7 +880,7 @@ function SetNodeNames() {
       #echo "Nodename ${SWARM_NODES[$nodeCount - 1]}"
       nodeCount=$(($nodeCount + 1))
    done
-   SWARM_MANAGER_NODE=${SWARM_NODES[1]}
+   SWARM_MANAGER_NODE=${SWARM_NODES[0]}
 
    # Create a subdir for each node
    for ((i = 0; i < $NODENAME_COUNT; i++)); do
@@ -949,7 +972,7 @@ function ConfigureInternalNetwork() {
 
    #  # Configure ETH0 IP Address (Manager & Worker)
    echo -e "\n"
-   read -e -p "Type ETH0 IP address${RD}${BO} default=[${ETH0_IP_ADDRESS}] ${BLA}> "
+   read -e -p "Type ETH0 IP address ${RD} ${BO} default=[${ETH0_IP_ADDRESS}] ${BLA}> "
    if [[ -z "$REPLY" ]]; then
       echo -e -n "${ETH0_IP_ADDRESS}"
    else
@@ -959,7 +982,7 @@ function ConfigureInternalNetwork() {
 
    #  # Configure ETH0 Static Routers (Manager & Worker)
    echo -e "\n"
-   read -e -p "${GR}Type ETH0 Static Routers${RD}${BO} default=[${ETH0_STATIC_ROUTERS}] ${WH}> "
+   read -e -p "Type ETH0 Static Routers ${RD} ${BO} default=[${ETH0_STATIC_ROUTERS}] ${BLA}> "
    if [[ -z "$REPLY" ]]; then
       echo -e -n "${ETH0_STATIC_ROUTERS}"
    else
@@ -969,7 +992,7 @@ function ConfigureInternalNetwork() {
 
    # # Configure ETH0 DNS Servers (Manager & Worker)
    echo -e "\n"
-   read -e -p "Type ETH0 DNS Servers${RD}${BO} default=[${ETH0_DNS_SERVERS}] ${BLA}> "
+   read -e -p "Type ETH0 DNS Servers ${BO} default=[${ETH0_DNS_SERVERS}] ${BLA}> "
    if [[ -z "$REPLY" ]]; then
       echo -e -n "${ETH0_DNS_SERVERS}"
    else
@@ -1117,6 +1140,9 @@ function ConfigureDNS() {
    DNS_URLS[2]="${ETH0ADDR[0]}.${ETH0ADDR[1]}.${ETH0ADDR[2]}.3 ${SWARM_NODES[2]} ${SWARM_NODES[2]}.${INTERNAL_DOMAIN_NAME}"
    DNS_URLS[3]="${ETH0ADDR[0]}.${ETH0ADDR[1]}.${ETH0ADDR[2]}.4 ${SWARM_NODES[3]} ${SWARM_NODES[3]}.${INTERNAL_DOMAIN_NAME}"
 
+   # Also set Application Internal and External Url's
+   APP_INTERNAL_DNS_RECORDS="${WLAN0_IP_ADDRESS} api.${INTERNAL_DOMAIN_NAME} console.${INTERNAL_DOMAIN_NAME} config.${INTERNAL_DOMAIN_NAME} sketch.${INTERNAL_DOMAIN_NAME} "
+
    # # Configure LetsEncrype Certificate ACME Email Address (Manager)
    # This E-mail adddress must must be a valid mail address, and be registere by
    # LetsEncrypt, together with the external domain name.
@@ -1139,61 +1165,61 @@ function ConfigureDNS() {
       fi
    done
 
-   #  # Configure Dynamic DNS (Manager)
-   echo -e "\n"
-   read -e -p "Use Dynamic DNS ? ${BLA}y | n > " -n 1 -r
-   if [[ $REPLY =~ ^[Yy]$ ]]; then
-      echo -e "\n"
-      DYNCOUNT=${#DNS_PROVIDER_LIST[@]}    # Get length of array
-      DYN_MENU=("${DNS_PROVIDER_LIST[@]}") # Convert list to array
-      select fav in "${DYN_MENU[@]}"; do
-         case $fav in
-         *)
-            for ((i = 0; i < $DYNCOUNT; i++)); do
-               if [ $fav == ${DNS_PROVIDER_LIST[i]} ]; then
-                  DYNAMIC_DNS_PROVIDER=${DNS_PROVIDER_LIST[i]^^}
-                  DYNAMIC_DNS_URL=${DNS_PROVIDER_URL_LIST[i]}
-                  echo -e "Provider: $DYNAMIC_DNS_PROVIDER"
-               fi
-            done
-            break
-            ;;
-         esac
-      done
+  #  # Configure Dynamic DNS (Manager)
+   # echo -e "\n"
+   # read -e -p "Use Dynamic DNS ? ${BLA}y | n > " -n 1 -r
+   # if [[ $REPLY =~ ^[Yy]$ ]]; then
+   #    echo -e "\n"
+   #    DYNCOUNT=${#DNS_PROVIDER_LIST[@]}    # Get length of array
+   #    DYN_MENU=("${DNS_PROVIDER_LIST[@]}") # Convert list to array
+   #    select fav in "${DYN_MENU[@]}"; do
+   #       case $fav in
+   #       *)
+   #          for ((i = 0; i < $DYNCOUNT; i++)); do
+   #             if [ $fav == ${DNS_PROVIDER_LIST[i]} ]; then
+   #                DYNAMIC_DNS_PROVIDER=${DNS_PROVIDER_LIST[i]^^}
+   #                DYNAMIC_DNS_URL=${DNS_PROVIDER_URL_LIST[i]}
+   #                echo -e "Provider: $DYNAMIC_DNS_PROVIDER"
+   #             fi
+   #          done
+   #          break
+   #          ;;
+   #       esac
+   #    done
+   # Moved to separate function
+   #    #  # Configure Dynamic DNS User Name (Manager)
+   #    echo -e "\n"
+   #    GETUSR=true
+   #    while $GETUSR; do
+   #       read -e -p "Type ${DYNAMIC_DNS_PROVIDER} User Name ${BLA}> "
+   #       if [[ -z "$REPLY" ]]; then
+   #          echo -e -n "You must provide DNS user name"
+   #       else
+   #          DYNAMIC_DNS_USER=$REPLY
+   #          echo -e -n "${DYNAMIC_DNS_USER}"
+   #          GETUSR=false
+   #       fi
+   #    done
 
-      #  # Configure Dynamic DNS User Name (Manager)
-      echo -e "\n"
-      GETUSR=true
-      while $GETUSR; do
-         read -e -p "Type ${DYNAMIC_DNS_PROVIDER} User Name ${BLA}> "
-         if [[ -z "$REPLY" ]]; then
-            echo -e -n "You must provide DNS user name"
-         else
-            DYNAMIC_DNS_USER=$REPLY
-            echo -e -n "${DYNAMIC_DNS_USER}"
-            GETUSR=false
-         fi
-      done
-
-      #  # Configure Dynamic DNS User Password (Manager)
-      echo -e "\n"
-      GETPW=true
-      while $GETPW; do
-         read -e -p "Type ${DYNAMIC_DNS_PROVIDER} User Password${RD}${BO} default=[${DYNAMIC_DNS_PASSWD}] ${BLA}> "
-         if [[ -z "$REPLY" ]]; then
-            echo -e -n "${DYNAMIC_DNS_PASSWD}"
-            GETPW=false
-            #echo -e -n "You must provide Dynamic DNS user password"
-         else
-            DYNAMIC_DNS_PASSWD=$REPLY
-            echo -e -n "${DYNAMIC_DNS_PASSWD}"
-            GETPW=false
-         fi
-      done
-      DYNDNS_DONE=$CHECK_DONE
-   else
-      echo -e -n "No Dynamic DNS"
-   fi
+   #    #  # Configure Dynamic DNS User Password (Manager)
+   #    echo -e "\n"
+   #    GETPW=true
+   #    while $GETPW; do
+   #       read -e -p "Type ${DYNAMIC_DNS_PROVIDER} User Password${RD}${BO} default=[${DYNAMIC_DNS_PASSWD}] ${BLA}> "
+   #       if [[ -z "$REPLY" ]]; then
+   #          echo -e -n "${DYNAMIC_DNS_PASSWD}"
+   #          GETPW=false
+   #          #echo -e -n "You must provide Dynamic DNS user password"
+   #       else
+   #          DYNAMIC_DNS_PASSWD=$REPLY
+   #          echo -e -n "${DYNAMIC_DNS_PASSWD}"
+   #          GETPW=false
+   #       fi
+   #    done
+   #    DYNDNS_DONE=$CHECK_DONE
+   # else
+   #    echo -e -n "No Dynamic DNS"
+   # fi
 }
 
 function GetNodeName() {
@@ -1237,14 +1263,6 @@ function SelectNodeName() {
    done
 
 }
-
-# function SelectNodeName() {
-#    echo -e "\n"
-#    #read -p "${GR}Select node by typing ${RD}${BO}ws02, ws03 ${GR}or ${RD}ws04 ${EC}${WH}> " -n 4 -r
-#    read -p "${GR}Select node by typing ${RD}${BO}${SWARM_NODES[1]}, ${SWARM_NODES[2]} ${GR}or ${RD}${SWARM_NODES[3]} ${EC}${WH}> " -n 4 -r
-#    NODE_NAME=$REPLY
-#    echo -e "\n$NODE_NAME"
-# }
 
 function GetUSBUUID() {
    # USB stick UUID and PARTUUID are different on Mac and RaspberryPI
@@ -1300,7 +1318,7 @@ function CreateStackList()
    IFS=','
    read -ra APPS <<<"$APPLICATION_LIST"
    local APPCOUNT=${#APPS[@]}
-   echo -e "\nStart\n"
+   # echo -e "\nStart\n"
    local RESULT_LIST="["
 
    for ((i = 0; i < $APPCOUNT; i++)) do
@@ -1312,6 +1330,78 @@ function CreateStackList()
       RESULT_LIST="${RESULT_LIST}$RESULT"
    done
    STACK_LIST="${RESULT_LIST}]"
+}
+
+function CopyStacks()
+{
+   #value=$(<../../Docker/Stacks/Mariadb/docker-compose.yml)
+   #cp ../../Docker/Stacks/*.yml Stacks
+
+   for f in ../../Docker/Stacks/*; do
+   cp -r "$f" "Stacks"
+   done
+
+   ls -l Stacks
+   # echo "$value"
+}
+
+function ConfigureDynDNS()
+{
+   #  # Configure Dynamic DNS (Manager)
+   echo -e "\n"
+   read -e -p "Use Dynamic DNS ? ${BLA}y | n > " -n 1 -r
+   if [[ $REPLY =~ ^[Yy]$ ]]; then
+      echo -e "\n"
+      DYNCOUNT=${#DNS_PROVIDER_LIST[@]}    # Get length of array
+      DYN_MENU=("${DNS_PROVIDER_LIST[@]}") # Convert list to array
+      select fav in "${DYN_MENU[@]}"; do
+         case $fav in
+         *)
+            for ((i = 0; i < $DYNCOUNT; i++)); do
+               if [ $fav == ${DNS_PROVIDER_LIST[i]} ]; then
+                  DYNAMIC_DNS_PROVIDER=${DNS_PROVIDER_LIST[i]^^}
+                  DYNAMIC_DNS_URL=${DNS_PROVIDER_URL_LIST[i]}
+                  echo -e "Provider: $DYNAMIC_DNS_PROVIDER"
+               fi
+            done
+            break
+            ;;
+         esac
+      done
+
+      #  # Configure Dynamic DNS User Name (Manager)
+      echo -e "\n"
+      GETUSR=true
+      while $GETUSR; do
+         read -e -p "Type ${DYNAMIC_DNS_PROVIDER} User Name ${BLA}> "
+         if [[ -z "$REPLY" ]]; then
+            echo -e -n "You must provide DNS user name"
+         else
+            DYNAMIC_DNS_USER=$REPLY
+            echo -e -n "${DYNAMIC_DNS_USER}"
+            GETUSR=false
+         fi
+      done
+
+      #  # Configure Dynamic DNS User Password (Manager)
+      echo -e "\n"
+      GETPW=true
+      while $GETPW; do
+         read -e -p "Type ${DYNAMIC_DNS_PROVIDER} User Password${RD}${BO} default=[${DYNAMIC_DNS_PASSWD}] ${BLA}> "
+         if [[ -z "$REPLY" ]]; then
+            echo -e -n "${DYNAMIC_DNS_PASSWD}"
+            GETPW=false
+            #echo -e -n "You must provide Dynamic DNS user password"
+         else
+            DYNAMIC_DNS_PASSWD=$REPLY
+            echo -e -n "${DYNAMIC_DNS_PASSWD}"
+            GETPW=false
+         fi
+      done
+      DYNDNS_DONE=$CHECK_DONE
+   else
+      echo -e -n "No Dynamic DNS"
+   fi  
 }
 
 function MainMenu() {
@@ -1329,6 +1419,7 @@ function MainMenu() {
          "Flash_to_SDCard"
          "Select_Node_Template"
          "Detail_Menu"
+         "CopyStacks"
          "Quit")
 
       select fav in "${SCRIPT_MENU[@]}"; do
@@ -1347,7 +1438,7 @@ function MainMenu() {
             DNS_DONE=$CHECK_DONE_DEFAULT
             SetDateTime
             DATE_DONE=$CHECK_DONE_DEFAULT
-            GenerateStackList;
+            CreateStackList;
             break
             ;;
          "Configure_Manager_Node")
@@ -1387,6 +1478,10 @@ function MainMenu() {
             DetailMenu
             break
             ;;
+         "CopyStacks")
+            CopyStacks
+            break
+            ;;
          "Quit")
             echo "$fav"
             QUIT_MENU="QUIT"
@@ -1409,6 +1504,7 @@ function DetailMenu() {
       DETAIL_MENU=("Configure_WiFi_Network"
          "Configure_Internal_Network"
          "Configure_DNS"
+         "Configure_Dynamic_DNS"
          "Change_Node_Names"
          "Configure_USB_Drives"
          "List_Properties"
@@ -1442,6 +1538,12 @@ function DetailMenu() {
             ConfigureDNS
             SetDnsStrings
             DNS_DONE=$CHECK_DONE
+            break
+            ;;
+         "Configure_Dynamic_DNS")
+            echo "$fav"
+            ConfigureDynDNS
+            DYNDNS_DONE=$CHECK_DONE
             break
             ;;
          "Configure_USB_Drives")
@@ -1495,7 +1597,7 @@ function DetailMenu() {
 function ConfigCheckMenu() {
    echo -e "\n"
    echo -e "_____________________________________________ Visited Menu's ______________________________________________________________________\n"
-   echo -e " | Eth0 [$ETH0_DONE] | WLan0[$WLAN0_DONE] | WiFi[$WIFI_DONE] | DynDns[$DYNDNS_DONE] | Manager[$MANAGER_DONE] | USB[$USB_DONE] | EDIT[$EDIT_DONE] | DATE[$DATE_DONE]\
+   echo -e " | Eth0 [$ETH0_DONE] | WLan0[$WLAN0_DONE] | WiFi[$WIFI_DONE] | DNS[$DNS_DONE] DynDns[$DYNDNS_DONE] | Manager[$MANAGER_DONE] | USB[$USB_DONE] | EDIT[$EDIT_DONE] | DATE[$DATE_DONE]\
  | ManagerNode[$MANAGER_DONE] | WorkerNode[$WORKER_DONE] \n | DNS Strings[$DNS_DONE] | NodeNames[$NODENAME_DONE] | SSH[$SSH_DONE]"
    echo -e "___________________________________________________________________________________________________________________________________\n"
 }
@@ -1530,7 +1632,8 @@ function FlashSD() {
       
       # Set DateTime for Fake HW Clock
       sed -i -n "s#ISO-DATE#$ISO_DATE#" user-data
-      ../flash --force --userdata user-data --metadata meta-data --file keyfile.txt -d $DISK https://github.com/hypriot/image-builder-rpi/releases/download/v1.12.3/hypriotos-rpi-v1.12.3.img.zip
+      #../flash --force --userdata user-data --metadata meta-data --file keyfile.txt -d $DISK https://github.com/hypriot/image-builder-rpi/releases/download/v1.12.3/hypriotos-rpi-v1.12.3.img.zip
+      ../flash --force --userdata user-data --metadata meta-data --file keyfile.txt -d $DISK /Volumes/Samsung_T5/SDImages/SnakeOS-v1.1.0.img
       cd ..
       echo -e "\n"
    fi
