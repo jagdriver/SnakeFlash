@@ -747,27 +747,16 @@ fi
       echo "  Set psk=${WIFI_PASSWORD}"
       sed_i -e "/^#/!s/.*psk=.*\$/      psk=\"${WIFI_PASSWORD}\"/" "${boot}/user-data"
     fi
-    # Also create SSH file (without extension) will enable Raspbian SSH by default
+    # WaveSnake change: Also create SSH file (without extension) will enable Raspbian SSH by default
     if [ ! -f "${boot}/ssh" ]; then
       echo "Creating empty ssh file"
       touch "${boot}/ssh"
     fi
-    # Also copy cmdline.txt while we are testing
+    # WaveSnake change: Also copy cmdline.txt while we are testing
     CMDLINE_FILE="cmdline.txt"
     echo "Copy cmdline.txt"
     cp "${CMDLINE_FILE}" "${boot}/"
     
-    # Also copy network-config while we are testing
-    #CMDLINE_FILE="network-config"
-    #echo "Copy network-config"
-    #cp "${CMDLINE_FILE}" "${boot}/"
-
-    # Also copy Stacks directory recursive to /boot ( NO we deploy from browser so the files must be on local pc)
-    # mkdir "${boot}/Stacks"
-    # for f in ../Stacks/*; do
-    # cp -r "$f" "${boot}/Stacks"
-    # done
-
     if [ ! -f "${boot}/meta-data" ]; then
       echo "Creating empty meta-data"
       touch "${boot}/meta-data"

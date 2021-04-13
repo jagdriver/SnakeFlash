@@ -1647,7 +1647,9 @@ function FlashSD() {
       # Set DateTime for Fake HW Clock
       sed -i -n "s#ISO-DATE#$ISO_DATE#" user-data
       #../flash --force --userdata user-data --metadata meta-data --file keyfile.txt -d $DISK https://github.com/hypriot/image-builder-rpi/releases/download/v1.12.3/hypriotos-rpi-v1.12.3.img.zip
-      ../flash --force --userdata user-data --metadata meta-data --file keyfile.txt -d $DISK /Volumes/Samsung_T5/SDImages/SnakeOS-v1.1.0.img
+      # OK ../flash --force --userdata user-data --metadata meta-data --file keyfile.txt -d $DISK /Volumes/Samsung_T5/SDImages/SnakeOS-v1.1.0.img
+      # OK ../flash --force --userdata user-data --metadata meta-data --file keyfile.txt -d $DISK ../Image/SnakeOS-v1.1.0.img.zip
+      ../flash --force --userdata user-data --metadata meta-data --file keyfile.txt -d $DISK https://www.icloud.com/iclouddrive/0-nd4KEtLGQn5Hd0jZ8h0ZhDw#Image/SnakeOS-v1.1.0.img.zip
       cd ..
       echo -e "\n"
    fi

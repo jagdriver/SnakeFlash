@@ -38,7 +38,7 @@ SnakeHome is the platform for hobbyist, who want the possibility to create their
 
 I would like to thank:
 Matt Williams for creating Flash utility.
-All people at Hypriot for creating the Hypriot Docker Image for Raspberry Pi.
+All people at Raspberry.org for creating the Raspbian light OS Image for Raspberry Pi.
 
 
 The system consists of:
@@ -69,7 +69,11 @@ The system consists of:
 - ### Automated Certificate handling <a name="certgen"></a>
 
 ## Prerequisites <a name="prerequisites"></a>
-prerequisites: Mac, Windows or Linux, Visual Studio Code with some extensions (free). 
+
+prerequisites: 
+1. Mac or Linux pc
+2. Visual Studio Code with some extensions (free).
+3. Arduino development environment
 
 ### ESP hardware <a name="esphardware"></a>
 
@@ -98,7 +102,7 @@ RaspberryPI hardware are rapildy developing and as of now, the hardware of choic
 | Hardware                | Count         | Prise DKr           |
 | ----------------------- | ------------- | ------------------- |  
 | RPI 3B or 4B            | 4             | 1200-2000           |
-| Micro SD Card 16 GB     | 4             | 200                 |
+| Micro SD Card 32 GB     | 4             | 200                 |
 | Cluster case 4 Node     | 1             | 170                 |
 | Mean Well power supply  | 1             | 180                 |
 | Tenda network switch    | 1             | 90                  |
@@ -133,7 +137,10 @@ The software running on the RPI's are all Docker Containers, installed onto the 
 Traefik and Portainer are installed at boot time, and will be available after swarm initialization.
 
 #### Redis  <a name="redis"></a>
-Redis are the in memory cache, where all application configuration are stored. All applications read their configuration from Redis at startup. When an application configuration are changed via SnakeConfig, and saved to Redis, the application container must be restarted to reflect the new configuration.
+Redis are the in memory cache, where all application configuration are stored. All applications read their configuration from Redis at startup, except form passwords which are read from Docker Secret file. When an application configuration are changed via SnakeConfig, and saved to Redis, the application container must be restarted to reflect the new configuration.
+
+#### SnakeConfig  <a name="snakeconfig"></a>
+SnakeConfig are the Manager UI that configures the Swarm and Applications. There are also a UI for visualizing the Swarm Containers, and log files.
 
 #### SnakeApi  <a name="snakeapi"></a>
 SnakeApi are the general API for manipulating Homes, Rooms and Accessories. 
@@ -143,9 +150,6 @@ SnakeTimer is the backend service that executes timed actions, setup via SnakeAp
 
 #### SnakeRule  <a name="snakerule"></a>
 SnakeRule are the background service that creates and updates the rule DB and also updates the rule DB ingredients.  
-
-#### SnakeConfig  <a name="snakeconfig"></a>
-SnakeConfig are the Manager UI that configures the Swarm and Applications. There are also a UI for visualizing the Swarm Containers, and log files.
 
 #### SnakeConsole  <a name="snakeconsole"></a>
 SnakeConsole are the User UI, for creating Homes, Rooms and Accessories.
