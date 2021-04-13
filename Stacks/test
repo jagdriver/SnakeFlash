@@ -14,13 +14,8 @@ services:
        GLOBAL_CONFIG_PATH: "/opt/containers/configuration/globalconfig.json"
 
     extra_hosts:
-      - "redis.wavesnake.local:172.16.1.1"
-      - "mqt.wavesnake.local:172.16.1.1"
-      - "api.wavesnake.local:192.168.1.236"
-      - "sql.wavesnake.local:192.168.1.236"
-      - "console.wavesnake.local:192.168.1.236"
-      - "config.wavesnake.local:192.168.1.236"
-      - "sketch.wavesnake.local:192.168.1.236"
+      - "redis.wavesnake.local:192.168.230.1"
+      - "api.wavesnake.local:192.168.1.220"
 
     volumes:
       - "/opt/containers/synchronization:/opt/containers/synchronization"
@@ -31,9 +26,6 @@ services:
 
     networks:
       - traefik-public
-
-    secrets:
-        - SwarmSecret
 
     deploy:
       restart_policy:
@@ -70,9 +62,6 @@ services:
         - "traefik.http.routers.config-secure.service=config-secure"
         - "traefik.http.services.config-secure.loadbalancer.server.port=6040"
 
-secrets:
-  SwarmSecret:
-    external: true
 
 networks:
   traefik-public:

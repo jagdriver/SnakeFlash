@@ -1340,9 +1340,23 @@ function CopyStacks()
    for f in ../../Docker/Stacks/*; do
    cp -r "$f" "Stacks"
    done
-
-   ls -l Stacks
+   EditStacks
+   # ls -l Stacks
    # echo "$value"
+}
+
+function EditStacks()
+{
+   # Traverse Stacks dir, and insert ETH0 & WLAN0 IP address in every compose file. 
+   for f in Stacks/*; do
+   #echo "File name: $f"
+   if test -f "$f/docker-compose.yml"; then
+      cp "$f/docker-compose.yml" new-compose
+      sed -i -n "s/SN01-ETH0-IP/$ETH0_IP_ADDRESS/g" new-compose
+      sed -i -n "s/SN01-WLAN0-IP/$WLAN0_IP_ADDRESS/g" new-compose
+      mv new-compose "$f/docker-compose.yml"
+   fi
+   done
 }
 
 function ConfigureDynDNS()

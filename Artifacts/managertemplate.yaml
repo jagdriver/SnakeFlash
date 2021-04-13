@@ -398,16 +398,16 @@ write_files:
   #
   # DHCPCD dhcpcd.conf static network setup
   #
+  # Removed 
+    #interface eth0
+      #static ip_address=ETH0-IP-ADDRESS/24
+      #static routers=ETH0-IP-ADDRESS
+      #static domain_name_servers=ETH0-DNS-SERVERS
   - content: |
       interface wlan0
       static ip_address=WLAN0-IP-ADDRESS/24
       static routers=WLAN0-STATIC-ROUTERS
       static domain_name_servers=WLAN0-DNS-SERVERS
-
-      interface eth0
-      static ip_address=ETH0-IP-ADDRESS/24
-      static routers=ETH0-IP-ADDRESS
-      static domain_name_servers=ETH0-DNS-SERVERS
     path: /etc/dhcpcd.conf
  
   #
@@ -956,6 +956,7 @@ runcmd:
   - 'logger !!! wavesnake !!! Start ETH0 Interface' 
   - 'logger !!! wavesnake !!!'
   - 'sudo ip addr flush dev eth0'
+  - 'ip addr add ETH0-IP-ADDRESS dev eth0'
   - 'sudo ip link set eth0 up'
   - 'sudo sleep 15'
 
@@ -970,8 +971,11 @@ runcmd:
   - 'logger !!! wavesnake !!!'
   - 'logger !!! wavesnake !!! Create bidirectional Route between WLAN0 network and ETH0 network'
   - 'logger !!! wavesnake !!!'
-  - 'sudo ip route delete default via ETH0-IP-ADDRESS'
-  - 'sudo ip route delete default via WLAN0-STATIC-ROUTERS'
+  #- 'sudo ip route delete default via ETH0-IP-ADDRESS'
+  #- 'sudo ip route delete default via WLAN0-STATIC-ROUTERS'
+  #- 'sudo ip route add default via WLAN0-IP-ADDRESS'
+
+  - 'sudo ip route del 0/0'
   - 'sudo ip route add default via WLAN0-STATIC-ROUTERS dev wlan0 src WLAN0-IP-ADDRESS metric 100'
   
   # Directories for NFS

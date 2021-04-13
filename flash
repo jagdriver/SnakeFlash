@@ -757,11 +757,16 @@ fi
     echo "Copy cmdline.txt"
     cp "${CMDLINE_FILE}" "${boot}/"
     
-    # Also copy Stacks directory recursive to /boot
-    mkdir "${boot}/Stacks"
-    for f in ../Stacks/*; do
-    cp -r "$f" "${boot}/Stacks"
-    done
+    # Also copy network-config while we are testing
+    #CMDLINE_FILE="network-config"
+    #echo "Copy network-config"
+    #cp "${CMDLINE_FILE}" "${boot}/"
+
+    # Also copy Stacks directory recursive to /boot ( NO we deploy from browser so the files must be on local pc)
+    # mkdir "${boot}/Stacks"
+    # for f in ../Stacks/*; do
+    # cp -r "$f" "${boot}/Stacks"
+    # done
 
     if [ ! -f "${boot}/meta-data" ]; then
       echo "Creating empty meta-data"

@@ -1,1 +1,1 @@
-console=serial0,115200 console=tty1 network-config=disabled ds=nocloud;s=/boot/ root=PARTUUID=bc369438-02 rootfstype=ext4 elevator=deadline fsck.repair=yes rootwait
+console=serial0,115200 console=tty1 ds=nocloud;s=/boot/ root=PARTUUID=bc369438-02 rootfstype=ext4 elevator=deadline fsck.repair=yes rootwait

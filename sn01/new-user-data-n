@@ -38,7 +38,7 @@ users:
     sudo: ALL=(ALL) NOPASSWD:ALL
     shell: /bin/bash
     groups: users,docker,video,input
-    # passwd: $6$re1cGWnTEMlOb2BF$bOhaKj62ayhIBQsRDtGXiYLmXD1blt32vgCIyfJFnNTRoFayNOwhuVhOaK2mlfpygsQiY8UMBMic1qGIYo9a7A==
+    # passwd: $6$T18DbckABTNYB0fz$F10QsNl2PD+LnskGioIc/unnJlKeI7jUfbA6F0De/isSHVcagUBSLqKv6zeOUXO+rBocwZYf+fKIdJV3r7uXAQ==
     plain_text_passwd: wavesnake
     lock_passwd: false
     ssh_pwauth: true
@@ -78,15 +78,15 @@ write_files:
       {
       "Swarm": {
           "Development": {
-              "PortainerServer":"192.168.1.235",
+              "PortainerServer":"192.168.1.236",
               "PortainerServerPort":"9000",
-              "APIServer":"192.168.1.235",
+              "APIServer":"192.168.1.236",
               "APIServerPort":"80",
-              "MqttServer":"192.168.1.235",
+              "MqttServer":"192.168.1.236",
               "MqttServerPort":"8213",
               "DBServer":"sql.wavesnake.local",
               "DBServerPort":"8211",
-              "SketchServer":"192.168.1.235",
+              "SketchServer":"192.168.1.236",
               "SketchServerPort":"80",
               "HomesDBName":"homes",
               "UsersDB":"users",
@@ -97,15 +97,15 @@ write_files:
               "SwarmSecret":"This is a secret string used to generate user tokens"
           },
           "Production": {
-              "PortainerServer":"192.168.1.235",
+              "PortainerServer":"192.168.1.236",
               "PortainerServerPort":"9000",
-              "APIServer":"192.168.1.235",
+              "APIServer":"192.168.1.236",
               "APIServerPort":"80",
-              "MqttServer":"192.168.1.235",
+              "MqttServer":"192.168.1.236",
               "MqttServerPort":"8213",
               "DBServer":"sql.wavesnake.local",
               "DBServerPort":"8211",
-              "SketchServer":"192.168.1.235",
+              "SketchServer":"192.168.1.236",
               "SketchServerPort":"80",
               "HomesDBName":"homes",
               "UsersDB":"users",
@@ -337,7 +337,7 @@ write_files:
   # and run a container with Debian.
   #
   - content: |
-      $6$re1cGWnTEMlOb2BF$bOhaKj62ayhIBQsRDtGXiYLmXD1blt32vgCIyfJFnNTRoFayNOwhuVhOaK2mlfpygsQiY8UMBMic1qGIYo9a7A==
+      $6$T18DbckABTNYB0fz$F10QsNl2PD+LnskGioIc/unnJlKeI7jUfbA6F0De/isSHVcagUBSLqKv6zeOUXO+rBocwZYf+fKIdJV3r7uXAQ==
     path: /opt/containers/mosquitto/config/conf.d/pw
   #
   # NodeName.env ( Should this be a json file?)
@@ -364,7 +364,7 @@ write_files:
   - content: |
       auto wlan0
       iface wlan0 inet static
-      address 192.168.1.235
+      address 192.168.1.236
       network 192.168.1.0
       netmask 255.255.255.0
       gateway 192.168.1.1
@@ -398,15 +398,15 @@ write_files:
   #
   # DHCPCD dhcpcd.conf static network setup
   #
+  # Removed 
+    #interface eth0
+      #static ip_address=172.16.1.1/24
+      #static routers=172.16.1.1
+      #static domain_name_servers=8.8.8.8 8.8.4.4
   - content: |
       interface wlan0
-      static ip_address=192.168.1.235/24
+      static ip_address=192.168.1.236/24
       static routers=192.168.1.1
-      static domain_name_servers=8.8.8.8 8.8.4.4
-
-      interface eth0
-      static ip_address=172.16.1.1/24
-      static routers=172.16.1.1
       static domain_name_servers=8.8.8.8 8.8.4.4
     path: /etc/dhcpcd.conf
  
@@ -877,7 +877,7 @@ write_files:
         # MQTT base topic for zigbee2mqtt MQTT messages
         base_topic: zigbee2mqtt
         # MQTT server URL
-        server: 'mqtt://192.168.1.235:MQTT-INTERNAL-PORT'
+        server: 'mqtt://192.168.1.236:MQTT-INTERNAL-PORT'
         # MQTT server authentication, uncomment if required:
         user: manager
         password: wavesnake
@@ -956,6 +956,7 @@ runcmd:
   - 'logger !!! wavesnake !!! Start ETH0 Interface' 
   - 'logger !!! wavesnake !!!'
   - 'sudo ip addr flush dev eth0'
+  - 'ip addr add 172.16.1.1 dev eth0'
   - 'sudo ip link set eth0 up'
   - 'sudo sleep 15'
 
@@ -970,9 +971,12 @@ runcmd:
   - 'logger !!! wavesnake !!!'
   - 'logger !!! wavesnake !!! Create bidirectional Route between WLAN0 network and ETH0 network'
   - 'logger !!! wavesnake !!!'
-  - 'sudo ip route delete default via 172.16.1.1'
-  - 'sudo ip route delete default via 192.168.1.1'
-  - 'sudo ip route add default via 192.168.1.1 dev wlan0 src 192.168.1.235 metric 100'
+  #- 'sudo ip route delete default via 172.16.1.1'
+  #- 'sudo ip route delete default via 192.168.1.1'
+  #- 'sudo ip route add default via 192.168.1.236'
+
+  - 'sudo ip route del 0/0'
+  - 'sudo ip route add default via 192.168.1.1 dev wlan0 src 192.168.1.236 metric 100'
   
   # Directories for NFS
   - 'sudo mkdir -p /mnt/nfs'
