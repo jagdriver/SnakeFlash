@@ -205,6 +205,7 @@ case "${OSTYPE}" in
     # @return _RET the raw device name
     get_raw_device_filename() {
       _RET="${1//\/dev\///dev/r}"
+      echo "Test: $_RET"
     }
 
     # Get the directory where the boot volume will be mounted.

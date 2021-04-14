@@ -26,11 +26,11 @@ services:
     extra_hosts:
       - "redis.wavesnake.local:172.16.1.1"
       - "mqt.wavesnake.local:172.16.1.1"
-      - "api.wavesnake.local:192.168.1.236"
-      - "sql.wavesnake.local:192.168.1.236"
-      - "console.wavesnake.local:192.168.1.236"
-      - "config.wavesnake.local:192.168.1.236"
-      - "sketch.wavesnake.local:192.168.1.236"
+      - "api.wavesnake.local:192.168.1.235"
+      - "sql.wavesnake.local:192.168.1.235"
+      - "console.wavesnake.local:192.168.1.235"
+      - "config.wavesnake.local:192.168.1.235"
+      - "sketch.wavesnake.local:192.168.1.235"
 
     deploy:
       restart_policy:

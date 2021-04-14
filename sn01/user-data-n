@@ -38,7 +38,7 @@ users:
     sudo: ALL=(ALL) NOPASSWD:ALL
     shell: /bin/bash
     groups: users,docker,video,input
-    # passwd: $6$T18DbckABTNYB0fz$F10QsNl2PD+LnskGioIc/unnJlKeI7jUfbA6F0De/isSHVcagUBSLqKv6zeOUXO+rBocwZYf+fKIdJV3r7uXAQ==
+    # passwd: $6$/wztpFKZnlI5U2CK$KqSa4JdltUkGQ9Y+QJMfpdE+VslWfWVbI1RbcscQ0azJNNCxuU67NWglmTus5Bmn046Y5t1Fltw7UXEIJNyLmw==
     plain_text_passwd: wavesnake
     lock_passwd: false
     ssh_pwauth: true
@@ -78,15 +78,15 @@ write_files:
       {
       "Swarm": {
           "Development": {
-              "PortainerServer":"192.168.1.236",
+              "PortainerServer":"192.168.1.235",
               "PortainerServerPort":"9000",
-              "APIServer":"192.168.1.236",
+              "APIServer":"192.168.1.235",
               "APIServerPort":"80",
-              "MqttServer":"192.168.1.236",
+              "MqttServer":"192.168.1.235",
               "MqttServerPort":"8213",
               "DBServer":"sql.wavesnake.local",
               "DBServerPort":"8211",
-              "SketchServer":"192.168.1.236",
+              "SketchServer":"192.168.1.235",
               "SketchServerPort":"80",
               "HomesDBName":"homes",
               "UsersDB":"users",
@@ -97,15 +97,15 @@ write_files:
               "SwarmSecret":"This is a secret string used to generate user tokens"
           },
           "Production": {
-              "PortainerServer":"192.168.1.236",
+              "PortainerServer":"192.168.1.235",
               "PortainerServerPort":"9000",
-              "APIServer":"192.168.1.236",
+              "APIServer":"192.168.1.235",
               "APIServerPort":"80",
-              "MqttServer":"192.168.1.236",
+              "MqttServer":"192.168.1.235",
               "MqttServerPort":"8213",
               "DBServer":"sql.wavesnake.local",
               "DBServerPort":"8211",
-              "SketchServer":"192.168.1.236",
+              "SketchServer":"192.168.1.235",
               "SketchServerPort":"80",
               "HomesDBName":"homes",
               "UsersDB":"users",
@@ -337,7 +337,7 @@ write_files:
   # and run a container with Debian.
   #
   - content: |
-      $6$T18DbckABTNYB0fz$F10QsNl2PD+LnskGioIc/unnJlKeI7jUfbA6F0De/isSHVcagUBSLqKv6zeOUXO+rBocwZYf+fKIdJV3r7uXAQ==
+      $6$/wztpFKZnlI5U2CK$KqSa4JdltUkGQ9Y+QJMfpdE+VslWfWVbI1RbcscQ0azJNNCxuU67NWglmTus5Bmn046Y5t1Fltw7UXEIJNyLmw==
     path: /opt/containers/mosquitto/config/conf.d/pw
   #
   # NodeName.env ( Should this be a json file?)
@@ -364,7 +364,7 @@ write_files:
   - content: |
       auto wlan0
       iface wlan0 inet static
-      address 192.168.1.236
+      address 192.168.1.235
       network 192.168.1.0
       netmask 255.255.255.0
       gateway 192.168.1.1
@@ -405,7 +405,7 @@ write_files:
       #static domain_name_servers=8.8.8.8 8.8.4.4
   - content: |
       interface wlan0
-      static ip_address=192.168.1.236/24
+      static ip_address=192.168.1.235/24
       static routers=192.168.1.1
       static domain_name_servers=8.8.8.8 8.8.4.4
     path: /etc/dhcpcd.conf
@@ -877,7 +877,7 @@ write_files:
         # MQTT base topic for zigbee2mqtt MQTT messages
         base_topic: zigbee2mqtt
         # MQTT server URL
-        server: 'mqtt://192.168.1.236:MQTT-INTERNAL-PORT'
+        server: 'mqtt://192.168.1.235:MQTT-INTERNAL-PORT'
         # MQTT server authentication, uncomment if required:
         user: manager
         password: wavesnake
@@ -973,10 +973,10 @@ runcmd:
   - 'logger !!! wavesnake !!!'
   #- 'sudo ip route delete default via 172.16.1.1'
   #- 'sudo ip route delete default via 192.168.1.1'
-  #- 'sudo ip route add default via 192.168.1.236'
+  #- 'sudo ip route add default via 192.168.1.235'
 
   - 'sudo ip route del 0/0'
-  - 'sudo ip route add default via 192.168.1.1 dev wlan0 src 192.168.1.236 metric 100'
+  - 'sudo ip route add default via 192.168.1.1 dev wlan0 src 192.168.1.235 metric 100'
   
   # Directories for NFS
   - 'sudo mkdir -p /mnt/nfs'
