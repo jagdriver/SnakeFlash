@@ -15,7 +15,7 @@
 
 # PowerState
 power_state:
-  delay: "+2"
+  delay: "+3"
   mode: reboot
   message: Bye Bye
   timeout: 30
@@ -289,7 +289,8 @@ write_files:
       # /usr/share/doc/mosquitto/examples/mosquitto.conf.example
       # ---  WaveSnake Technologies --------
 
-      pid_file /var/run/mosquitto.pid
+      # Uncommented for now 
+      #pid_file /var/run/mosquitto.pid
 
       persistence true
       persistence_location /mosquitto/data/
@@ -313,7 +314,9 @@ write_files:
 
       allow_anonymous false
 
-      port 1883
+      # port deprecated
+      #port 1883
+      listener 1883
 
     path: /opt/containers/mosquitto/config/mosquitto.conf
   
@@ -337,7 +340,7 @@ write_files:
   # and run a container with Debian.
   #
   - content: |
-      MANAGER-ENCRYPTED-PASSWORD
+      MQTT-USER-PASSWORD
     path: /opt/containers/mosquitto/config/conf.d/pw
   #
   # NodeName.env ( Should this be a json file?)
@@ -398,11 +401,6 @@ write_files:
   #
   # DHCPCD dhcpcd.conf static network setup
   #
-  # Removed 
-    #interface eth0
-      #static ip_address=ETH0-IP-ADDRESS/24
-      #static routers=ETH0-IP-ADDRESS
-      #static domain_name_servers=ETH0-DNS-SERVERS
   - content: |
       interface wlan0
       static ip_address=WLAN0-IP-ADDRESS/24
@@ -971,10 +969,6 @@ runcmd:
   - 'logger !!! wavesnake !!!'
   - 'logger !!! wavesnake !!! Create bidirectional Route between WLAN0 network and ETH0 network'
   - 'logger !!! wavesnake !!!'
-  #- 'sudo ip route delete default via ETH0-IP-ADDRESS'
-  #- 'sudo ip route delete default via WLAN0-STATIC-ROUTERS'
-  #- 'sudo ip route add default via WLAN0-IP-ADDRESS'
-
   - 'sudo ip route del 0/0'
   - 'sudo ip route add default via WLAN0-STATIC-ROUTERS dev wlan0 src WLAN0-IP-ADDRESS metric 100'
   
@@ -1214,7 +1208,6 @@ runcmd:
   - 'logger !!! wavesnake !!!'
   - 'logger !!! wavesnake !!! Execute Resize of Root Partition'
   - 'logger !!! wavesnake !!!'
-  #- 'sudo resize2fs /dev/mmcblk0p2'
   - 'sudo raspi-config nonint do_expand_rootfs'
 
   - 'logger !!! wavesnake !!!'

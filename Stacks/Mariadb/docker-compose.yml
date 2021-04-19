@@ -6,18 +6,15 @@ version: '3.7'
 #
 services:
   mariadb:
-    image: jagdriver/wavesnake:mariaDB-v1.0.1
+    image: jagdriver/snakeapps:mariadb
 
     environment:
        MYSQL_ROOT_PASSWORD: "${ROOT_PASSWORD}"
-       MYSQL_DATABASE: history
-       MYSQL_USER: manager
-       MYSQL_PASSWORD: "${MANAGER_PASSWORD}"
+       MYSQL_DATABASE: "test"
 
     volumes:
-      # (Production) - /media/data/mariadb:/var/lib/mysql
-      - /opt/containers/mariadb/data:/var/lib/mysql
-
+      - /media/data/mariadb:/var/lib/mysql
+      
     ports:
       - target: 3306
         protocol: tcp

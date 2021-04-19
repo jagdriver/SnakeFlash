@@ -38,7 +38,7 @@ users:
     sudo: ALL=(ALL) NOPASSWD:ALL
     shell: /bin/bash
     groups: users,docker,video,input
-    # passwd: $6$/wztpFKZnlI5U2CK$KqSa4JdltUkGQ9Y+QJMfpdE+VslWfWVbI1RbcscQ0azJNNCxuU67NWglmTus5Bmn046Y5t1Fltw7UXEIJNyLmw==
+    # passwd: $6$jzg4Mc4uJxRW2Jt9$Wdox/RafKLBL7HMnBq8eK3ijQLDEH6CDigpFGiq0yChe9XXrYK9/6lL406c9S9k9tMc3PJpHkBJJ6NvkXLHEbw==
     plain_text_passwd: wavesnake
     lock_passwd: false
     ssh_pwauth: true
@@ -337,7 +337,7 @@ write_files:
   # and run a container with Debian.
   #
   - content: |
-      $6$/wztpFKZnlI5U2CK$KqSa4JdltUkGQ9Y+QJMfpdE+VslWfWVbI1RbcscQ0azJNNCxuU67NWglmTus5Bmn046Y5t1Fltw7UXEIJNyLmw==
+      $6$jzg4Mc4uJxRW2Jt9$Wdox/RafKLBL7HMnBq8eK3ijQLDEH6CDigpFGiq0yChe9XXrYK9/6lL406c9S9k9tMc3PJpHkBJJ6NvkXLHEbw==
     path: /opt/containers/mosquitto/config/conf.d/pw
   #
   # NodeName.env ( Should this be a json file?)

@@ -499,6 +499,9 @@ check_requirements
 http_download() {
   local uri="${1}"
   local tmp="/tmp/${2}"
+  echo ""
+  echo "Download parameters URI: ${uri}  TMP: ${tmp}"
+  echo ""
 
   if beginswith http:// "${uri}" || beginswith https:// "${uri}"; then
     command -v curl 2>/dev/null || error "Error: curl not found. Aborting" 1
@@ -508,6 +511,7 @@ http_download() {
   else
     _RET="${uri}"
   fi
+  echo "_RET: Downloading ${_RET}"
 }
 
 if [ -n "${USER_DATA}" ]; then

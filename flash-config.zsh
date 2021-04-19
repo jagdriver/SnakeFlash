@@ -286,7 +286,7 @@ function ReadProperties() {
    MQTT_SERVER_PORT=$MQTT_SERVER_PORT
 
    # USB Drive mount command
-   USB_MOUNT_COMMAND=$USB_MOUNT_COMMAND
+   #USB_MOUNT_COMMAND=$USB_MOUNT_COMMAND
 
    REDIS_DEFAULT_CONFIG=$REDIS_DEFAULT_CONFIG
 }
@@ -416,6 +416,7 @@ function EditProperties() {
       sed -i -n "s#MQTT-SERVER-ADDRESS#$MQTT_SERVER_ADDRESS#" new-user-data
       sed -i -n "s#MQTT-SERVER-PORT#$MQTT_SERVER_PORT#" new-user-data
       # What goes wrong here
+      sed -i -n "s#MQTT-USER-PASSWORD#$MQTT_USER_PASSWORD#g" new-user-data
       sed -i -n "s#MANAGER-ENCRYPTED-PASSWORD#$MANAGER_ENCRYPTED_PASSWORD#g" new-user-data
 
       # SKETCH Server
@@ -571,7 +572,8 @@ function EditProperties() {
    sed -i -n "s/NODE-NAME/$NODE_NAME/g" new-user-data
 
    # USB Drive mount command
-   sed -i -n "s#USB-MOUNT-COMMAND#$USB_RESULT_STRING#" new-user-data
+   #sed -i -n "s#USB-MOUNT-COMMAND#$USB_RESULT_STRING#" new-user-data
+   sed -i -n "s#USB-MOUNT-COMMAND#$USB_MOUNT_COMMAND#" new-user-data
 
    # Meta Data
    sed -i -n "s/INSTANCE-ID/$NODE_NAME/g" new-meta-data
@@ -647,9 +649,12 @@ function PromptForInput() {
       # I dont think that we create the Mqtt users file yet.
       # Or split name:password string
 
-      MQTT_USER_PASSWORD=$(./Utilities/HashUtil $MANAGER_NAME $MANAGER_PASSWORD MQTT)
+      #MQTT_USER_PASSWORD=$(./Utilities/HashUtil $MANAGER_NAME $MANAGER_PASSWORD MQTT)
+      MQTT_USER_PASSWORD=$(php ./pwdhash.php manager wavesnake MQTT)
       echo "MQTT: ${MQTT_USER_PASSWORD}"
-      MANAGER_ENCRYPTED_PASSWORD=$(./Utilities/HashUtil $MANAGER_NAME $MANAGER_PASSWORD USER)
+      
+      #MANAGER_ENCRYPTED_PASSWORD=$(./Utilities/HashUtil $MANAGER_NAME $MANAGER_PASSWORD USER)
+      MANAGER_ENCRYPTED_PASSWORD=$(php ./pwdhash.php manager wavesnake MQTT)
       echo "USER: ${MANAGER_ENCRYPTED_PASSWORD}"
    done
 
@@ -1093,14 +1098,20 @@ function ConfigureUSBDrives() {
    # USB stick UUID and PARTUUID are different on Mac and RaspberryPI
    # So we must verify the USB stick on RaspberryPI, and
    # Type in the UUID here.
+   #
+   # /dev/sda1 /media/data ext4  defaults 0 0
+   #
    echo -e "\n"
-   read -e -p "Mount USB Drive ? ${BLA}y | n > " -n 1 -r
+   read -e -p "Mount extra USB Drive ? ${BLA}y | n > " -n 1 -r
    if [[ $REPLY =~ ^[Yy]$ ]]; then
-      echo -e "\n"
-      read -e -p "Type USB UUID ${BLA}> "
+      # Here we could ask for /dev/sda1, /dev/sda2 ...
+
+      #echo -e "\n"
+      #read -e -p "Type USB UUID ${BLA}> "
       #USB_MOUNT_COMMAND = ${USB_MOUNT_COMMAND#USB_UUID#$REPLY}
-      USB_MOUNT_COMMAND=$(echo "$USB_MOUNT_COMMAND" | sed "s/USB_UUID/$REPLY/")
-      echo -e ""
+      #USB_MOUNT_COMMAND=$(echo "$USB_MOUNT_COMMAND" | sed "s/USB_UUID/$REPLY/")
+      #echo -e ""
+      USB_MOUNT_COMMAND="/dev/sda1 /media/data ext4  defaults 0 0"
    else
       USB_MOUNT_COMMAND="'logger No USB Drive Mount'"
    fi
@@ -1164,62 +1175,6 @@ function ConfigureDNS() {
          echo "Email address $email is invalid."
       fi
    done
-
-  #  # Configure Dynamic DNS (Manager)
-   # echo -e "\n"
-   # read -e -p "Use Dynamic DNS ? ${BLA}y | n > " -n 1 -r
-   # if [[ $REPLY =~ ^[Yy]$ ]]; then
-   #    echo -e "\n"
-   #    DYNCOUNT=${#DNS_PROVIDER_LIST[@]}    # Get length of array
-   #    DYN_MENU=("${DNS_PROVIDER_LIST[@]}") # Convert list to array
-   #    select fav in "${DYN_MENU[@]}"; do
-   #       case $fav in
-   #       *)
-   #          for ((i = 0; i < $DYNCOUNT; i++)); do
-   #             if [ $fav == ${DNS_PROVIDER_LIST[i]} ]; then
-   #                DYNAMIC_DNS_PROVIDER=${DNS_PROVIDER_LIST[i]^^}
-   #                DYNAMIC_DNS_URL=${DNS_PROVIDER_URL_LIST[i]}
-   #                echo -e "Provider: $DYNAMIC_DNS_PROVIDER"
-   #             fi
-   #          done
-   #          break
-   #          ;;
-   #       esac
-   #    done
-   # Moved to separate function
-   #    #  # Configure Dynamic DNS User Name (Manager)
-   #    echo -e "\n"
-   #    GETUSR=true
-   #    while $GETUSR; do
-   #       read -e -p "Type ${DYNAMIC_DNS_PROVIDER} User Name ${BLA}> "
-   #       if [[ -z "$REPLY" ]]; then
-   #          echo -e -n "You must provide DNS user name"
-   #       else
-   #          DYNAMIC_DNS_USER=$REPLY
-   #          echo -e -n "${DYNAMIC_DNS_USER}"
-   #          GETUSR=false
-   #       fi
-   #    done
-
-   #    #  # Configure Dynamic DNS User Password (Manager)
-   #    echo -e "\n"
-   #    GETPW=true
-   #    while $GETPW; do
-   #       read -e -p "Type ${DYNAMIC_DNS_PROVIDER} User Password${RD}${BO} default=[${DYNAMIC_DNS_PASSWD}] ${BLA}> "
-   #       if [[ -z "$REPLY" ]]; then
-   #          echo -e -n "${DYNAMIC_DNS_PASSWD}"
-   #          GETPW=false
-   #          #echo -e -n "You must provide Dynamic DNS user password"
-   #       else
-   #          DYNAMIC_DNS_PASSWD=$REPLY
-   #          echo -e -n "${DYNAMIC_DNS_PASSWD}"
-   #          GETPW=false
-   #       fi
-   #    done
-   #    DYNDNS_DONE=$CHECK_DONE
-   # else
-   #    echo -e -n "No Dynamic DNS"
-   # fi
 }
 
 function GetNodeName() {
@@ -1352,8 +1307,24 @@ function EditStacks()
    #echo "File name: $f"
    if test -f "$f/docker-compose.yml"; then
       cp "$f/docker-compose.yml" new-compose
+      # Edit DNS IP Addresses
       sed -i -n "s/SN01-ETH0-IP/$ETH0_IP_ADDRESS/g" new-compose
       sed -i -n "s/SN01-WLAN0-IP/$WLAN0_IP_ADDRESS/g" new-compose
+      # EDIT Application Placement
+
+      sed -i -n "s/REDIS-APP-PLACEMENT/$REDIS_APP_PLACEMENT/g" new-compose
+      sed -i -n "s/PORTAINER-APP-PLACEMENT/$PORTAINER_APP_PLACEMENT/g" new-compose
+      sed -i -n "s/TRAEFIK-APP-PLACEMENT/$TRAEFIK_APP_PLACEMENT/g" new-compose
+      sed -i -n "s/MOSQUITTO-APP-PLACEMENT/$MOSQUITTO_APP_PLACEMENT/g" new-compose
+      sed -i -n "s/SNAKECONFIG-APP-PLACEMENT/$SNAKECONFIG_APP_PLACEMENT/g" new-compose
+      sed -i -n "s/SNAKEAPI-APP-PLACEMENT/$SNAKEAPI_APP_PLACEMENT/g" new-compose
+      sed -i -n "s/SNAKECONSOLE-APP-PLACEMENT/$SNAKECONSOLE_APP_PLACEMENT/g" new-compose      
+      sed -i -n "s/SNAKEHISTORY-APP-PLACEMENT/$SNAKEHISTORY_APP_PLACEMENT/g" new-compose      
+      sed -i -n "s/SNAKEHOME-APP-PLACEMENT/$SNAKEHOME_APP_PLACEMENT/g" new-compose
+      sed -i -n "s/SNAKEUTIL-APP-PLACEMENT/$SNAKEUTIL_APP_PLACEMENT/g" new-compose
+      sed -i -n "s/SNAKERULE-APP-PLACEMENT/$SNAKERULE_APP_PLACEMENT/g" new-compose
+      sed -i -n "s/SNAKETIMER-APP-PLACEMENT/$SNAKETIMER_APP_PLACEMENT/g" new-compose
+
       mv new-compose "$f/docker-compose.yml"
    fi
    done
@@ -1648,8 +1619,10 @@ function FlashSD() {
       sed -i -n "s#ISO-DATE#$ISO_DATE#" user-data
       #../flash --force --userdata user-data --metadata meta-data --file keyfile.txt -d $DISK https://github.com/hypriot/image-builder-rpi/releases/download/v1.12.3/hypriotos-rpi-v1.12.3.img.zip
       # OK ../flash --force --userdata user-data --metadata meta-data --file keyfile.txt -d $DISK /Volumes/Samsung_T5/SDImages/SnakeOS-v1.1.0.img
-      ../flash --force --userdata user-data --metadata meta-data --file keyfile.txt -d $DISK ../../../../SDImages/SnakeOS-v1.1.0.img.zip 
+      # ../flash --force --userdata user-data --metadata meta-data --file keyfile.txt -d $DISK ../../../../SDImages/SnakeOS-v1.1.0.img.zip 
       #../flash --force --userdata user-data --metadata meta-data --file keyfile.txt -d $DISK https://www.icloud.com/iclouddrive/0-nd4KEtLGQn5Hd0jZ8h0ZhDw#Image/SnakeOS-v1.1.0.img.zip
+      #../flash --force --userdata user-data --metadata meta-data --file keyfile.txt -d $DISK Volumes/Samsung_T5/Images/SnakeOS-v1.1.0.img.zip 
+      ../flash --force --userdata user-data --metadata meta-data --file keyfile.txt -d $DISK ../Images/SnakeOS-v1.1.0.img.zip 
       cd ..
       echo -e "\n"
    fi

@@ -62,14 +62,23 @@ ETH0_IP_ADDRESS="172.16.1.1"
 ETH0_STATIC_ROUTERS="172.16.1.1"
 ETH0_DNS_SERVERS="8.8.8.8 8.8.4.4"
 
-# Swarm Node IP Address
-# Here you set the IP addresses of Eth0 interfaces on all Swarm Nodes
-# SN01_IP_ADDRESS="172.16.1.1"
-# SN02_IP_ADDRESS="172.16.1.2"
-# SN03_IP_ADDRESS="172.16.1.3"
-# SN04_IP_ADDRESS="172.16.1.4"
+# Swarm Application placement, allowed values [ NodeName | all ]
+# Here you decite on which node applications will be deployed
+#
+REDIS_APP_PLACEMENT="sn01"
+PORTAINER_APP_PLACEMENT="sn01"
+TRAEFIK_APP_PLACEMENT="sn01"
+MOSQUITTO_APP_PLACEMENT="sn01"
+SNAKECONFIG_APP_PLACEMENT="sn01"
+SNAKEHOME_APP_PLACEMENT="sn01"
+SNAKEAPI_APP_PLACEMENT="sn01"
+SNAKECONSOLE_APP_PLACEMENT="sn01"
+SNAKEHISTORY_APP_PLACEMENT="sn01"
+SNAKERULE_APP_PLACEMENT="sn01"
+SNAKETIMER_APP_PLACEMENT="sn01"
+SNAKEUTIL_APP_PLACEMENT="all"
 
-# Manager Node WLAN0 properties
+# Manager Node WLAN0 default properties
 # Change the WLAN0 address here. The script auto detects the current lan
 # address, so you just set the last byte of the IP address. Preferrably
 # a value > 200, so we don't interfere with DHCP leases.

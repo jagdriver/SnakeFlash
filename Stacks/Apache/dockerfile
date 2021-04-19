@@ -1,5 +1,6 @@
-FROM ulsmith/rpi-raspbian-apache-php
-MAINTAINER jagdriver@wavesnake.com
+#FROM ulsmith/rpi-raspbian-apache-php
+FROM httpd:2.4
+COPY ./public-html/ /usr/local/apache2/htdocs/
 
 # Remove default apache landing page and copy your files to working directory /var/www/html
 # RUN rm /var/www/html/index.html
@@ -7,5 +8,5 @@ MAINTAINER jagdriver@wavesnake.com
 
 # RUN chmod -R 0755 /var/www/html
 
-EXPOSE 80
-CMD ["/run.sh"]
+#EXPOSE 80
+#CMD ["/run.sh"]

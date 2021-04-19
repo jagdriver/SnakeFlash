@@ -9,6 +9,22 @@
 # 1. NFS Mount setup
 # 2. Check SSH setup
 # 3. 
+
+# PowerState
+power_state:
+  delay: "+3"
+  mode: reboot
+  message: Bye Bye
+  timeout: 30
+  condition: True
+
+# Disk partition management
+growpart:
+  mode: off
+  devices: ['/dev/mmcblk0p2']
+  ignore_growroot_disabled: false
+
+
 # Set your hostname here, the manage_etc_hosts will update the hosts file entries as well
 hostname: NODE-NAME
 manage_etc_hosts: false
@@ -74,7 +90,6 @@ write_files:
   - content: |
       # Please note that this file is written to be used with dhcpcd
       # For static IP, consult /etc/dhcpcd.conf and 'man dhcpcd.conf'
-
       # Include files from /etc/network/interfaces.d:
       source-directory /etc/network/interfaces.d
     path: /etc/network/interfaces
@@ -114,68 +129,70 @@ write_files:
       else
         echo -e "No label given"
       fi
-    path: /home/manager
+    path: /home/manager/usbmount.sh
+    
 # These commands will be run once on first boot only
 runcmd:
-  # Restart Avahi daemon and sleep 30 seec  - 'logger !!! wavesnake !!!'
-  - 'logger !!! wavesnake !!!' 
-  - 'logger !!! wavesnake !!! Restart avahi-deamon'
-  - 'logger !!! wavesnake !!!' 
-  - 'systemctl restart avahi-daemon'
- 
-  
-  # Set Fake HW Date, Restart NTP, workaround for Debian Buster time initialization
-  - 'logger !!! wavesnake !!!'
-  - 'logger !!! wavesnake !!! Workaround for Buster Fake Time error initializing date/time'
-  - 'logger !!! wavesnake !!!'
-  - sudo date -s 'ISO-DATE'
-  - 'sudo service ntp --full-restart'
-  - 'sudo sleep 15'
-  - 'sudo date'
-
   # Start ETH0 interface
+  - 'logger !!! wavesnake !!!'
+  - 'logger !!! wavesnake !!! Start ETH0 Interface' 
+  - 'logger !!! wavesnake !!!'
   - 'sudo ip addr flush dev eth0'
-  - 'sudo ifdown eth0'
-  - 'sudo ifup eth0'
+  - 'ip addr add ETH0-IP-ADDRESS dev eth0'
+  - 'sudo ip link set eth0 up'
   - 'sudo sleep 15'
 
   # Update package index
+  - 'logger !!! wavesnake !!!'
   - 'logger !!! wavesnake !!! Update Package list'
+  - 'logger !!! wavesnake !!!'
   - 'sudo apt-get update --allow-releaseinfo-change'
 
   # Install packages
+  - 'logger !!! wavesnake !!!'
   - 'logger !!! wavesnake !!! Install packages'
-  - 'sudo apt-get -y install acl'
-  - 'sudo apt-get -y install sshfs'
-  - 'sudo apt-get -y install nfs-common'
+  - 'logger !!! wavesnake !!!'
 
   # Skip Locale check on User Session Startup
   - 'sudo touch /var/lib/cloud/instance/locale-check.skip'
 
   # Setup Manager
-  - 'logger !!! wavesnake !!! Set manager in docker group'
+  - 'logger !!! wavesnake !!!'
+  - 'logger !!! wavesnake !!! Set manager as owner and set rights on home directory'
+  - 'logger !!! wavesnake !!!'
   - 'sudo chown manager:manager /home/manager'
   - 'sudo chmod -R u+rwX,go+rX-w /home/manager'
   - 'sudo usermod -aG docker $(whoami)'
 
   # Add Node to Swarm
+  - 'logger !!! wavesnake !!!'
   - 'logger !!! wavesnake !!! Join Worker Node to swarm'
+  - 'logger !!! wavesnake !!!'
   - 'docker swarm join --token SWARM-WORKER-TOKEN SWARM-MANAGER-NODE:SWARM-PORT'
   - 'sudo sleep 5'
 
-  # Create SSH private/public key
+  # Create SSH keys
+  - 'logger !!! wavesnake !!!'
   - 'logger !!! wavesnake !!! Create ssh private/public keys'
+  - 'logger !!! wavesnake !!!'
   - 'sudo mkdir -p /home/manager/.ssh'
   - 'sudo chown manager:manager /home/manager/.ssh'
   - 'sudo touch /home/manager/.ssh/authorized_keys'
   - 'sudo chmod 700 /home/manager/.ssh'
-
-  # 'sudo cp -P /boot/keyfile.txt /home/manager/.ssh/authorized_keys'
+  - 'sudo cp -P /boot/keyfile.txt /home/manager/.ssh/authorized_keys'
   - 'sudo chown manager:manager /home/manager/.ssh/authorized_keys'
   - 'sudo chmod 600 /home/manager/.ssh/authorized_keys'
 
+  # Skip Locale check on User Session Startup
+  - 'logger !!! wavesnake !!!'
+  - 'logger !!! wavesnake !!! Skip Locale check'
+  - 'logger !!! wavesnake !!!'
+  - 'sudo touch /var/lib/cloud/instance/locale-check.skip'
+
   # Create Container directory
+  - 'logger !!! wavesnake !!!'
   - 'logger !!! wavesnake !!! Create container directory'
+  - 'logger !!! wavesnake !!!'
   - 'sudo mkdir -p /opt/containers'
 
   # Create Container application directories on each
@@ -214,42 +231,51 @@ runcmd:
   # Synchronization
   - 'sudo mkdir -p /opt/containers/synchronization'
   
-  # Set manager as owner and give rw permission to users
+  # Set rights on container files
+  - 'logger !!! wavesnake !!!'
+  - 'logger !!! wavesnake !!! Set rights on Container files'
+  - 'logger !!! wavesnake !!!'
+  - 'sudo chgrp -R manager /opt/containers'
   - 'chown -R manager /opt/containers'
-  - 'sudo chmod a+rw /opt/containers -R'
+  - 'sudo chmod ug+rw /opt/containers -R'
 
   # Copy Mosquitto files to Container dir
-  - 'sudo cp /var/local/mosquitto.conf /opt/containers/mosquitto/config/'
-  - 'sudo cp /var/local/acl /opt/containers/mosquitto/config/config.d/'
-  - 'sudo cp /var/local/pw /opt/containers/mosquitto/config/config.d/'
+  #- 'sudo cp /var/local/mosquitto.conf /opt/containers/mosquitto/config/'
+  #- 'sudo cp /var/local/acl /opt/containers/mosquitto/config/config.d/'
+  #- 'sudo cp /var/local/pw /opt/containers/mosquitto/config/config.d/'
 
   # Create log directories
   - 'logger !!! wavesnake !!! Create log files'
   - 'sudo mkdir -p /var/log/snakelogs'
-  - 'sudo mkdir -p /var/log/mosquitto'
-  - 'sudo mkdir -p /var/log/redis'
-  - 'sudo mkdir -p /var/log/mysql'
+  - 'sudo mkdir -p /var/log/snakelogs/traefik'
+  - 'sudo mkdir -p /var/log/snakelogs/redis'
+  - 'sudo mkdir -p /var/log/snakelogs/mosquitto'
   
   # Set Owner and rights on log files
-  - 'sudo chgrp -R manager /var/log/snakelogs'
-  - 'sudo chgrp -R manager /var/log/mosquitto'
-  - 'sudo chgrp -R manager /var/log/redis'
-  - 'sudo chgrp -R manager /var/log/mysql'
-  
-  - 'sudo chmod a+rw /var/log/snakelogs -R'
-  - 'sudo chmod a+rw /var/log/mosquitto -R'
-  - 'sudo chmod a+rw /var/log/redis -R'
-  - 'sudo chmod a+rw /var/log/mysql -R'
+  - 'sudo chmod ugo+rw /var/log/snakelogs -R'
   
   # Create Media drive to mysql
   - 'sudo mkdir -p /media/data' 
   - 'sudo mkdir -p /media/data/mariadb'
   - 'sudo chmod a+rw /media/data/mariadb -R'
-
-  # Mount USB Drive, which requires that we know the UUID of the USB stick
-  # Can be obtained on Unix(RPI) with command: sudo blkid -sUUID
+  #
+  # Craete USB Mount command in /etc/fstab
+  #
+  - 'logger !!! wavesnake !!!'
+  - 'logger !!! wavesnake !!! Create NFS Exports config'
+  - 'logger !!! wavesnake !!!'
   - 'USB-MOUNT-COMMAND'
 
+  #
+  # Resize rootpartition
+  #
+  - 'logger !!! wavesnake !!!'
+  - 'logger !!! wavesnake !!! Execute Resize of Root Partition'
+  - 'logger !!! wavesnake !!!'
+  - 'sudo raspi-config nonint do_expand_rootfs'
+
+  - 'logger !!! wavesnake !!!'
   - 'logger !!! wavesnake !!! End of RUNCMD'
+  - 'logger !!! wavesnake !!!'
   
   # !!! There must be a newline after this line
