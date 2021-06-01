@@ -270,6 +270,7 @@ function ReadProperties() {
 
    # SnakeConsole properties
    SNAKE_CONSOLE_SERVER=$SNAKE_CONSOLE_SERVER
+   SNAKECONSOLE_LOG_FILE=$SNAKECONSOLE_LOG_FILE
 
    # Redis properties
    REDIS_MASTER_SERVER_ADDRESS=$REDIS_MASTER_SERVER_ADDRESS
@@ -280,6 +281,7 @@ function ReadProperties() {
    # Sketch properties
    SKETCH_SERVER_ADDRESS=$SKETCH_SERVER_ADDRESS
    SKETCH_SERVER_PORT=$SKETCH_SERVER_PORT
+   SKETCH_BASE_DIR=$SKETCH_BASE_DIR
 
    # MQTT properties
    MQTT_SERVER_ADDRESS=$MQTT_SERVER_ADDRESS
@@ -382,6 +384,7 @@ function EditProperties() {
       sed -i -n "s#SNAKEHISTORY-LOG-FILE#$SNAKEHISTORY_LOG_FILE#" new-user-data
       sed -i -n "s#SNAKECONFIG-LOG-FILE#$SNAKECONFIG_LOG_FILE#" new-user-data
       sed -i -n "s#SNAKETIMER-LOG-FILE#$SNAKETIMER_LOG_FILE#" new-user-data
+      sed -i -n "s#SNAKECONSOLE-LOG-FILE#$SNAKECONSOLE_LOG_FILE#" new-user-data
       #sed -i -n "s##$#" new-user-data
 
       # Portainer Server
@@ -391,6 +394,7 @@ function EditProperties() {
       # Sketch Server
       sed -i -n "s#SKETCH-SERVER-ADDRESS#$SKETCH_SERVER_ADDRESS#" new-user-data
       sed -i -n "s#SKETCH-SERVER-PORT#$SKETCH_SERVER_PORT#" new-user-data
+      sed -i -n "s#SKETCH-BASE-DIR#$SKETCH_BASE_DIR#" new-user-data
 
       # API Server
       sed -i -n "s#API-SERVER-ADDRESS#$API_SERVER_ADDRESS#" new-user-data
@@ -418,10 +422,6 @@ function EditProperties() {
       # What goes wrong here
       sed -i -n "s#MQTT-USER-PASSWORD#$MQTT_USER_PASSWORD#g" new-user-data
       sed -i -n "s#MANAGER-ENCRYPTED-PASSWORD#$MANAGER_ENCRYPTED_PASSWORD#g" new-user-data
-
-      # SKETCH Server
-      sed -i -n "s#SKETCH-SERVER-ADDRESS#$SKETCH_SERVER_ADDRESS#" new-user-data
-      sed -i -n "s#SKETCH-SERVER-PORT#$SKETCH_SERVER_PORT#" new-user-data
 
       # SWARM Mail
       sed -i -n "s#SWARM-MAIL-USER#$SWARM_MAIL_USER#" new-user-data

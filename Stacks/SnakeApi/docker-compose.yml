@@ -20,7 +20,7 @@ services:
       - SwarmSecret
 
     volumes:
-      - "/var/log/snakelogs:/var/log/snakelogs"
+      - "/var/log/snakelogs/snakeapi:/var/log/snakelogs"
       - "/mnt/config:/opt/containers"
 
     extra_hosts:
@@ -46,7 +46,7 @@ services:
 
         # This section is for internal http access
         - "traefik.http.routers.api-internal.entrypoints=web"
-        - "traefik.http.routers.api-internal.rule=Host(`api.wavesnake.local`)"
+        - "traefik.http.routers.api-internal.rule=Host(`api.wavesnake.local`) || Host(`api.wavesnake.local`) "
         - "traefik.http.routers.api-internal.service=apisvc-internal"
         - "traefik.http.services.apisvc-internal.loadbalancer.server.port=5000"
 

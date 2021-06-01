@@ -139,7 +139,9 @@ write_files:
             "SnakeApiLogFile":"SNAKEAPI-LOG-FILE",
             "SnakeHistoryLogFile":"SNAKEHISTORY-LOG-FILE",
             "SnakeConfigLogFile":"SNAKECONFIG-LOG-FILE",
-            "SnakeTimerLogFile":"SNAKETIMER-LOG-FILE"
+            "SnakeTimerLogFile":"SNAKETIMER-LOG-FILE",
+            "SnakeConsoleLogFile":"SNAKECONSOLE-LOG-FILE"
+
         },
         "Production": {
             "ApplicationLogPath":"APPLICATION-LOG-PATH",
@@ -147,7 +149,8 @@ write_files:
             "SnakeApiLogFile":"SNAKEAPI-LOG-FILE",
             "SnakeHistoryLogFile":"SNAKEHISTORY-LOG-FILE",
             "SnakeConfigLogFile":"SNAKECONFIG-LOG-FILE",
-            "SnakeTimerLogFile":"SNAKETIMER-LOG-FILE"
+            "SnakeTimerLogFile":"SNAKETIMER-LOG-FILE",
+            "SnakeConsoleLogFile":"SNAKECONSOLE-LOG-FILE"
         }
       },
       "SnakeApi": {
@@ -169,7 +172,8 @@ write_files:
               "ServiceTypes":"SERVICE-TYPES",
               "Services":"ACCESSORY-SERVICES",
               "Boards":"BOARD-TYPES",   
-              "Sketches":"SKETCH-RECORDS"       
+              "Sketches":"SKETCH-RECORDS",
+              "SketchBaseDir":"SKETCH-BASE-DIR"      
           },
           "Production" : {
               "Version":"SNAKEAPI-VERSION",
@@ -189,7 +193,8 @@ write_files:
               "ServiceTypes":"SERVICE-TYPES",
               "Services":"ACCESSORY-SERVICES",
               "Boards":"BOARD-TYPES",
-              "Sketches":"SKETCH-RECORDS"          
+              "Sketches":"SKETCH-RECORDS",
+              "SketchBaseDir":"SKETCH-BASE-DIR"           
           }
         },
         "SnakeUtil": {
@@ -720,7 +725,7 @@ write_files:
           image: jagdriver/wavesnake:redis
 
           volumes:
-            - /var/log/snakelogs/redis:/var/snakelogs
+            - /var/log/snakelogs/redis:/var/log/snakelogs
             - /opt/containers/redis/data:/data
             - /opt/containers/redis/conf:/etc/redis
 
@@ -856,7 +861,9 @@ write_files:
         "SwarmManagerPassword":"wavesnake",
         "SqlManager":"root",
         "SqlManagerPassword":"wavesnake",
-        "GlobalConfigPath":"/opt/containers/configuration/globalconfig.json"
+        "GlobalConfigPath":"/opt/containers/configuration/globalconfig.json",
+        "RedisMasterServerAddress":"REDIS-MASTER-SERVER-ADDRESS",
+        "RedisMasterServerPort":"REDIS-MASTER-SERVER-PORT"
       }
     path: /opt/containers/configuration/swarmsecret.json
   
@@ -1117,7 +1124,14 @@ runcmd:
   - 'sudo mkdir -p /var/log/snakelogs/traefik'
   - 'sudo mkdir -p /var/log/snakelogs/redis'
   - 'sudo mkdir -p /var/log/snakelogs/mosquitto'
-  - 'sudo mkdir -p /var/log/mosquitto'
+  - 'sudo mkdir -p /var/log/snakelogs/snakeapi'
+  - 'sudo mkdir -p /var/log/snakelogs/snakeconsole'
+  - 'sudo mkdir -p /var/log/snakelogs/snakeconfig'
+  - 'sudo mkdir -p /var/log/snakelogs/snakehistory'
+  - 'sudo mkdir -p /var/log/snakelogs/snakeutil'
+  - 'sudo mkdir -p /var/log/snakelogs/snaketimer'
+  - 'sudo mkdir -p /var/log/snakelogs/snakerule'
+  #- 'sudo mkdir -p /var/log/mosquitto'
 
   # Set Owner and rights on log files
   - 'logger !!! wavesnake !!!'

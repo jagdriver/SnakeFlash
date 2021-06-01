@@ -21,9 +21,10 @@ services:
       DNS_PASSWORD: "${DNS_PASSWORD}"
 
     volumes:
-      - "/opt/containers/environment:/opt/containers/environment"
-      - "/opt/containers/mosquitto:/opt/containers/mosquitto"
+      #- "/opt/containers/environment:/opt/containers/environment"
+      #- "/opt/containers/mosquitto:/opt/containers/mosquitto"
       - "/var/log/snakelogs:/var/log/snakelogs"
+      - "/mnt/config:/opt/containers"
 
     extra_hosts:
       - "redis.wavesnake.local:172.16.1.1"

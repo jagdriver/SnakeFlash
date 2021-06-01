@@ -9,7 +9,7 @@ services:
     image: jagdriver/wavesnake:redis
 
     volumes:
-      - /var/log/snakelogs:/var/snakelogs
+      - /var/log/snakelogs:/var/log/snakelogs
       - /opt/containers/redis/data:/data
       - /opt/containers/redis/conf:/etc/redis
 

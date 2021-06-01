@@ -11,7 +11,7 @@ version: '3.7'
 #
 services:
 
-  snakehistory1: 
+  snakehistory: 
     image: jagdriver/wavesnake:snakehistory
 
     networks:
@@ -22,6 +22,7 @@ services:
 
     volumes:
       - "/var/log/snakelogs:/var/log/snakelogs"
+      - "/mnt/config:/opt/containers"
 
     environment:
        MANAGER_PASSWORD: "${MANAGER_PASSWORD}"
@@ -43,7 +44,7 @@ services:
         window: 120s
       placement:
         constraints:
-          - node.labels.wsnode == sn02
+          - node.labels.wsnode == sn01
 secrets:
   SwarmSecret:
     external: true
