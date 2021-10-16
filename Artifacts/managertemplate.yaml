@@ -285,6 +285,48 @@ write_files:
     path:  /home/manager/.ssh/authorized_keys
 
   #
+  # LogRotate config file (Mainly to Rotate Traefik log files)
+  #
+  - content: |
+
+      # see "man logrotate" for details
+      # rotate log files weekly
+      weekly
+
+      # keep 4 weeks worth of backlogs
+      rotate 4
+
+      # create new (empty) log files after rotating old ones
+      create
+
+      # use date as a suffix of the rotated file
+      dateext
+
+      # uncomment this if you want your log files compressed
+      compress
+
+      # packages drop log rotation information into this directory
+      include /etc/logrotate.d
+
+      # system-specific logs may be also be configured here.
+
+      # WaveSnake Logrotation fot Traefik
+
+      /var/log/snakelogs/traefik/traefik.log /var/log/snakelogs/traefik/access.log 
+      {
+        rotate 1
+        daily
+        postrotate
+          # First find container name
+          CONTAINERID=$(docker ps -aqf "name=Traefik_traefik")
+          echo "$CONTAINERID"
+          docker kill --signal="USR1" $CONTAINERID
+        endscript 
+      }
+        
+    path: /etc/logrotate.conf
+
+  #
   # Mosquitto config file
   #  
   - content: |
@@ -998,6 +1040,7 @@ runcmd:
   - 'sudo apt-get update --allow-releaseinfo-change'
 
   # Install packages
+  # I think that these packages are installed in the base package
   - 'logger !!! wavesnake !!!'
   - 'logger !!! wavesnake !!! Install packages'
   - 'logger !!! wavesnake !!!'
@@ -1137,7 +1180,10 @@ runcmd:
   - 'logger !!! wavesnake !!!'
   - 'logger !!! wavesnake !!! Set rights on log files'
   - 'logger !!! wavesnake !!!'
-  - 'sudo chmod ugo+rw /var/log/snakelogs -R'
+  #- 'sudo chmod ugo+rw /var/log/snakelogs -R'
+  # Changed 2021-06-11 NJN 
+  - 'sudo chmod 744 /var/log/snakelogs -R'
+  - 'sudo chown manager:root /var/log/snakelogs -R'
 
   # Create Docker network
   - 'logger !!! wavesnake !!!'
@@ -1180,6 +1226,7 @@ runcmd:
   - 'logger !!! wavesnake !!!'
   - 'logger !!! wavesnake !!! Create NFS Exports config'
   - 'logger !!! wavesnake !!!'
+  # Below IP Address must be substituted with "ETH0_NETWORK_BITS"
   - 'sudo sed  -i "$ a\/mnt/config 192.168.230.0/24(rw,nohide,insecure,no_subtree_check,async)" /etc/exports'
   
   #

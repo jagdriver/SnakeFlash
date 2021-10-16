@@ -1,0 +1,118 @@
+{
+    "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+    "type": "AdaptiveCard",
+    "version": "1.0",
+    "body": [
+      {
+        "type": "TextBlock",
+        "text": "GasBurnerOn",
+        "weight": "bolder",
+        "size": "medium"
+      },
+      {
+        "type": "ColumnSet",
+        "columns": [
+          {
+            "type": "Column",
+            "width": "auto",
+            "items": [
+              {
+                "type": "Image",
+                "url": "http://localhost:3000/images/GasBurnerOn.jpeg",
+                "size": "small",
+                "style": "person"
+              }
+            ]
+          },
+          {
+            "type": "Column",
+            "width": "stretch",
+            "items": [
+              {
+                "type": "TextBlock",
+                "text": "Niels J. Nielsen",
+                "weight": "bolder",
+                "wrap": true
+              },
+              {
+                "type": "TextBlock",
+                "spacing": "none",
+                "text": "Created {{DATE(2021-08-20T13:08:39Z, SHORT)}}",
+                "isSubtle": true,
+                "wrap": true
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "TextBlock",
+        "text": "This Action will send a MQTT message to the Mosquitto with the Accessory and Service id's included. The listening GasBurner Accessory will be asked to turn on the GasBurner.",
+        "wrap": true
+      },
+      {
+        "type": "FactSet",
+        "facts": [
+          {
+            "title": "Accessory:",
+            "value": "Gasburner"
+          },
+          {
+            "title": "Service:",
+            "value": "Relay"
+          },
+          {
+            "title": "Command:",
+            "value": "Turn on GasBurner"
+          },
+          {
+            "title": "Return:",
+            "value": "State of Gasburnert"
+          }
+        ]
+      }
+    ],
+    "actions": [
+      {
+        "type": "Action.ShowCard",
+        "title": "Set due date",
+        "card": {
+          "type": "AdaptiveCard",
+          "body": [
+            {
+              "type": "Input.Date",
+              "id": "dueDate"
+            }
+          ],
+          "actions": [
+            {
+              "type": "Action.Submit",
+              "title": "OK"
+            }
+          ]
+        }
+      },
+      {
+        "type": "Action.ShowCard",
+        "title": "Comment",
+        "card": {
+          "type": "AdaptiveCard",
+          "body": [
+            {
+              "type": "Input.Text",
+              "id": "comment",
+              "isMultiline": true,
+              "placeholder": "Enter your comment"
+            }
+          ],
+          "actions": [
+            {
+              "type": "Action.Submit",
+              "title": "OK",
+              "data": {"Template": "GasBurnerOn"}
+            }
+          ]
+        }
+      }
+    ]
+  }
