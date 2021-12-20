@@ -7,7 +7,7 @@ version: '3.7'
 
 services:
   SnakeApi:
-    image: jagdriver/wavesnake:snakeapi
+    image: jagdriver/snakeapps:snakeapi
     
     #environment:
     #   ROOT_PASSWORD: "${ROOT_PASSWORD}"
