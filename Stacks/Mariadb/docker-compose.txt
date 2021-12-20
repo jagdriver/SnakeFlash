@@ -6,7 +6,7 @@ version: '3.7'
 #
 services:
   mariadb:
-    image: mariadb:latest
+    image: jagdriver/wavesnake:mariaDB-v1.0.1
 
     environment:
        MYSQL_ROOT_PASSWORD: "${ROOT_PASSWORD}"
