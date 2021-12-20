@@ -758,9 +758,9 @@ fi
       touch "${boot}/ssh"
     fi
     # WaveSnake change: Also copy cmdline.txt while we are testing
-    CMDLINE_FILE="cmdline.txt"
-    echo "Copy cmdline.txt"
-    cp "${CMDLINE_FILE}" "${boot}/"
+    #CMDLINE_FILE="cmdline.txt"
+    #echo "Copy cmdline.txt"
+    #cp "${CMDLINE_FILE}" "${boot}/"
     
     if [ ! -f "${boot}/meta-data" ]; then
       echo "Creating empty meta-data"

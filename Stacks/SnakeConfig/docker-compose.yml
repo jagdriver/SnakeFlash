@@ -16,18 +16,19 @@ services:
     extra_hosts:
       - "redis.wavesnake.local:172.16.1.1"
       - "mqt.wavesnake.local:172.16.1.1"
-      - "api.wavesnake.local:192.168.1.235"
-      - "sql.wavesnake.local:192.168.1.235"
-      - "console.wavesnake.local:192.168.1.235"
-      - "config.wavesnake.local:192.168.1.235"
-      - "sketch.wavesnake.local:192.168.1.235"
+      - "api.wavesnake.local:192.168.1.230"
+      - "sql.wavesnake.local:192.168.1.230"
+      - "console.wavesnake.local:192.168.1.230"
+      - "config.wavesnake.local:192.168.1.230"
+      - "sketch.wavesnake.local:192.168.1.230"
 
     volumes:
-      - "/opt/containers/synchronization:/opt/containers/synchronization"
-      - "/opt/containers/environment:/opt/containers/environment"
-      - "/opt/containers/configuration:/opt/containers/configuration"
-      - "/var/log/snakelogs:/var/log/snakelogs"
+      #- "/opt/containers/synchronization:/opt/containers/synchronization"
+      #- "/opt/containers/environment:/opt/containers/environment"
+      #- "/opt/containers/configuration:/opt/containers/configuration"
+      - "/var/log/snakelogs/snakeconfig:/var/log/snakelogs"
       - "/var/run/docker.sock:/var/run/docker.sock"
+      - "/mnt/config:/opt/containers"
 
     networks:
       - traefik-public

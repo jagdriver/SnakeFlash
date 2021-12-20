@@ -15,7 +15,7 @@
 
 # PowerState
 power_state:
-  delay: "+2"
+  delay: "+3"
   mode: reboot
   message: Bye Bye
   timeout: 30
@@ -38,7 +38,7 @@ users:
     sudo: ALL=(ALL) NOPASSWD:ALL
     shell: /bin/bash
     groups: users,docker,video,input
-    # passwd: $6$jzg4Mc4uJxRW2Jt9$Wdox/RafKLBL7HMnBq8eK3ijQLDEH6CDigpFGiq0yChe9XXrYK9/6lL406c9S9k9tMc3PJpHkBJJ6NvkXLHEbw==
+    # passwd: 
     plain_text_passwd: wavesnake
     lock_passwd: false
     ssh_pwauth: true
@@ -78,15 +78,15 @@ write_files:
       {
       "Swarm": {
           "Development": {
-              "PortainerServer":"192.168.1.235",
+              "PortainerServer":"192.168.1.230",
               "PortainerServerPort":"9000",
-              "APIServer":"192.168.1.235",
+              "APIServer":"192.168.1.230",
               "APIServerPort":"80",
-              "MqttServer":"192.168.1.235",
+              "MqttServer":"192.168.1.230",
               "MqttServerPort":"8213",
               "DBServer":"sql.wavesnake.local",
               "DBServerPort":"8211",
-              "SketchServer":"192.168.1.235",
+              "SketchServer":"192.168.1.230",
               "SketchServerPort":"80",
               "HomesDBName":"homes",
               "UsersDB":"users",
@@ -97,15 +97,15 @@ write_files:
               "SwarmSecret":"This is a secret string used to generate user tokens"
           },
           "Production": {
-              "PortainerServer":"192.168.1.235",
+              "PortainerServer":"192.168.1.230",
               "PortainerServerPort":"9000",
-              "APIServer":"192.168.1.235",
+              "APIServer":"192.168.1.230",
               "APIServerPort":"80",
-              "MqttServer":"192.168.1.235",
+              "MqttServer":"192.168.1.230",
               "MqttServerPort":"8213",
               "DBServer":"sql.wavesnake.local",
               "DBServerPort":"8211",
-              "SketchServer":"192.168.1.235",
+              "SketchServer":"192.168.1.230",
               "SketchServerPort":"80",
               "HomesDBName":"homes",
               "UsersDB":"users",
@@ -139,7 +139,9 @@ write_files:
             "SnakeApiLogFile":"snakeapi.log",
             "SnakeHistoryLogFile":"snakehistory.log",
             "SnakeConfigLogFile":"snakeconfig.log",
-            "SnakeTimerLogFile":"snaketimer.log"
+            "SnakeTimerLogFile":"snaketimer.log",
+            "SnakeConsoleLogFile":"snakeconsole.log"
+
         },
         "Production": {
             "ApplicationLogPath":"/var/log/snakelogs/",
@@ -147,7 +149,8 @@ write_files:
             "SnakeApiLogFile":"snakeapi.log",
             "SnakeHistoryLogFile":"snakehistory.log",
             "SnakeConfigLogFile":"snakeconfig.log",
-            "SnakeTimerLogFile":"snaketimer.log"
+            "SnakeTimerLogFile":"snaketimer.log",
+            "SnakeConsoleLogFile":"snakeconsole.log"
         }
       },
       "SnakeApi": {
@@ -167,9 +170,10 @@ write_files:
               "AccessoryTypes":"TempSensor,TempHumSensor,GateController,Relay,Switch,GasBurner",
               "UnitTypes":"byte,sbyte,short,ushort,int,uint,long,ulong,float,double",
               "ServiceTypes":"Temperature,Humidity,Sketch,UpTime,OpenClose,OnOff",
-              "Services":"[ { 'Id':0, 'ServiceId':0, 'Type':'Temperature', 'Description':'Temperature in degree Celsius', 'Value':'', 'Range':'-40;+50', 'Unit':'3' }, { 'Id':0, 'ServiceId':0, 'Type':'Humidity', 'Description':'Humidity i percentage', 'Value':'', 'Range':'0;100', 'Unit':'1' }, { 'Id':0, 'ServiceId':0, 'Type':'OpenClose', 'Description':'State Open/Closed', 'Value':'', 'Range':'0;1', 'Unit':'5' }, { 'Id':0, 'ServiceId':0, 'Type':'OnOff', 'Description':'State On/Off', 'Value':'', 'Range':'0;1', 'Unit':'5' }, { 'Id':0, 'ServiceId':0, 'Type':'Sketch', 'Description':'Sketch Version', 'Value':'', 'Range':'*', 'Unit':'4' }, { 'Id':0, 'ServiceId':0, 'Type':'UpTime', 'Description':'Accessory Uptime', 'Value':'', 'Range':'5000;3600000', 'Unit':'2' } ]",
-              "Boards":"[ {'ChipId':'1458376', 'Model':'ESP8266-12F-DEVKIT-v3', 'Vendor':'ShenZhen Doctors of Intelligence BOARD-TYPES Technology Co., Ltd', 'Description':'Preferred Dev board' }, {'ChipId':'1458400','Model':'ESP8266-ESP12E-Module','Vendor':'AI-THINKER', 'Description':'Preferred ESP Chip'} }, {'ChipId':'99359','Model':'SparkFun-ESP8266-Thing-Dev','Vendor':'SparkFun', 'Description':'Older Dev board' } ]",   
-              "Sketches":"[ {'Name':'WSTempSensor01', 'Version':'1.2.1', 'BaseDir':'Sketch', 'SketchBin':'wstempsensor01.bin', 'BoardId':2, 'Description':'Temperature measurement SKETCH-RECORDS reporting, with attached Display'},    {'Name':'WSTempHumSensor01', 'Version':'1.2.1', 'BaseDir':'Sketch', 'SketchBin':'wstemphumsensor01.bin', 'BoardId':2, 'Description':'Temperature SKETCH-RECORDS Humidity measurement SKETCH-RECORDS reporting, with attached Display'},    {'Name':'WSTempSensor', 'Version':'1.2.1', 'BaseDir':'Sketch', 'SketchBin':'wstempsensor.bin', 'BoardId':2, 'Description':'Temperature measurement SKETCH-RECORDS reporting'},    {'Name':'WSTempHumSensor', 'Version':'1.2.1', 'BaseDir':'Sketch', 'SketchBin':'wstemphumsensor.bin', 'BoardId':2, 'Description':'Temperature SKETCH-RECORDS Humidity measurement SKETCH-RECORDS reporting'},    {'Name':'WSGateSensor', 'Version':'1.2.1', 'BaseDir':'Sketch', 'SketchBin':'wsgate.bin','BoardId':2, 'Description':'Relay (NonLatching) for Open/Close Garage ports'}, {'Name':'WSGasBurner', 'Version':'1.2.1', 'BaseDir':'Sketch', 'SketchBin':'wsgasburner.bin', 'BoardId':2, 'Description':'Relay (Latching) for switcing On/Off Gas Burner circulation pump'} ]"       
+              "Services":"[ { 'Id':0, 'UniqId':'22876cfb-4f10-4b1b-a52b-f26ea4d9f098', 'Type':'Temperature', 'Description':'Temperature in degree Celsius', 'Value':'', 'Range':'-40;+50', 'Unit':'3' }, { 'Id':0, 'UniqId':'78286ebc-3d78-4c2e-aea8-1d7dad5bc902', 'Type':'Humidity', 'Description':'Humidity i percentage', 'Value':'', 'Range':'0;100', 'Unit':'1' }, { 'Id':0, 'UniqId':'b6bc6007-4212-4888-8ff7-2e8946a71b73', 'Type':'OpenClose', 'Description':'State Open/Closed', 'Value':'', 'Range':'0;1', 'Unit':'5' }, { 'Id':0, 'UniqId':'5736337a-36a4-440d-8f13-6ee5d557bc1d', 'Type':'OnOff', 'Description':'State On/Off', 'Value':'', 'Range':'0;1', 'Unit':'5' }, { 'Id':0, 'UniqId':'ebf0ce7c-eae7-4fdb-ada6-c47d589f79c6', 'Type':'Sketch', 'Description':'Sketch Version', 'Value':'', 'Range':'*', 'Unit':'4' }, { 'Id':0, 'UniqId':'50f756b8-230c-4b08-a5d4-11ece5248cd3', 'Type':'UpTime', 'Description':'Accessory Uptime', 'Value':'', 'Range':'5000;3600000', 'Unit':'2' } ]",
+              "Boards":"[ {'ChipId':'1458376', 'Model':'ESP8266-12F-DEVKIT-v3', 'Vendor':'ShenZhen Doctors of Intelligence BOARD-TYPES Technology Co., Ltd', 'Description':'Preferred Dev board' }, {'ChipId':'1458400','Model':'ESP8266-ESP12E-Module','Vendor':'AI-THINKER', 'Description':'Preferred ESP Chip'}, {'ChipId':'99359','Model':'SparkFun-ESP8266-Thing-Dev','Vendor':'SparkFun', 'Description':'Older Dev board' } ]",   
+              "Sketches":"[ {'Name':'WSTempSensor01', 'Version':'1.2.1', 'BaseDir':'Sketch', 'SketchBin':'wstempsensor01.bin', 'BoardId':2, 'Description':'Temperature measurement SKETCH-RECORDS reporting, with attached Display'},    {'Name':'WSTempHumSensor01', 'Version':'1.2.1', 'BaseDir':'Sketch', 'SketchBin':'wstemphumsensor01.bin', 'BoardId':2, 'Description':'Temperature SKETCH-RECORDS Humidity measurement SKETCH-RECORDS reporting, with attached Display'}, {'Name':'WSTempSensor', 'Version':'1.2.1', 'BaseDir':'Sketch', 'SketchBin':'wstempsensor.bin', 'BoardId':2, 'Description':'Temperature measurement SKETCH-RECORDS reporting'}, {'Name':'WSTempHumSensor', 'Version':'1.2.1', 'BaseDir':'Sketch', 'SketchBin':'wstemphumsensor.bin', 'BoardId':2, 'Description':'Temperature SKETCH-RECORDS Humidity measurement SKETCH-RECORDS reporting'}, {'Name':'WSGateSensor', 'Version':'1.2.1', 'BaseDir':'Sketch', 'SketchBin':'wsgate.bin','BoardId':2, 'Description':'Relay (NonLatching) for Open/Close Garage ports'}, {'Name':'WSGasBurner', 'Version':'1.2.1', 'BaseDir':'Sketch', 'SketchBin':'wsgasburner.bin', 'BoardId':2, 'Description':'Relay (Latching) for switcing On/Off Gas Burner circulation pump'} ]",
+              "SketchBaseDir":"Sketch"      
           },
           "Production" : {
               "Version":"1.2.0",
@@ -187,9 +191,10 @@ write_files:
               "AccessoryTypes":"TempSensor,TempHumSensor,GateController,Relay,Switch,GasBurner",
               "UnitTypes":"byte,sbyte,short,ushort,int,uint,long,ulong,float,double",
               "ServiceTypes":"Temperature,Humidity,Sketch,UpTime,OpenClose,OnOff",
-              "Services":"[ { 'Id':0, 'ServiceId':0, 'Type':'Temperature', 'Description':'Temperature in degree Celsius', 'Value':'', 'Range':'-40;+50', 'Unit':'3' }, { 'Id':0, 'ServiceId':0, 'Type':'Humidity', 'Description':'Humidity i percentage', 'Value':'', 'Range':'0;100', 'Unit':'1' }, { 'Id':0, 'ServiceId':0, 'Type':'OpenClose', 'Description':'State Open/Closed', 'Value':'', 'Range':'0;1', 'Unit':'5' }, { 'Id':0, 'ServiceId':0, 'Type':'OnOff', 'Description':'State On/Off', 'Value':'', 'Range':'0;1', 'Unit':'5' }, { 'Id':0, 'ServiceId':0, 'Type':'Sketch', 'Description':'Sketch Version', 'Value':'', 'Range':'*', 'Unit':'4' }, { 'Id':0, 'ServiceId':0, 'Type':'UpTime', 'Description':'Accessory Uptime', 'Value':'', 'Range':'5000;3600000', 'Unit':'2' } ]",
-              "Boards":"[ {'ChipId':'1458376', 'Model':'ESP8266-12F-DEVKIT-v3', 'Vendor':'ShenZhen Doctors of Intelligence BOARD-TYPES Technology Co., Ltd', 'Description':'Preferred Dev board' }, {'ChipId':'1458400','Model':'ESP8266-ESP12E-Module','Vendor':'AI-THINKER', 'Description':'Preferred ESP Chip'} }, {'ChipId':'99359','Model':'SparkFun-ESP8266-Thing-Dev','Vendor':'SparkFun', 'Description':'Older Dev board' } ]",
-              "Sketches":"[ {'Name':'WSTempSensor01', 'Version':'1.2.1', 'BaseDir':'Sketch', 'SketchBin':'wstempsensor01.bin', 'BoardId':2, 'Description':'Temperature measurement SKETCH-RECORDS reporting, with attached Display'},    {'Name':'WSTempHumSensor01', 'Version':'1.2.1', 'BaseDir':'Sketch', 'SketchBin':'wstemphumsensor01.bin', 'BoardId':2, 'Description':'Temperature SKETCH-RECORDS Humidity measurement SKETCH-RECORDS reporting, with attached Display'},    {'Name':'WSTempSensor', 'Version':'1.2.1', 'BaseDir':'Sketch', 'SketchBin':'wstempsensor.bin', 'BoardId':2, 'Description':'Temperature measurement SKETCH-RECORDS reporting'},    {'Name':'WSTempHumSensor', 'Version':'1.2.1', 'BaseDir':'Sketch', 'SketchBin':'wstemphumsensor.bin', 'BoardId':2, 'Description':'Temperature SKETCH-RECORDS Humidity measurement SKETCH-RECORDS reporting'},    {'Name':'WSGateSensor', 'Version':'1.2.1', 'BaseDir':'Sketch', 'SketchBin':'wsgate.bin','BoardId':2, 'Description':'Relay (NonLatching) for Open/Close Garage ports'}, {'Name':'WSGasBurner', 'Version':'1.2.1', 'BaseDir':'Sketch', 'SketchBin':'wsgasburner.bin', 'BoardId':2, 'Description':'Relay (Latching) for switcing On/Off Gas Burner circulation pump'} ]"          
+              "Services":"[ { 'Id':0, 'UniqId':'22876cfb-4f10-4b1b-a52b-f26ea4d9f098', 'Type':'Temperature', 'Description':'Temperature in degree Celsius', 'Value':'', 'Range':'-40;+50', 'Unit':'3' }, { 'Id':0, 'UniqId':'78286ebc-3d78-4c2e-aea8-1d7dad5bc902', 'Type':'Humidity', 'Description':'Humidity i percentage', 'Value':'', 'Range':'0;100', 'Unit':'1' }, { 'Id':0, 'UniqId':'b6bc6007-4212-4888-8ff7-2e8946a71b73', 'Type':'OpenClose', 'Description':'State Open/Closed', 'Value':'', 'Range':'0;1', 'Unit':'5' }, { 'Id':0, 'UniqId':'5736337a-36a4-440d-8f13-6ee5d557bc1d', 'Type':'OnOff', 'Description':'State On/Off', 'Value':'', 'Range':'0;1', 'Unit':'5' }, { 'Id':0, 'UniqId':'ebf0ce7c-eae7-4fdb-ada6-c47d589f79c6', 'Type':'Sketch', 'Description':'Sketch Version', 'Value':'', 'Range':'*', 'Unit':'4' }, { 'Id':0, 'UniqId':'50f756b8-230c-4b08-a5d4-11ece5248cd3', 'Type':'UpTime', 'Description':'Accessory Uptime', 'Value':'', 'Range':'5000;3600000', 'Unit':'2' } ]",
+              "Boards":"[ {'ChipId':'1458376', 'Model':'ESP8266-12F-DEVKIT-v3', 'Vendor':'ShenZhen Doctors of Intelligence BOARD-TYPES Technology Co., Ltd', 'Description':'Preferred Dev board' }, {'ChipId':'1458400','Model':'ESP8266-ESP12E-Module','Vendor':'AI-THINKER', 'Description':'Preferred ESP Chip'}, {'ChipId':'99359','Model':'SparkFun-ESP8266-Thing-Dev','Vendor':'SparkFun', 'Description':'Older Dev board' } ]",
+              "Sketches":"[ {'Name':'WSTempSensor01', 'Version':'1.2.1', 'BaseDir':'Sketch', 'SketchBin':'wstempsensor01.bin', 'BoardId':2, 'Description':'Temperature measurement SKETCH-RECORDS reporting, with attached Display'},    {'Name':'WSTempHumSensor01', 'Version':'1.2.1', 'BaseDir':'Sketch', 'SketchBin':'wstemphumsensor01.bin', 'BoardId':2, 'Description':'Temperature SKETCH-RECORDS Humidity measurement SKETCH-RECORDS reporting, with attached Display'}, {'Name':'WSTempSensor', 'Version':'1.2.1', 'BaseDir':'Sketch', 'SketchBin':'wstempsensor.bin', 'BoardId':2, 'Description':'Temperature measurement SKETCH-RECORDS reporting'}, {'Name':'WSTempHumSensor', 'Version':'1.2.1', 'BaseDir':'Sketch', 'SketchBin':'wstemphumsensor.bin', 'BoardId':2, 'Description':'Temperature SKETCH-RECORDS Humidity measurement SKETCH-RECORDS reporting'}, {'Name':'WSGateSensor', 'Version':'1.2.1', 'BaseDir':'Sketch', 'SketchBin':'wsgate.bin','BoardId':2, 'Description':'Relay (NonLatching) for Open/Close Garage ports'}, {'Name':'WSGasBurner', 'Version':'1.2.1', 'BaseDir':'Sketch', 'SketchBin':'wsgasburner.bin', 'BoardId':2, 'Description':'Relay (Latching) for switcing On/Off Gas Burner circulation pump'} ]",
+              "SketchBaseDir":"Sketch"           
           }
         },
         "SnakeUtil": {
@@ -280,6 +285,48 @@ write_files:
     path:  /home/manager/.ssh/authorized_keys
 
   #
+  # LogRotate config file (Mainly to Rotate Traefik log files)
+  #
+  - content: |
+
+      # see "man logrotate" for details
+      # rotate log files weekly
+      weekly
+
+      # keep 4 weeks worth of backlogs
+      rotate 4
+
+      # create new (empty) log files after rotating old ones
+      create
+
+      # use date as a suffix of the rotated file
+      dateext
+
+      # uncomment this if you want your log files compressed
+      compress
+
+      # packages drop log rotation information into this directory
+      include /etc/logrotate.d
+
+      # system-specific logs may be also be configured here.
+
+      # WaveSnake Logrotation fot Traefik
+
+      /var/log/snakelogs/traefik/traefik.log /var/log/snakelogs/traefik/access.log 
+      {
+        rotate 1
+        daily
+        postrotate
+          # First find container name
+          CONTAINERID=$(docker ps -aqf "name=Traefik_traefik")
+          echo "$CONTAINERID"
+          docker kill --signal="USR1" $CONTAINERID
+        endscript 
+      }
+        
+    path: /etc/logrotate.conf
+
+  #
   # Mosquitto config file
   #  
   - content: |
@@ -289,7 +336,8 @@ write_files:
       # /usr/share/doc/mosquitto/examples/mosquitto.conf.example
       # ---  WaveSnake Technologies --------
 
-      pid_file /var/run/mosquitto.pid
+      # Uncommented for now 
+      #pid_file /var/run/mosquitto.pid
 
       persistence true
       persistence_location /mosquitto/data/
@@ -313,7 +361,9 @@ write_files:
 
       allow_anonymous false
 
-      port 1883
+      # port deprecated
+      #port 1883
+      listener 1883
 
     path: /opt/containers/mosquitto/config/mosquitto.conf
   
@@ -337,7 +387,7 @@ write_files:
   # and run a container with Debian.
   #
   - content: |
-      $6$jzg4Mc4uJxRW2Jt9$Wdox/RafKLBL7HMnBq8eK3ijQLDEH6CDigpFGiq0yChe9XXrYK9/6lL406c9S9k9tMc3PJpHkBJJ6NvkXLHEbw==
+      
     path: /opt/containers/mosquitto/config/conf.d/pw
   #
   # NodeName.env ( Should this be a json file?)
@@ -364,7 +414,7 @@ write_files:
   - content: |
       auto wlan0
       iface wlan0 inet static
-      address 192.168.1.235
+      address 192.168.1.230
       network 192.168.1.0
       netmask 255.255.255.0
       gateway 192.168.1.1
@@ -398,14 +448,9 @@ write_files:
   #
   # DHCPCD dhcpcd.conf static network setup
   #
-  # Removed 
-    #interface eth0
-      #static ip_address=172.16.1.1/24
-      #static routers=172.16.1.1
-      #static domain_name_servers=8.8.8.8 8.8.4.4
   - content: |
       interface wlan0
-      static ip_address=192.168.1.235/24
+      static ip_address=192.168.1.230/24
       static routers=192.168.1.1
       static domain_name_servers=8.8.8.8 8.8.4.4
     path: /etc/dhcpcd.conf
@@ -722,7 +767,7 @@ write_files:
           image: jagdriver/wavesnake:redis
 
           volumes:
-            - /var/log/snakelogs/redis:/var/snakelogs
+            - /var/log/snakelogs/redis:/var/log/snakelogs
             - /opt/containers/redis/data:/data
             - /opt/containers/redis/conf:/etc/redis
 
@@ -858,7 +903,9 @@ write_files:
         "SwarmManagerPassword":"wavesnake",
         "SqlManager":"root",
         "SqlManagerPassword":"wavesnake",
-        "GlobalConfigPath":"/opt/containers/configuration/globalconfig.json"
+        "GlobalConfigPath":"/opt/containers/configuration/globalconfig.json",
+        "RedisMasterServerAddress":"172.16.1.1",
+        "RedisMasterServerPort":"8214"
       }
     path: /opt/containers/configuration/swarmsecret.json
   
@@ -877,7 +924,7 @@ write_files:
         # MQTT base topic for zigbee2mqtt MQTT messages
         base_topic: zigbee2mqtt
         # MQTT server URL
-        server: 'mqtt://192.168.1.235:MQTT-INTERNAL-PORT'
+        server: 'mqtt://192.168.1.230:MQTT-INTERNAL-PORT'
         # MQTT server authentication, uncomment if required:
         user: manager
         password: wavesnake
@@ -971,12 +1018,8 @@ runcmd:
   - 'logger !!! wavesnake !!!'
   - 'logger !!! wavesnake !!! Create bidirectional Route between WLAN0 network and ETH0 network'
   - 'logger !!! wavesnake !!!'
-  #- 'sudo ip route delete default via 172.16.1.1'
-  #- 'sudo ip route delete default via 192.168.1.1'
-  #- 'sudo ip route add default via 192.168.1.235'
-
   - 'sudo ip route del 0/0'
-  - 'sudo ip route add default via 192.168.1.1 dev wlan0 src 192.168.1.235 metric 100'
+  - 'sudo ip route add default via 192.168.1.1 dev wlan0 src 192.168.1.230 metric 100'
   
   # Directories for NFS
   - 'sudo mkdir -p /mnt/nfs'
@@ -997,6 +1040,7 @@ runcmd:
   - 'sudo apt-get update --allow-releaseinfo-change'
 
   # Install packages
+  # I think that these packages are installed in the base package
   - 'logger !!! wavesnake !!!'
   - 'logger !!! wavesnake !!! Install packages'
   - 'logger !!! wavesnake !!!'
@@ -1123,13 +1167,23 @@ runcmd:
   - 'sudo mkdir -p /var/log/snakelogs/traefik'
   - 'sudo mkdir -p /var/log/snakelogs/redis'
   - 'sudo mkdir -p /var/log/snakelogs/mosquitto'
-  - 'sudo mkdir -p /var/log/mosquitto'
+  - 'sudo mkdir -p /var/log/snakelogs/snakeapi'
+  - 'sudo mkdir -p /var/log/snakelogs/snakeconsole'
+  - 'sudo mkdir -p /var/log/snakelogs/snakeconfig'
+  - 'sudo mkdir -p /var/log/snakelogs/snakehistory'
+  - 'sudo mkdir -p /var/log/snakelogs/snakeutil'
+  - 'sudo mkdir -p /var/log/snakelogs/snaketimer'
+  - 'sudo mkdir -p /var/log/snakelogs/snakerule'
+  #- 'sudo mkdir -p /var/log/mosquitto'
 
   # Set Owner and rights on log files
   - 'logger !!! wavesnake !!!'
   - 'logger !!! wavesnake !!! Set rights on log files'
   - 'logger !!! wavesnake !!!'
-  - 'sudo chmod ugo+rw /var/log/snakelogs -R'
+  #- 'sudo chmod ugo+rw /var/log/snakelogs -R'
+  # Changed 2021-06-11 NJN 
+  - 'sudo chmod 744 /var/log/snakelogs -R'
+  - 'sudo chown manager:root /var/log/snakelogs -R'
 
   # Create Docker network
   - 'logger !!! wavesnake !!!'
@@ -1172,6 +1226,7 @@ runcmd:
   - 'logger !!! wavesnake !!!'
   - 'logger !!! wavesnake !!! Create NFS Exports config'
   - 'logger !!! wavesnake !!!'
+  # Below IP Address must be substituted with "ETH0_NETWORK_BITS"
   - 'sudo sed  -i "$ a\/mnt/config 192.168.230.0/24(rw,nohide,insecure,no_subtree_check,async)" /etc/exports'
   
   #
@@ -1214,7 +1269,6 @@ runcmd:
   - 'logger !!! wavesnake !!!'
   - 'logger !!! wavesnake !!! Execute Resize of Root Partition'
   - 'logger !!! wavesnake !!!'
-  #- 'sudo resize2fs /dev/mmcblk0p2'
   - 'sudo raspi-config nonint do_expand_rootfs'
 
   - 'logger !!! wavesnake !!!'

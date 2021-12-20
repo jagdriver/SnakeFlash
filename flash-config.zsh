@@ -648,14 +648,17 @@ function PromptForInput() {
       # It might be better to call below for MQTT_USER_PASSWORD
       # I dont think that we create the Mqtt users file yet.
       # Or split name:password string
-
-      #MQTT_USER_PASSWORD=$(./Utilities/HashUtil $MANAGER_NAME $MANAGER_PASSWORD MQTT)
-      MQTT_USER_PASSWORD=$(php ./pwdhash.php manager wavesnake MQTT)
-      echo "MQTT: ${MQTT_USER_PASSWORD}"
       
-      #MANAGER_ENCRYPTED_PASSWORD=$(./Utilities/HashUtil $MANAGER_NAME $MANAGER_PASSWORD USER)
-      MANAGER_ENCRYPTED_PASSWORD=$(php ./pwdhash.php manager wavesnake MQTT)
-      echo "USER: ${MANAGER_ENCRYPTED_PASSWORD}"
+       ##MQTT_USER_PASSWORD=$(./Utilities/HashUtil $MANAGER_NAME $MANAGER_PASSWORD MQTT)
+
+      #(Installed PHP8.0) We have to test this
+      #MQTT_USER_PASSWORD=$(/usr/local/Cellar/php@8.0/8.0.14/bin/php ./pwdhash.php manager wavesnake MQTT)
+      #echo "MQTT: ${MQTT_USER_PASSWORD}"
+      
+       ##MANAGER_ENCRYPTED_PASSWORD=$(./Utilities/HashUtil $MANAGER_NAME $MANAGER_PASSWORD USER)
+      #(Installed PHP8.0) We have to test this
+      #MANAGER_ENCRYPTED_PASSWORD=$(/usr/local/Cellar/php@8.0/8.0.14/bin/php ./pwdhash.php manager wavesnake MQTT)
+      #echo "USER: ${MANAGER_ENCRYPTED_PASSWORD}"
    done
 
    # # Configure Time Zone (Manager & Worker)
@@ -1622,7 +1625,8 @@ function FlashSD() {
       # ../flash --force --userdata user-data --metadata meta-data --file keyfile.txt -d $DISK ../../../../SDImages/SnakeOS-v1.1.0.img.zip 
       #../flash --force --userdata user-data --metadata meta-data --file keyfile.txt -d $DISK https://www.icloud.com/iclouddrive/0-nd4KEtLGQn5Hd0jZ8h0ZhDw#Image/SnakeOS-v1.1.0.img.zip
       #../flash --force --userdata user-data --metadata meta-data --file keyfile.txt -d $DISK Volumes/Samsung_T5/Images/SnakeOS-v1.1.0.img.zip 
-      ../flash --force --userdata user-data --metadata meta-data --file keyfile.txt -d $DISK ../Images/SnakeOS-v1.1.0.img.zip 
+      #../flash --force --userdata user-data --metadata meta-data --file keyfile.txt -d $DISK ../Images/SnakeOS-v1.1.0.img.zip 
+      ../flash --force --userdata user-data --metadata meta-data --file keyfile.txt -d $DISK /Volumes/Samsung_T5/SDImages/SnakeOS-Ready/SnakeOS-ARM64.img 
       cd ..
       echo -e "\n"
    fi

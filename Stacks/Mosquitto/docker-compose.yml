@@ -4,16 +4,10 @@ version: '3.7'
 # This solution are deployed from Portainer
 # as a Swarm Stack Service.
 #
-# This compose depends on the Eclipse docker image
-# eclipse-mosquitto
-# And is not built by waveSnake, but at a later point in time
-# I will build my own
-# When the swarm is configured, the conf, pw and acl files are constructed and
-# written to the swarm. 
-# 
 services:
   mosquitto:
-    image: eclipse-mosquitto
+    image: jagdriver/wavesnake:mosquitto-v1.0.6
+
     ports:
       - target: 1883
         protocol: tcp
@@ -25,11 +19,11 @@ services:
     extra_hosts:
       - "redis.wavesnake.local:172.16.1.1"
       - "mqt.wavesnake.local:172.16.1.1"
-      - "api.wavesnake.local:192.168.1.235"
-      - "sql.wavesnake.local:192.168.1.235"
-      - "console.wavesnake.local:192.168.1.235"
-      - "config.wavesnake.local:192.168.1.235"
-      - "sketch.wavesnake.local:192.168.1.235"
+      - "api.wavesnake.local:192.168.1.230"
+      - "sql.wavesnake.local:192.168.1.230"
+      - "console.wavesnake.local:192.168.1.230"
+      - "config.wavesnake.local:192.168.1.230"
+      - "sketch.wavesnake.local:192.168.1.230"
 
     volumes:
         # - "/opt/containers/mosquitto/data:/mosquitto/data"

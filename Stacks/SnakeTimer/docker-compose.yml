@@ -16,17 +16,18 @@ services:
     extra_hosts:
       - "redis.wavesnake.local:172.16.1.1"
       - "mqt.wavesnake.local:172.16.1.1"
-      - "api.wavesnake.local:192.168.1.235"
-      - "sql.wavesnake.local:192.168.1.235"
-      - "console.wavesnake.local:192.168.1.235"
-      - "config.wavesnake.local:192.168.1.235"
-      - "sketch.wavesnake.local:192.168.1.235"
+      - "api.wavesnake.local:192.168.1.230"
+      - "sql.wavesnake.local:192.168.1.230"
+      - "console.wavesnake.local:192.168.1.230"
+      - "config.wavesnake.local:192.168.1.230"
+      - "sketch.wavesnake.local:192.168.1.230"
 
     secrets:
       - SwarmSecret
 
     volumes:
-      - "/var/log/snakelogs:/var/log/snakelogs"
+      - "/var/log/snakelogs/snaketimer:/var/log/snakelogs"
+      - "/mnt/config:/opt/containers"
 
     extra_hosts:
       - "redis.wavesnake.local:192.168.230.1"
@@ -39,7 +40,7 @@ services:
         window: 120s
       placement:
         constraints:
-          - node.labels.wsnode == sn03
+          - node.labels.wsnode == sn01
 
 secrets:
   SwarmSecret:
