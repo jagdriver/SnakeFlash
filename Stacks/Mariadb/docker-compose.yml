@@ -15,8 +15,8 @@ services:
        MYSQL_PASSWORD: "${MANAGER_PASSWORD}"
 
     volumes:
-      # (Production) - /media/data/mariadb:/var/lib/mysql
-      - /opt/containers/mariadb/data:/var/lib/mysql
+      - /media/data/mariadb:/var/lib/mysql
+      # - /opt/containers/mariadb/data:/var/lib/mysql
 
     ports:
       - target: 3306
