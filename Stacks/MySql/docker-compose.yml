@@ -22,7 +22,7 @@ services:
       # - /opt/containers/mariadb/data:/var/lib/mysql
 
     ports:
-      - target: 3306
+      - target: 33060
         protocol: tcp
         mode: host
 
@@ -54,7 +54,7 @@ services:
         - "traefik.tcp.routers.mariaint.entrypoints=mariadb"
         - "traefik.tcp.routers.mariaint.rule=HostSNI(`*`)"
         - "traefik.tcp.routers.mariaint.service=mariainternal"
-        - "traefik.tcp.services.mariainternal.loadBalancer.server.port=3306"
+        - "traefik.tcp.services.mariainternal.loadBalancer.server.port=33060"
 
 networks:
   traefik-public:
