@@ -1,0 +1,59 @@
+version: '3.7'
+#
+# Docker Compose file for MariaDB
+# This solution are deployed from Portainer
+# as a Swarm Stack Service.
+#
+services:
+  mariadb:
+    image: mysql:latest
+
+    environment:
+       MYSQL_ROOT_PASSWORD: "${ROOT_PASSWORD}"
+       MYSQL_DATABASE: history
+       MYSQL_USER: manager
+       MYSQL_PASSWORD: "${MANAGER_PASSWORD}"
+
+    volumes:
+      - /media/data/mysql:/var/lib/mysql
+      
+      # - /opt/containers/mariadb/data:/var/lib/mysql
+
+    ports:
+      - target: 3306
+        protocol: tcp
+        mode: host
+
+    networks:
+      - traefik-public
+
+    extra_hosts:
+      - "redis.wavesnake.local:172.16.1.1"
+      - "mqt.wavesnake.local:172.16.1.1"
+      - "api.wavesnake.local:192.168.1.230"
+      - "sql.wavesnake.local:192.168.1.230"
+      - "console.wavesnake.local:192.168.1.230"
+      - "config.wavesnake.local:192.168.1.230"
+      - "sketch.wavesnake.local:192.168.1.230"
+
+    deploy:
+      restart_policy:
+        condition: any
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+      placement:
+        constraints:
+          - node.labels.wsnode == sn01
+      labels:
+        - "traefik.enable=true"
+
+        # This section id for local http access
+        - "traefik.tcp.routers.mariaint.entrypoints=mariadb"
+        - "traefik.tcp.routers.mariaint.rule=HostSNI(`*`)"
+        - "traefik.tcp.routers.mariaint.service=mariainternal"
+        - "traefik.tcp.services.mariainternal.loadBalancer.server.port=3306"
+
+networks:
+  traefik-public:
+    external: true
