@@ -15,7 +15,7 @@ services:
        MYSQL_DATABASE: history
        MYSQL_USER: manager
        MYSQL_PASSWORD: "${MANAGER_PASSWORD}"
-       MYSQL_ROOT_HOST: "17.*.*.*"
+       MYSQL_ROOT_HOST: "10.*.*.*"
 
     volumes:
       - /media/data/mysql:/var/lib/mysql
