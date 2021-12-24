@@ -13,9 +13,9 @@ services:
     environment:
        MYSQL_ROOT_PASSWORD: "${ROOT_PASSWORD}"
        #MYSQL_DATABASE: history
-       #MYSQL_USER: manager
-       #MYSQL_PASSWORD: "${MANAGER_PASSWORD}"
-       #MYSQL_ROOT_HOST: "10.*.*.*"
+       MYSQL_USER: manager
+       MYSQL_PASSWORD: "${MANAGER_PASSWORD}"
+       MYSQL_ROOT_HOST: "10.*.*.*"
 
     volumes:
       - /media/data/mysql:/var/lib/mysql
