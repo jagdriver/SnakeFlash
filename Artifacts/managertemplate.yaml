@@ -933,7 +933,7 @@ write_files:
       serial:
         # Location of CC2531 USB sniffer
         port: /dev/cc2531
-        
+
       # Advanced settings
       advanced:
         log_directory: /var/log/snakelogs/zigbee2mqtt
@@ -1179,8 +1179,8 @@ runcmd:
   - 'sudo mkdir -p /var/log/snakelogs/snakeutil'
   - 'sudo mkdir -p /var/log/snakelogs/snaketimer'
   - 'sudo mkdir -p /var/log/snakelogs/snakerule'
-  #- 'sudo mkdir -p /var/log/mosquitto'
-
+  - 'sudo mkdir -p /var/log/snakelogs/zigbeetomqtt'
+ 
   # Set Owner and rights on log files
   - 'logger !!! wavesnake !!!'
   - 'logger !!! wavesnake !!! Set rights on log files'
