@@ -1405,6 +1405,7 @@ function MainMenu() {
          "Configure_Manager_Node"
          "Configure_Worker_Node"
          "Flash_to_SDCard"
+         "Copy_To_SDCard"
          "Select_Node_Template"
          "Detail_Menu"
          "CopyStacks"
@@ -1451,6 +1452,9 @@ function MainMenu() {
             SetDateTime
             FlashSD
             break
+            ;;
+         "Copy_To_SDCard")
+            CopyConfigToSD
             ;;
          "Save_Config_File")
             # And then take input from this template
@@ -1629,6 +1633,53 @@ function FlashSD() {
       ../flash --force --userdata user-data --metadata meta-data --file keyfile.txt -d $DISK /Volumes/Samsung_T5/SDImages/SnakeOS-Ready/SnakeOS-ARM64.img 
       cd ..
       echo -e "\n"
+   fi
+   echo -e "\nLeaving Flash...\n"
+}
+
+function CopyConfigToSD()
+{
+   # Format 32GB SDCard, and name it SNAKEOS
+   # Use Raspberry PI Imager to copy SnakeOS Disk image to the SD Card
+   # Run flash-config.zsh to generate configuration files, and copy the files to SDCard /boot partition
+   # 
+ 
+
+   # Show external disk to choose as destination
+   ls -l /Volumes
+   echo -e "\n"
+   read -e -p "Look at the Volume list and type the Volume to copy configuraytion files to, example: /Volumes/SNAKEOS/boot > "
+
+   # Confirm the choosen disk/boot
+   echo -e "You have choosen" $REPLY "as destination for configuration files"
+   echo -e "\n"
+   DISK=$REPLY
+   
+   echo -e "\n"
+   echo -e "Copy configuration files to SD Card\n"
+   pwd
+   #ls -la
+   echo -e "\n"
+   echo -e "Select the Node Name from below list\n"
+   SelectNodeName
+
+   read -e -p "Are you ready to Copy configuration files for $NODE_NAME? y/n " -n 1 -r
+   if [[ $REPLY =~ ^[Yy]$ ]]; then
+      cd $NODE_NAME
+      echo -e "Node: $NODE_NAME\n"
+      echo -e "$(ls -l)"
+      
+      # Copy SSH Key to keyfile.txt
+      pwd
+      # echo -e "Keyfile: $SSH_KEY_FILE"
+      # cp "../$SSH_KEY_FILE".pub keyfile.txt
+      
+      # # Set DateTime for Fake HW Clock
+      # sed -i -n "s#ISO-DATE#$ISO_DATE#" user-data
+
+      # # Copy rest of configurattion files
+      #  cp ../user-data user-data
+      #  cp ../meta-data meta-data
    fi
    echo -e "\nLeaving Flash...\n"
 }
