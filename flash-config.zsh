@@ -1644,11 +1644,10 @@ function CopyConfigToSD()
    # Run flash-config.zsh to generate configuration files, and copy the files to SDCard /boot partition
    # 
  
-
    # Show external disk to choose as destination
    ls -l /Volumes
    echo -e "\n"
-   read -e -p "Look at the Volume list and type the Volume to copy configuraytion files to, example: /Volumes/SNAKEOS/boot > "
+   read -e -p "Look at the Volume list and type the Name of the Volume to copy configuration files to, example: /Volumes/boot > "
 
    # Confirm the choosen disk/boot
    echo -e "You have choosen" $REPLY "as destination for configuration files"
@@ -1658,7 +1657,7 @@ function CopyConfigToSD()
    echo -e "\n"
    echo -e "Copy configuration files to SD Card\n"
    pwd
-   #ls -la
+   
    echo -e "\n"
    echo -e "Select the Node Name from below list\n"
    SelectNodeName
@@ -1681,6 +1680,8 @@ function CopyConfigToSD()
       #  cp ../user-data user-data
       #  cp ../meta-data meta-data
    fi
+   
+   echo -e "Copy from $NODE_NAME to $DISK1"
    echo -e "\nLeaving Flash...\n"
 }
 #

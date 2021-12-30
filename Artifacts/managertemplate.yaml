@@ -924,7 +924,7 @@ write_files:
         # MQTT base topic for zigbee2mqtt MQTT messages
         base_topic: zigbee2mqtt
         # MQTT server URL
-        server: 'mqtt://WLAN0-IP-ADDRESS:MQTT-INTERNAL-PORT'
+        server: 'mqtt://WLAN0-IP-ADDRESS:MQTT-SERVER-PORT'
         # MQTT server authentication, uncomment if required:
         user: manager
         password: wavesnake
