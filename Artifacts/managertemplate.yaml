@@ -923,7 +923,7 @@ write_files:
       mqtt:
         # MQTT base topic for zigbee2mqtt MQTT messages
         base_topic: zigbee2mqtt
-        # MQTT server URL
+        # MQTT server and port
         server: 'mqtt://WLAN0-IP-ADDRESS:MQTT-SERVER-PORT'
         # MQTT server authentication, uncomment if required:
         user: manager
@@ -933,6 +933,11 @@ write_files:
       serial:
         # Location of CC2531 USB sniffer
         port: /dev/cc2531
+        
+      # Advanced settings
+      advanced:
+        log_directory: /var/log/snakelogs/zigbee2mqtt
+        log_level: info
     path: /opt/containers/snakezig/data/configuration.yaml
  
   #
