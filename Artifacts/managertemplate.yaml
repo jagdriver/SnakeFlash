@@ -68,7 +68,7 @@ package_upgrade: false
 
 #
 # Write Files section is where we create all configuration files
-# and bash scripts to be run after reboot
+# and bash scripts to be run on first boot
 #
 write_files:
   #

@@ -9,10 +9,6 @@ services:
   SnakeApi:
     image: jagdriver/snakeapps:snakeapi
     
-    #environment:
-    #   ROOT_PASSWORD: "${ROOT_PASSWORD}"
-    #   MANAGER_PASSWORD: "${MANAGER_PASSWORD}"
-
     networks:
       - traefik-public
 
@@ -26,11 +22,11 @@ services:
     extra_hosts:
       - "redis.wavesnake.local:172.16.1.1"
       - "mqt.wavesnake.local:172.16.1.1"
-      - "api.wavesnake.local:192.168.1.230"
-      - "sql.wavesnake.local:192.168.1.230"
-      - "console.wavesnake.local:192.168.1.230"
-      - "config.wavesnake.local:192.168.1.230"
-      - "sketch.wavesnake.local:192.168.1.230"
+      - "api.wavesnake.local:192.168.1.240"
+      - "sql.wavesnake.local:192.168.1.240"
+      - "console.wavesnake.local:192.168.1.240"
+      - "config.wavesnake.local:192.168.1.240"
+      - "sketch.wavesnake.local:192.168.1.240"
 
     deploy:
       restart_policy:
@@ -46,7 +42,7 @@ services:
 
         # This section is for internal http access
         - "traefik.http.routers.api-internal.entrypoints=web"
-        - "traefik.http.routers.api-internal.rule=Host(`api.wavesnake.local`, `192.168.1.230`)"
+        - "traefik.http.routers.api-internal.rule=Host(`api.wavesnake.local`, `192.168.1.240`)"
         - "traefik.http.routers.api-internal.service=apisvc-internal"
         - "traefik.http.services.apisvc-internal.loadbalancer.server.port=5000"
 
