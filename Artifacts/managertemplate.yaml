@@ -1049,6 +1049,10 @@ runcmd:
   - 'sudo chmod 755 /mnt/logs'
   - 'sudo chmod +x /home/manager/nfs.sh'
 
+  # Directories for Mysql
+  - 'sudo mkdir -p /media/data/mysql'
+  - 'sudo chown -R manager:manager /media/data'
+
   # Update package index and allow for release info change
   - 'logger !!! wavesnake !!!'
   - 'logger !!! wavesnake !!! Update Package list'
