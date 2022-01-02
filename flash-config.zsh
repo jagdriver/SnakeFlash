@@ -75,6 +75,8 @@ ETH0_ADDRESS_BYTES=()
 DNS_URLS=()
 # Node local IP addresses
 IP_ADDRESSES=()
+# set Current date
+CURRENT_DATE=$(date +%Y-%m-%d)
 
 function Quit() {
    echo -e "${BLACK}"
@@ -551,6 +553,9 @@ function EditProperties() {
    sed -i -n "s#TIME-ZONE#$TIME_ZONE#" new-user-data
    #sed -i -n "s#ISO-DATE#$ISO_DATE#" new-user-data
    #sed -i -n "s#ISO-TIME#$ISO_TIME#" new-user-data
+   
+   # Current date
+    sed -i -n "s#CURRENT-DATE#$CURRENT_DATE#" new-user-data
 
    # SSH Authorized Key
    sed -i -n "s#AUTHORIZED-SSH-KEY#$AUTHORIZED_SSH_KEY#" new-user-data
@@ -1454,6 +1459,7 @@ function MainMenu() {
             break
             ;;
          "Copy_To_SDCard")
+            echo -e "\n${RD}${BO}ACTION: Copy configuration files to the Boot partition on the SD Card\n$RESETALL"
             CopyConfigToSD
             ;;
          "Save_Config_File")
@@ -1639,24 +1645,27 @@ function FlashSD() {
 
 function CopyConfigToSD()
 {
+   # After creating an OS image from RaspiOS Light, we don't use HypriotOS anymore.
+   # So after configuring actual Node, we just copy the resulting files to the
+   # SDCard boot partition.
    # Format 32GB SDCard, and name it SNAKEOS
    # Use Raspberry PI Imager to copy SnakeOS Disk image to the SD Card
    # Run flash-config.zsh to generate configuration files, and copy the files to SDCard /boot partition
    # 
  
-   # Show external disk to choose as destination
-   ls -l /Volumes
+   df -Hl
    echo -e "\n"
    read -e -p "Look at the Volume list and type the Name of the Volume to copy configuration files to, example: /Volumes/boot > "
 
    # Confirm the choosen disk/boot
-   echo -e "You have choosen" $REPLY "as destination for configuration files"
-   echo -e "\n"
+   echo -e "\nYou have choosen" $REPLY "as destination for configuration files"
+   #echo -e "\n"
    DISK=$REPLY
-   
-   echo -e "\n"
-   echo -e "Copy configuration files to SD Card\n"
-   pwd
+
+
+   #echo -e "\n"
+   #echo -e "Copy configuration files to SD Card\n"
+   #pwd
    
    echo -e "\n"
    echo -e "Select the Node Name from below list\n"
@@ -1667,21 +1676,23 @@ function CopyConfigToSD()
       cd $NODE_NAME
       echo -e "Node: $NODE_NAME\n"
       echo -e "$(ls -l)"
-      
+
+      # Create Current Date SubDir
+      #mkdir ./"$DATO"
+
       # Copy SSH Key to keyfile.txt
-      pwd
+      #pwd
       # echo -e "Keyfile: $SSH_KEY_FILE"
       # cp "../$SSH_KEY_FILE".pub keyfile.txt
       
       # # Set DateTime for Fake HW Clock
       # sed -i -n "s#ISO-DATE#$ISO_DATE#" user-data
-
-      # # Copy rest of configurattion files
-      #  cp ../user-data user-data
-      #  cp ../meta-data meta-data
+      echo "COPYCOMMAND: cp user-data $DISK"
+      # # Copy user-data and meta-data
+      cp ./user-data $DISK/user-data
+      cp ./meta-data $DISK/meta-data
    fi
-   
-   echo -e "Copy from $NODE_NAME to $DISK1"
+
    echo -e "\nLeaving Flash...\n"
 }
 #

@@ -28,28 +28,28 @@ growpart:
   ignore_growroot_disabled: false
 
 # Set your hostname here, the manage_etc_hosts will update the hosts file entries as well
-hostname: NODE-NAME
+hostname: sn01
 manage_etc_hosts: false
 
 # You could modify this for your own user information
 users:
-  - name: MANAGER-NAME
+  - name: manager
     gecos: "Wavesnake Manager"
     sudo: ALL=(ALL) NOPASSWD:ALL
     shell: /bin/bash
     groups: users,docker,video,input
-    # passwd: MANAGER-ENCRYPTED-PASSWORD
-    plain_text_passwd: MANAGER-PASSWORD
+    # passwd: 
+    plain_text_passwd: wavesnake
     lock_passwd: false
     ssh_pwauth: true
     chpasswd: { expire: false }
 
 # # Set the locale of the system
-locale: "SWARM-LOCALE"
+locale: "en_US.UTF-8"
 
 # # Set the timezone
 # # Value of 'timezone' must exist in /usr/share/zoneinfo
-timezone: "TIME-ZONE"
+timezone: "Europe/Copenhagen"
 
 # # Update apt packages on first boot
 package_update: false
@@ -78,189 +78,189 @@ write_files:
       {
       "Swarm": {
           "Development": {
-              "PortainerServer":"PORTAINER-SERVER-ADDRESS",
-              "PortainerServerPort":"PORTAINER-SERVER-PORT",
-              "APIServer":"API-SERVER-ADDRESS",
-              "APIServerPort":"API-SERVER-PORT",
-              "MqttServer":"MQTT-SERVER-ADDRESS",
-              "MqttServerPort":"MQTT-SERVER-PORT",
-              "DBServer":"SQL-SERVER-ADDRESS",
-              "DBServerPort":"SQL-SERVER-PORT",
-              "SketchServer":"SKETCH-SERVER-ADDRESS",
-              "SketchServerPort":"SKETCH-SERVER-PORT",
-              "HomesDBName":"SQL-HOMES-DB-NAME",
-              "UsersDB":"SQL-USERS-DB-NAME",
-              "CollectionsDB":"SQL-COLLECTIONS-DB-NAME",
-              "SwarmManager":"MANAGER-NAME",
-              "ManagerEmail":"MANAGER-EMAIL",
-              "DBAdmin":"SQL-DB-ADMIN",
-              "SwarmSecret":"SWARM-SECRET"
+              "PortainerServer":"192.168.1.240",
+              "PortainerServerPort":"9000",
+              "APIServer":"192.168.1.240",
+              "APIServerPort":"80",
+              "MqttServer":"192.168.1.240",
+              "MqttServerPort":"8213",
+              "DBServer":"sql.wavesnake.local",
+              "DBServerPort":"8211",
+              "SketchServer":"192.168.1.240",
+              "SketchServerPort":"80",
+              "HomesDBName":"homes",
+              "UsersDB":"users",
+              "CollectionsDB":"collections",
+              "SwarmManager":"manager",
+              "ManagerEmail":"manager@swarm.local",
+              "DBAdmin":"root",
+              "SwarmSecret":"This is a secret string used to generate user tokens"
           },
           "Production": {
-              "PortainerServer":"PORTAINER-SERVER-ADDRESS",
-              "PortainerServerPort":"PORTAINER-SERVER-PORT",
-              "APIServer":"API-SERVER-ADDRESS",
-              "APIServerPort":"API-SERVER-PORT",
-              "MqttServer":"MQTT-SERVER-ADDRESS",
-              "MqttServerPort":"MQTT-SERVER-PORT",
-              "DBServer":"SQL-SERVER-ADDRESS",
-              "DBServerPort":"SQL-SERVER-PORT",
-              "SketchServer":"SKETCH-SERVER-ADDRESS",
-              "SketchServerPort":"SKETCH-SERVER-PORT",
-              "HomesDBName":"SQL-HOMES-DB-NAME",
-              "UsersDB":"SQL-USERS-DB-NAME",
-              "CollectionsDB":"SQL-COLLECTIONS-DB-NAME",
-              "SwarmManager":"MANAGER-NAME",
-              "ManagerEmail":"MANAGER-EMAIL",
-              "DBAdmin":"SQL-DB-ADMIN",
-              "SwarmSecret":"SWARM-SECRET"
+              "PortainerServer":"192.168.1.240",
+              "PortainerServerPort":"9000",
+              "APIServer":"192.168.1.240",
+              "APIServerPort":"80",
+              "MqttServer":"192.168.1.240",
+              "MqttServerPort":"8213",
+              "DBServer":"sql.wavesnake.local",
+              "DBServerPort":"8211",
+              "SketchServer":"192.168.1.240",
+              "SketchServerPort":"80",
+              "HomesDBName":"homes",
+              "UsersDB":"users",
+              "CollectionsDB":"collections",
+              "SwarmManager":"manager",
+              "ManagerEmail":"manager@swarm.local",
+              "DBAdmin":"root",
+              "SwarmSecret":"This is a secret string used to generate user tokens"
           }
         },
       "Redis": {
         "Development": {
             "RedisConfiguration":"development",
-            "RedisMasterServerAddress":"REDIS-MASTER-SERVER-ADDRESS",
-            "RedisMasterServerPort":"REDIS-MASTER-SERVER-PORT",
-            "redisReplicaServerAddress":"REDIS-REPLICA-SERVER-ADDRESS",
-            "RedisReplicaServerPort":"REDIS-REPLICA-SERVER-PORT"
+            "RedisMasterServerAddress":"172.16.1.1",
+            "RedisMasterServerPort":"8214",
+            "redisReplicaServerAddress":"172.16.1.4",
+            "RedisReplicaServerPort":"8214"
         },
         "Production": {
             "RedisConfiguration":"production",
-            "RedisMasterServerAddress":"REDIS-MASTER-SERVER-ADDRESS",
-            "RedisMasterServerPort":"REDIS-MASTER-SERVER-PORT",
-            "redisReplicaServerAddress":"REDIS-REPLICA-SERVER-ADDRESS",
-            "RedisReplicaServerPort":"REDIS-REPLICA-SERVER-PORT"
+            "RedisMasterServerAddress":"172.16.1.1",
+            "RedisMasterServerPort":"8214",
+            "redisReplicaServerAddress":"172.16.1.4",
+            "RedisReplicaServerPort":"8214"
         }
       },
       "Logging": {
         "Development": {
-            "ApplicationLogPath":"APPLICATION-LOG-PATH",
-            "SnakeUtilLogFile":"SNAKEUTIL-LOG-FILE",
-            "SnakeApiLogFile":"SNAKEAPI-LOG-FILE",
-            "SnakeHistoryLogFile":"SNAKEHISTORY-LOG-FILE",
-            "SnakeConfigLogFile":"SNAKECONFIG-LOG-FILE",
-            "SnakeTimerLogFile":"SNAKETIMER-LOG-FILE",
-            "SnakeConsoleLogFile":"SNAKECONSOLE-LOG-FILE"
+            "ApplicationLogPath":"/var/log/snakelogs/",
+            "SnakeUtilLogFile":"snakeutil.log",
+            "SnakeApiLogFile":"snakeapi.log",
+            "SnakeHistoryLogFile":"snakehistory.log",
+            "SnakeConfigLogFile":"snakeconfig.log",
+            "SnakeTimerLogFile":"snaketimer.log",
+            "SnakeConsoleLogFile":"snakeconsole.log"
 
         },
         "Production": {
-            "ApplicationLogPath":"APPLICATION-LOG-PATH",
-            "SnakeUtilLogFile":"SNAKEUTIL-LOG-FILE",
-            "SnakeApiLogFile":"SNAKEAPI-LOG-FILE",
-            "SnakeHistoryLogFile":"SNAKEHISTORY-LOG-FILE",
-            "SnakeConfigLogFile":"SNAKECONFIG-LOG-FILE",
-            "SnakeTimerLogFile":"SNAKETIMER-LOG-FILE",
-            "SnakeConsoleLogFile":"SNAKECONSOLE-LOG-FILE"
+            "ApplicationLogPath":"/var/log/snakelogs/",
+            "SnakeUtilLogFile":"snakeutil.log",
+            "SnakeApiLogFile":"snakeapi.log",
+            "SnakeHistoryLogFile":"snakehistory.log",
+            "SnakeConfigLogFile":"snakeconfig.log",
+            "SnakeTimerLogFile":"snaketimer.log",
+            "SnakeConsoleLogFile":"snakeconsole.log"
         }
       },
       "SnakeApi": {
           "Development" : {
-              "Version":"SNAKEAPI-VERSION",
-              "SwarmMailUser":"SWARM-MAIL-USER",
-              "SwarmMailSubject":"SWARM-MAIL-SUBJECT",
-              "SwarmMailBody":"SWARM-MAIL-BODY",
-              "SwarmMailPath":"SWARM-MAIL-PATH",
-              "Template":"SQL-TEMPLATE-DEFAULT",
-              "TemplateLookupUser":"SQL-TEMPLATE-LOOKUP-USER",
-              "TemplateCreateUser":"SQL-TEMPLATE-CREATE-USER",
-              "TemplateGrantPrivileges":"SQL-TEMPLATE-GRANT-PRIVILEGES",
-              "TemplateFindUser":"SQL-TEMPLATE-FIND-USER",
-              "TemplateGrantAllPrivileges":"SQL-TEMPLATE-GRANT-ALL-PRIVILEGES",
-              "RuleTypes":"RULE-TYPES",
-              "AccessoryTypes":"ACCESSORY-TYPES",
-              "UnitTypes":"UNIT-TYPES",
-              "ServiceTypes":"SERVICE-TYPES",
-              "Services":"ACCESSORY-SERVICES",
-              "Boards":"BOARD-TYPES",   
-              "Sketches":"SKETCH-RECORDS",
-              "SketchBaseDir":"SKETCH-BASE-DIR"      
+              "Version":"1.2.0",
+              "SwarmMailUser":"wavesnakeapi@gmail.com",
+              "SwarmMailSubject":"Wavesnake API Account",
+              "SwarmMailBody":"This is your new SnakeApi account",
+              "SwarmMailPath":"/tmp/mail/msg.txt",
+              "Template":"server={0}; port={1}; database={2}; user={3}; password={4}",
+              "TemplateLookupUser":"server={0}; port={1}; Uid={2}; Pwd={3}",
+              "TemplateCreateUser":"CREATE USER '{0}'@'%' IDENTIFIED BY '{1}';",
+              "TemplateGrantPrivileges":"GRANT ALL PRIVILEGES ON {0}.* TO '{1}'@'%';",
+              "TemplateFindUser":"SELECT count(*) FROM mysql.user WHERE user = '{0}';",
+              "TemplateGrantAllPrivileges":"GRANT ALL PRIVILEGES ON *.* TO '{0}'@'%' WITH GRANT OPTION;",
+              "RuleTypes":"accessory,group",
+              "AccessoryTypes":"TempSensor,TempHumSensor,GateController,Relay,Switch,GasBurner",
+              "UnitTypes":"byte,sbyte,short,ushort,int,uint,long,ulong,float,double",
+              "ServiceTypes":"Temperature,Humidity,Sketch,UpTime,OpenClose,OnOff",
+              "Services":"[ { 'Id':0, 'UniqId':'22876cfb-4f10-4b1b-a52b-f26ea4d9f098', 'Type':'Temperature', 'Description':'Temperature in degree Celsius', 'Value':'', 'Range':'-40;+50', 'Unit':'3' }, { 'Id':0, 'UniqId':'78286ebc-3d78-4c2e-aea8-1d7dad5bc902', 'Type':'Humidity', 'Description':'Humidity i percentage', 'Value':'', 'Range':'0;100', 'Unit':'1' }, { 'Id':0, 'UniqId':'b6bc6007-4212-4888-8ff7-2e8946a71b73', 'Type':'OpenClose', 'Description':'State Open/Closed', 'Value':'', 'Range':'0;1', 'Unit':'5' }, { 'Id':0, 'UniqId':'5736337a-36a4-440d-8f13-6ee5d557bc1d', 'Type':'OnOff', 'Description':'State On/Off', 'Value':'', 'Range':'0;1', 'Unit':'5' }, { 'Id':0, 'UniqId':'ebf0ce7c-eae7-4fdb-ada6-c47d589f79c6', 'Type':'Sketch', 'Description':'Sketch Version', 'Value':'', 'Range':'*', 'Unit':'4' }, { 'Id':0, 'UniqId':'50f756b8-230c-4b08-a5d4-11ece5248cd3', 'Type':'UpTime', 'Description':'Accessory Uptime', 'Value':'', 'Range':'5000;3600000', 'Unit':'2' } ]",
+              "Boards":"[ {'ChipId':'1458376', 'Model':'ESP8266-12F-DEVKIT-v3', 'Vendor':'ShenZhen Doctors of Intelligence BOARD-TYPES Technology Co., Ltd', 'Description':'Preferred Dev board' }, {'ChipId':'1458400','Model':'ESP8266-ESP12E-Module','Vendor':'AI-THINKER', 'Description':'Preferred ESP Chip'}, {'ChipId':'99359','Model':'SparkFun-ESP8266-Thing-Dev','Vendor':'SparkFun', 'Description':'Older Dev board' } ]",   
+              "Sketches":"[ {'Name':'WSTempSensor01', 'Version':'1.2.1', 'BaseDir':'Sketch', 'SketchBin':'wstempsensor01.bin', 'BoardId':2, 'Description':'Temperature measurement SKETCH-RECORDS reporting, with attached Display'},    {'Name':'WSTempHumSensor01', 'Version':'1.2.1', 'BaseDir':'Sketch', 'SketchBin':'wstemphumsensor01.bin', 'BoardId':2, 'Description':'Temperature SKETCH-RECORDS Humidity measurement SKETCH-RECORDS reporting, with attached Display'}, {'Name':'WSTempSensor', 'Version':'1.2.1', 'BaseDir':'Sketch', 'SketchBin':'wstempsensor.bin', 'BoardId':2, 'Description':'Temperature measurement SKETCH-RECORDS reporting'}, {'Name':'WSTempHumSensor', 'Version':'1.2.1', 'BaseDir':'Sketch', 'SketchBin':'wstemphumsensor.bin', 'BoardId':2, 'Description':'Temperature SKETCH-RECORDS Humidity measurement SKETCH-RECORDS reporting'}, {'Name':'WSGateSensor', 'Version':'1.2.1', 'BaseDir':'Sketch', 'SketchBin':'wsgate.bin','BoardId':2, 'Description':'Relay (NonLatching) for Open/Close Garage ports'}, {'Name':'WSGasBurner', 'Version':'1.2.1', 'BaseDir':'Sketch', 'SketchBin':'wsgasburner.bin', 'BoardId':2, 'Description':'Relay (Latching) for switcing On/Off Gas Burner circulation pump'} ]",
+              "SketchBaseDir":"Sketch"      
           },
           "Production" : {
-              "Version":"SNAKEAPI-VERSION",
-              "SwarmMailUser":"SWARM-MAIL-USER",
-              "SwarmMailSubject":"SWARM-MAIL-SUBJECT",
-              "SwarmMailBody":"SWARM-MAIL-BODY",
-              "SwarmMailPath":"SWARM-MAIL-PATH",
-              "Template":"SQL-TEMPLATE-DEFAULT",
-              "TemplateLookupUser":"SQL-TEMPLATE-LOOKUP-USER",
-              "TemplateCreateUser":"SQL-TEMPLATE-CREATE-USER",
-              "TemplateGrantPrivileges":"SQL-TEMPLATE-GRANT-PRIVILEGES",
-              "TemplateFindUser":"SQL-TEMPLATE-FIND-USER",
-              "TemplateGrantAllPrivileges":"SQL-TEMPLATE-GRANT-ALL-PRIVILEGES",
-              "RuleTypes":"RULE-TYPES",
-              "AccessoryTypes":"ACCESSORY-TYPES",
-              "UnitTypes":"UNIT-TYPES",
-              "ServiceTypes":"SERVICE-TYPES",
-              "Services":"ACCESSORY-SERVICES",
-              "Boards":"BOARD-TYPES",
-              "Sketches":"SKETCH-RECORDS",
-              "SketchBaseDir":"SKETCH-BASE-DIR"           
+              "Version":"1.2.0",
+              "SwarmMailUser":"wavesnakeapi@gmail.com",
+              "SwarmMailSubject":"Wavesnake API Account",
+              "SwarmMailBody":"This is your new SnakeApi account",
+              "SwarmMailPath":"/tmp/mail/msg.txt",
+              "Template":"server={0}; port={1}; database={2}; user={3}; password={4}",
+              "TemplateLookupUser":"server={0}; port={1}; Uid={2}; Pwd={3}",
+              "TemplateCreateUser":"CREATE USER '{0}'@'%' IDENTIFIED BY '{1}';",
+              "TemplateGrantPrivileges":"GRANT ALL PRIVILEGES ON {0}.* TO '{1}'@'%';",
+              "TemplateFindUser":"SELECT count(*) FROM mysql.user WHERE user = '{0}';",
+              "TemplateGrantAllPrivileges":"GRANT ALL PRIVILEGES ON *.* TO '{0}'@'%' WITH GRANT OPTION;",
+              "RuleTypes":"accessory,group",
+              "AccessoryTypes":"TempSensor,TempHumSensor,GateController,Relay,Switch,GasBurner",
+              "UnitTypes":"byte,sbyte,short,ushort,int,uint,long,ulong,float,double",
+              "ServiceTypes":"Temperature,Humidity,Sketch,UpTime,OpenClose,OnOff",
+              "Services":"[ { 'Id':0, 'UniqId':'22876cfb-4f10-4b1b-a52b-f26ea4d9f098', 'Type':'Temperature', 'Description':'Temperature in degree Celsius', 'Value':'', 'Range':'-40;+50', 'Unit':'3' }, { 'Id':0, 'UniqId':'78286ebc-3d78-4c2e-aea8-1d7dad5bc902', 'Type':'Humidity', 'Description':'Humidity i percentage', 'Value':'', 'Range':'0;100', 'Unit':'1' }, { 'Id':0, 'UniqId':'b6bc6007-4212-4888-8ff7-2e8946a71b73', 'Type':'OpenClose', 'Description':'State Open/Closed', 'Value':'', 'Range':'0;1', 'Unit':'5' }, { 'Id':0, 'UniqId':'5736337a-36a4-440d-8f13-6ee5d557bc1d', 'Type':'OnOff', 'Description':'State On/Off', 'Value':'', 'Range':'0;1', 'Unit':'5' }, { 'Id':0, 'UniqId':'ebf0ce7c-eae7-4fdb-ada6-c47d589f79c6', 'Type':'Sketch', 'Description':'Sketch Version', 'Value':'', 'Range':'*', 'Unit':'4' }, { 'Id':0, 'UniqId':'50f756b8-230c-4b08-a5d4-11ece5248cd3', 'Type':'UpTime', 'Description':'Accessory Uptime', 'Value':'', 'Range':'5000;3600000', 'Unit':'2' } ]",
+              "Boards":"[ {'ChipId':'1458376', 'Model':'ESP8266-12F-DEVKIT-v3', 'Vendor':'ShenZhen Doctors of Intelligence BOARD-TYPES Technology Co., Ltd', 'Description':'Preferred Dev board' }, {'ChipId':'1458400','Model':'ESP8266-ESP12E-Module','Vendor':'AI-THINKER', 'Description':'Preferred ESP Chip'}, {'ChipId':'99359','Model':'SparkFun-ESP8266-Thing-Dev','Vendor':'SparkFun', 'Description':'Older Dev board' } ]",
+              "Sketches":"[ {'Name':'WSTempSensor01', 'Version':'1.2.1', 'BaseDir':'Sketch', 'SketchBin':'wstempsensor01.bin', 'BoardId':2, 'Description':'Temperature measurement SKETCH-RECORDS reporting, with attached Display'},    {'Name':'WSTempHumSensor01', 'Version':'1.2.1', 'BaseDir':'Sketch', 'SketchBin':'wstemphumsensor01.bin', 'BoardId':2, 'Description':'Temperature SKETCH-RECORDS Humidity measurement SKETCH-RECORDS reporting, with attached Display'}, {'Name':'WSTempSensor', 'Version':'1.2.1', 'BaseDir':'Sketch', 'SketchBin':'wstempsensor.bin', 'BoardId':2, 'Description':'Temperature measurement SKETCH-RECORDS reporting'}, {'Name':'WSTempHumSensor', 'Version':'1.2.1', 'BaseDir':'Sketch', 'SketchBin':'wstemphumsensor.bin', 'BoardId':2, 'Description':'Temperature SKETCH-RECORDS Humidity measurement SKETCH-RECORDS reporting'}, {'Name':'WSGateSensor', 'Version':'1.2.1', 'BaseDir':'Sketch', 'SketchBin':'wsgate.bin','BoardId':2, 'Description':'Relay (NonLatching) for Open/Close Garage ports'}, {'Name':'WSGasBurner', 'Version':'1.2.1', 'BaseDir':'Sketch', 'SketchBin':'wsgasburner.bin', 'BoardId':2, 'Description':'Relay (Latching) for switcing On/Off Gas Burner circulation pump'} ]",
+              "SketchBaseDir":"Sketch"           
           }
         },
         "SnakeUtil": {
           "Development": {
-            "Version":"SNAKEUTIL-VERSION",
-            "ExternalDomainName":"EXTERNAL-DOMAIN-NAME",
-            "DnsProviderList":"DNS-PROVIDER-LIST",
-            "DnsProviderName":"DNS-PROVIDER-NAME",
+            "Version":"1.2.0",
+            "ExternalDomainName":"wavesnake.dk",
+            "DnsProviderList":"GratisDNS CloudFlare OneCom",
+            "DnsProviderName":"",
             "DnsProviderId":"DNS-PROVIDER-ID",
-            "DnsProviderUrl":"DNS-PROVIDER-URL",
-            "DnsProviderUser":"DNS-PROVIDER-USER",
-            "DnsProviderPassword":"DNS-PROVIDER-PASSWD"
+            "DnsProviderUrl":"",
+            "DnsProviderUser":"jagdriver",
+            "DnsProviderPassword":"32a88235d7dfb08e11"
           },
           "Production": {
-            "Version":"SNAKEUTIL-VERSION",
-            "ExternalDomainName":"EXTERNAL-DOMAIN-NAME",
-            "DnsProviderList":"DNS-PROVIDER-LIST",
-            "DnsProviderName":"DNS-PROVIDER-NAME",
+            "Version":"1.2.0",
+            "ExternalDomainName":"wavesnake.dk",
+            "DnsProviderList":"GratisDNS CloudFlare OneCom",
+            "DnsProviderName":"",
             "DnsProviderId":"DNS-PROVIDER-ID",
-            "DnsProviderUrl":"DNS-PROVIDER-URL",
-            "DnsProviderUser":"DNS-PROVIDER-USER",
-            "DnsProviderPassword":"DNS-PROVIDER-PASSWD"
+            "DnsProviderUrl":"",
+            "DnsProviderUser":"jagdriver",
+            "DnsProviderPassword":"32a88235d7dfb08e11"
           }
         },
         "SnakeTimer": {
           "Development": {
-            "Version":"SNAKETIMER-VERSION"
+            "Version":"1.2.0"
           },
           "Production": {
-            "Version":"SNAKETIMER-VERSION"
+            "Version":"1.2.0"
           }
         },
         "SnakeConfig": {
           "Development": {
-            "Version":"SNAKECONFIG-VERSION",
-            "RedisSynchKey":"REDIS-SYNC-KEY",
-            "RedisSyncPath":"REDIS-SYNC-PATH",
-            "ApplicationList":"APPLICATION-LIST",
-            "EnvironmentList":"ENVIRONMENT-LIST",
-            "StackList":"STACK-LIST"
+            "Version":"1.2.0",
+            "RedisSynchKey":"SEMSYNC",
+            "RedisSyncPath":"/opt/containers",
+            "ApplicationList":"Swarm:Swarm,SnakeApi:SnakeApi,SnakeHistory:SnakeHistory,SnakeUtil:SnakeUtil,SnakeConfig:SnakeConfig,SnakeTimer:SnakeTimer,SnakeConsole:SnakeConsole",
+            "EnvironmentList":"Development:Development,Test:Test,Production:Production",
+            "StackList":"[{'name':'Swarm:Swarm','value':'Swarm:Swarm/docker-compose.yml'},{'name':'SnakeApi:SnakeApi','value':'SnakeApi:SnakeApi/docker-compose.yml'},{'name':'SnakeHistory:SnakeHistory','value':'SnakeHistory:SnakeHistory/docker-compose.yml'},{'name':'SnakeUtil:SnakeUtil','value':'SnakeUtil:SnakeUtil/docker-compose.yml'},{'name':'SnakeConfig:SnakeConfig','value':'SnakeConfig:SnakeConfig/docker-compose.yml'},{'name':'SnakeTimer:SnakeTimer','value':'SnakeTimer:SnakeTimer/docker-compose.yml'},{'name':'SnakeConsole:SnakeConsole','value':'SnakeConsole:SnakeConsole/docker-compose.yml'}]"
           },
           "Production": {
-            "Version":"SNAKECONFIG-VERSION",
-            "RedisSynchKey":"REDIS-SYNC-KEY",
-            "RedisSyncPath":"REDIS-SYNC-PATH",
-            "ApplicationList":"APPLICATION-LIST",
-            "EnvironmentList":"ENVIRONMENT-LIST",
-            "StackList":"STACK-LIST"
+            "Version":"1.2.0",
+            "RedisSynchKey":"SEMSYNC",
+            "RedisSyncPath":"/opt/containers",
+            "ApplicationList":"Swarm:Swarm,SnakeApi:SnakeApi,SnakeHistory:SnakeHistory,SnakeUtil:SnakeUtil,SnakeConfig:SnakeConfig,SnakeTimer:SnakeTimer,SnakeConsole:SnakeConsole",
+            "EnvironmentList":"Development:Development,Test:Test,Production:Production",
+            "StackList":"[{'name':'Swarm:Swarm','value':'Swarm:Swarm/docker-compose.yml'},{'name':'SnakeApi:SnakeApi','value':'SnakeApi:SnakeApi/docker-compose.yml'},{'name':'SnakeHistory:SnakeHistory','value':'SnakeHistory:SnakeHistory/docker-compose.yml'},{'name':'SnakeUtil:SnakeUtil','value':'SnakeUtil:SnakeUtil/docker-compose.yml'},{'name':'SnakeConfig:SnakeConfig','value':'SnakeConfig:SnakeConfig/docker-compose.yml'},{'name':'SnakeTimer:SnakeTimer','value':'SnakeTimer:SnakeTimer/docker-compose.yml'},{'name':'SnakeConsole:SnakeConsole','value':'SnakeConsole:SnakeConsole/docker-compose.yml'}]"
           }
         },
         "SnakeHistory": {
             "Development" : {
-              "Version":"SNAKEHISTORY-VERSION"
+              "Version":"1.2.0"
             },
             "Production": {
-              "Version":"SNAKEHISTORY-VERSION"
+              "Version":"1.2.0"
             }
           },
         "SnakeConsole": {
             "Development" : {
               "Version":"SNAKECONSOLE-VERSION",
-              "SnakeConsoleServer":"SNAKE-CONSOLE-SERVER"
+              "SnakeConsoleServer":"consoleapi.wavesnake.local"
             },
             "Production": {
               "Version":"SNAKECONSOLE-VERSION",
-              "SnakeConsoleServer":"SNAKE-CONSOLE-SERVER"
+              "SnakeConsoleServer":"consoleapi.wavesnake.local"
             }
           }
       }
@@ -271,8 +271,8 @@ write_files:
   #
   - content: |
       {
-        "ManagerPassword":"MANAGER-PASSWORD",
-        "RootPassword":"ROOT-PASSWORD",
+        "ManagerPassword":"wavesnake",
+        "RootPassword":"wavesnake",
         "GlobalConfigPath":"GLOBAL-CONFIG-PATH"
       }
     path:  /opt/containers/configuration/swarmsecret.json
@@ -281,7 +281,7 @@ write_files:
   # Authorized SSH Keys
   #
   - content: |
-      AUTHORIZED-SSH-KEY
+      ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBHYLIUDFKrhs1WTpdrkWGThkTindIGSHHTK87Vr7+t2Cx+BvYk7Qrosrcopcdv6CWxRY+TSyi4dXCojiRine7j0= nielsjorgennielsen@snakemacpro.local
     path:  /home/manager/.ssh/authorized_keys
 
   #
@@ -387,13 +387,13 @@ write_files:
   # and run a container with Debian.
   #
   - content: |
-      MQTT-USER-PASSWORD
+      
     path: /opt/containers/mosquitto/config/conf.d/pw
   #
   # NodeName.env ( Should this be a json file?)
   #
   - content: |
-      NODE_NAME=NODE-NAME
+      NODE_NAME=sn01
     path:  /opt/containers/environment/nodename.env
   
   #
@@ -402,10 +402,10 @@ write_files:
   - content: |
       auto eth0
       iface eth0 inet static
-      address ETH0-IP-ADDRESS
-      network ETH0-NETWORK-ADDRESS
-      netmask ETH0-NETWORK-NETMASK
-      dns-nameservers ETH0-DNS-SERVERS
+      address 172.16.1.1
+      network 172.16.1.0
+      netmask 255.255.255.0
+      dns-nameservers 8.8.8.8 8.8.4.4
     path: /etc/network/interfaces.d/eth0
   
   #
@@ -414,26 +414,24 @@ write_files:
   - content: |
       auto wlan0
       iface wlan0 inet static
-      address WLAN0-IP-ADDRESS
-      network WLAN0-NETWORK-ADDRESS
-      netmask WLAN0-NETWORK-NETMASK
-      gateway WLAN0-STATIC-ROUTERS
-      dns-nameservers WLAN0-DNS-SERVERS
+      address 192.168.1.240
+      network 192.168.1.0
+      netmask 255.255.255.0
+      gateway 192.168.1.1
+      dns-nameservers 8.8.8.8 8.8.4.4
       wpa-conf /etc/wpa_supplicant/wpa_supplicant.conf
     path: /etc/network/interfaces.d/wlan0
-    # theo er sød
-
  
   #
   # WiFi properties setup
   #
   - content: |
-      country=COUNTRY-CODE
+      country=DK
       ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
       update_config=1
       network={
-        ssid="WIFI-SSID"
-        psk="WIFI-PASSWD"
+        ssid="Toften8_2.4G"
+        psk="Jaguarxk120"
       }
     path: /etc/wpa_supplicant/wpa_supplicant.conf
   
@@ -452,20 +450,20 @@ write_files:
   #
   - content: |
       interface wlan0
-      static ip_address=WLAN0-IP-ADDRESS/24
-      static routers=WLAN0-STATIC-ROUTERS
-      static domain_name_servers=WLAN0-DNS-SERVERS
+      static ip_address=192.168.1.240/24
+      static routers=192.168.1.1
+      static domain_name_servers=8.8.8.8 8.8.4.4
     path: /etc/dhcpcd.conf
  
   #
   # Hosts
   #
   - content: |
-      127.0.1.1 NODE-NAME NODE-NAME.INTERNAL-DOMAIN-NAME
+      127.0.1.1 sn01 sn01.wavesnake.local
       127.0.0.1 localhost
-      DNS-STRING1
-      DNS-STRING2
-      DNS-STRING3
+      172.16.1.2 sn02 sn02.wavesnake.local
+      172.16.1.3 sn03 sn03.wavesnake.local
+      172.16.1.4 sn04 sn04.wavesnake.local
     path: /etc/hosts
   
   #
@@ -673,7 +671,7 @@ write_files:
       certificatesResolvers:
         http:
           acme:
-            email: ACME-EMAIL-ADDRESS
+            email: jagdriver@hotmail.dk
             storage: acme.json
             httpChallenge:
               entryPoint: web
@@ -722,15 +720,15 @@ write_files:
           ssh-ws02:
             loadBalancer:
               servers:
-                - address: "WS02-IP-ADDRESS:22"
+                - address: "172.16.1.2:22"
           ssh-ws03:
             loadBalancer:
               servers:
-                - address: "WS03-IP-ADDRESS:22"
+                - address: "172.16.1.3:22"
           ssh-ws04:
             loadBalancer:
               servers:
-                - address: "WS04-IP-ADDRESS:22"
+                - address: "172.16.1.4:22"
         routers:
           ssh-route-ws02:
             entryPoints:
@@ -914,8 +912,8 @@ write_files:
         "SqlManager":"root",
         "SqlManagerPassword":"wavesnake",
         "GlobalConfigPath":"/opt/containers/configuration/globalconfig.json",
-        "RedisMasterServerAddress":"REDIS-MASTER-SERVER-ADDRESS",
-        "RedisMasterServerPort":"REDIS-MASTER-SERVER-PORT"
+        "RedisMasterServerAddress":"172.16.1.1",
+        "RedisMasterServerPort":"8214"
       }
     path: /opt/containers/configuration/swarmsecret.json
   
@@ -934,7 +932,7 @@ write_files:
         # MQTT base topic for zigbee2mqtt MQTT messages
         base_topic: zigbee2mqtt
         # MQTT server and port
-        server: 'mqtt://WLAN0-IP-ADDRESS:MQTT-SERVER-PORT'
+        server: 'mqtt://192.168.1.240:8213'
         # MQTT server authentication, uncomment if required:
         user: manager
         password: wavesnake
@@ -1017,12 +1015,11 @@ runcmd:
   - 'logger !!! wavesnake !!!'
   - 'logger !!! wavesnake !!! Start ETH0 Interface' 
   - 'logger !!! wavesnake !!!'
-  #- 'sudo ip addr flush dev eth0'
-  #- 'ip addr add ETH0-IP-ADDRESS dev eth0'
-  #- 'sudo ip link set eth0 up'
-  #- 'sudo sleep 15'
+  - 'sudo ip addr flush dev eth0'
+  - 'ip addr add 172.16.1.1 dev eth0'
+  - 'sudo ip link set eth0 up'
+  - 'sudo sleep 15'
 
-  # This not actual anymore
   # Workaround for Hypriot initial date/time setting
   # File fake-hwclock.data is set by Flash Utility
   - 'logger !!! wavesnake !!!'
@@ -1035,7 +1032,7 @@ runcmd:
   - 'logger !!! wavesnake !!! Create bidirectional Route between WLAN0 network and ETH0 network'
   - 'logger !!! wavesnake !!!'
   - 'sudo ip route del 0/0'
-  - 'sudo ip route add default via WLAN0-STATIC-ROUTERS dev wlan0 src WLAN0-IP-ADDRESS metric 100'
+  - 'sudo ip route add default via 192.168.1.1 dev wlan0 src 192.168.1.240 metric 100'
   
   # Directories for NFS
   - 'sudo mkdir -p /mnt/nfs'
@@ -1062,20 +1059,20 @@ runcmd:
   - 'logger !!! wavesnake !!!'
   #- 'sudo apt-get -y install acl'
   #- 'sudo apt-get -y install sshfs'
-  - 'sudo apt-get -y install nfs-kernel-server'
+  #- 'sudo apt-get -y install nfs-kernel-server'
   #- 'sudo apt-get -y install dnsmasq'
 
   #  Docker Swarm Initialization
   - 'logger !!! wavesnake !!!'
   - 'logger !!! wavesnake !!! Docker Swarm Init with listen and advertise interface'
   - 'logger !!! wavesnake !!!'
-  - 'docker swarm init --listen-addr SWARM-INTERFACE:SWARM-PORT --advertise-addr SWARM-INTERFACE:SWARM-PORT'
+  - 'docker swarm init --listen-addr eth0:2377 --advertise-addr eth0:2377'
   
   #  Docker Node label
   - 'logger !!! wavesnake !!!'
   - 'logger !!! wavesnake !!! Docker Node Label'
   - 'logger !!! wavesnake !!!'
-  - 'docker node update --label-add wsnode=NODE-NAME NODE-NAME'
+  - 'docker node update --label-add wsnode=sn01 sn01'
 
   # Setup manager
   - 'logger !!! wavesnake !!!'
@@ -1270,7 +1267,7 @@ runcmd:
   #
   # Create Zigbee2Mqtt configuration
   #
-  - 'echo "SUBSYSTEM==\"tty\", ATTRS{idVendor}==\"ZIGBEE-VENDOR\", ATTRS{idProduct}==\"ZIGBEE-PRODUCT\", SYMLINK+=\"cc2531\",  RUN+=\"/home/manager/docker-setup-cc2531.sh\"" | sudo tee /etc/udev/rules.d/99-cc2531.rules'
+  - 'echo "SUBSYSTEM==\"tty\", ATTRS{idVendor}==\"0451\", ATTRS{idProduct}==\"16a8\", SYMLINK+=\"cc2531\",  RUN+=\"/home/manager/docker-setup-cc2531.sh\"" | sudo tee /etc/udev/rules.d/99-cc2531.rules'
   - 'sudo udevadm control --reload-rules'
   - 'sudo chmod 744 /home/manager/docker-setup-cc2531.sh'
   - 'sudo chmod 744 /home/manager/docker-event-listener.sh'

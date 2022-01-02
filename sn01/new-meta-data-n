@@ -1,0 +1,5 @@
+#cloud-config
+# vim: syntax=yaml
+#
+
+instance-id: INSTANCE-ID
