@@ -6,21 +6,21 @@ version: '3.7'
 #
 services:
   SnakeConfig:
-    image: jagdriver/wavesnake:snakeconfig
+    image: jagdriver/snakeapps:snakeconfig
 
     environment:
-       ROOT_PASSWORD: "${ROOT_PASSWORD}"
-       MANAGER_PASSWORD: "${MANAGER_PASSWORD}"
+       #ROOT_PASSWORD: "${ROOT_PASSWORD}"
+       #MANAGER_PASSWORD: "${MANAGER_PASSWORD}"
        GLOBAL_CONFIG_PATH: "/opt/containers/configuration/globalconfig.json"
 
     extra_hosts:
       - "redis.wavesnake.local:172.16.1.1"
       - "mqt.wavesnake.local:172.16.1.1"
-      - "api.wavesnake.local:192.168.1.230"
-      - "sql.wavesnake.local:192.168.1.230"
-      - "console.wavesnake.local:192.168.1.230"
-      - "config.wavesnake.local:192.168.1.230"
-      - "sketch.wavesnake.local:192.168.1.230"
+      - "api.wavesnake.local:192.168.1.240"
+      - "sql.wavesnake.local:192.168.1.240"
+      - "console.wavesnake.local:192.168.1.240"
+      - "config.wavesnake.local:192.168.1.240"
+      - "sketch.wavesnake.local:192.168.1.240"
 
     volumes:
       #- "/opt/containers/synchronization:/opt/containers/synchronization"
