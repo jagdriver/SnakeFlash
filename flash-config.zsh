@@ -649,21 +649,13 @@ function PromptForInput() {
       fi
 
       # Set Mosquitto Manager User and Password string
-      # OBS! we have to get two different outputs one for Mosquitto and one for manager user.
-      # It might be better to call below for MQTT_USER_PASSWORD
-      # I dont think that we create the Mqtt users file yet.
-      # Or split name:password string
-      
-       ##MQTT_USER_PASSWORD=$(./Utilities/HashUtil $MANAGER_NAME $MANAGER_PASSWORD MQTT)
 
       #(Installed PHP8.0) We have to test this
-      #MQTT_USER_PASSWORD=$(/usr/local/Cellar/php@8.0/8.0.14/bin/php ./pwdhash.php manager wavesnake MQTT)
-      #echo "MQTT: ${MQTT_USER_PASSWORD}"
-      
-       ##MANAGER_ENCRYPTED_PASSWORD=$(./Utilities/HashUtil $MANAGER_NAME $MANAGER_PASSWORD USER)
-      #(Installed PHP8.0) We have to test this
-      #MANAGER_ENCRYPTED_PASSWORD=$(/usr/local/Cellar/php@8.0/8.0.14/bin/php ./pwdhash.php manager wavesnake MQTT)
-      #echo "USER: ${MANAGER_ENCRYPTED_PASSWORD}"
+      MQTT_USER_PASSWORD=$(/usr/local/Cellar/php@8.0/8.0.14/bin/php ./pwdhash.php $MANAGER_NAME $MANAGER_PASSWORD MQTT)
+      echo "1: $MQTT_USER_PASSWORD"
+
+      MANAGER_ENCRYPTED_PASSWORD=$(/usr/local/Cellar/php@8.0/8.0.14/bin/php ./pwdhash.php $MANAGER_NAME $MANAGER_PASSWORD USER)
+      echo "2: $MANAGER_ENCRYPTED_PASSWORD"
    done
 
    # # Configure Time Zone (Manager & Worker)

@@ -2,7 +2,8 @@
 
 function getSalt() {
     #$charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789/\\][{}\'";:?.>,<!@#$%^&*()-_=+|';
-    $charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789/\\][{}\'";:?.>,<!@#%^&*()-_=+|';
+    #$charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789/\\][{}\'";:?.>,<!@#%^&*()-_=+|';
+    $charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789/=+';
     $randStringLen = 16;
 
     $randString = "";
@@ -13,22 +14,19 @@ function getSalt() {
     return $randString;
 }
 
-var_dump($argv);
-
-
+#var_dump($argv);
 #nOsgGCKqIEZx1rbO
 #mfJ0Eq3rIDLKG33r
-
-
 #$username="manager";
-$password="wavesnake";
+#$password="wavesnake";
+
 $username=$argv[1];
 $password=$argv[2];
 $type=$argv[3];
 
 $salt_base64="nOsgGCKqIEZx1rbO";
 #$salt_base64="mOsgGCKqIEZx1rbO";
-#$saltx_base64=getSalt();
+#$salt_base64=getSalt(); !OBS we have to get thiw working
 #echo("Saltx".$saltx_base64);
 $salt=base64_decode($salt_base64);
 $hash=hash("sha512",$password.$salt, true);

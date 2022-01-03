@@ -68,7 +68,7 @@ package_upgrade: false
 
 #
 # Write Files section is where we create all configuration files
-# and bash scripts to be run after reboot
+# and bash scripts to be run on first boot
 #
 write_files:
   #
@@ -78,15 +78,15 @@ write_files:
       {
       "Swarm": {
           "Development": {
-              "PortainerServer":"192.168.1.240",
+              "PortainerServer":"192.168.1.230",
               "PortainerServerPort":"9000",
-              "APIServer":"192.168.1.240",
+              "APIServer":"192.168.1.230",
               "APIServerPort":"80",
-              "MqttServer":"192.168.1.240",
+              "MqttServer":"192.168.1.230",
               "MqttServerPort":"8213",
               "DBServer":"sql.wavesnake.local",
               "DBServerPort":"8211",
-              "SketchServer":"192.168.1.240",
+              "SketchServer":"192.168.1.230",
               "SketchServerPort":"80",
               "HomesDBName":"homes",
               "UsersDB":"users",
@@ -97,15 +97,15 @@ write_files:
               "SwarmSecret":"This is a secret string used to generate user tokens"
           },
           "Production": {
-              "PortainerServer":"192.168.1.240",
+              "PortainerServer":"192.168.1.230",
               "PortainerServerPort":"9000",
-              "APIServer":"192.168.1.240",
+              "APIServer":"192.168.1.230",
               "APIServerPort":"80",
-              "MqttServer":"192.168.1.240",
+              "MqttServer":"192.168.1.230",
               "MqttServerPort":"8213",
               "DBServer":"sql.wavesnake.local",
               "DBServerPort":"8211",
-              "SketchServer":"192.168.1.240",
+              "SketchServer":"192.168.1.230",
               "SketchServerPort":"80",
               "HomesDBName":"homes",
               "UsersDB":"users",
@@ -200,7 +200,7 @@ write_files:
         "SnakeUtil": {
           "Development": {
             "Version":"1.2.0",
-            "ExternalDomainName":"wavesnake.dk",
+            "ExternalDomainName":"external.domain",
             "DnsProviderList":"GratisDNS CloudFlare OneCom",
             "DnsProviderName":"",
             "DnsProviderId":"DNS-PROVIDER-ID",
@@ -210,7 +210,7 @@ write_files:
           },
           "Production": {
             "Version":"1.2.0",
-            "ExternalDomainName":"wavesnake.dk",
+            "ExternalDomainName":"external.domain",
             "DnsProviderList":"GratisDNS CloudFlare OneCom",
             "DnsProviderName":"",
             "DnsProviderId":"DNS-PROVIDER-ID",
@@ -281,7 +281,7 @@ write_files:
   # Authorized SSH Keys
   #
   - content: |
-      ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBHYLIUDFKrhs1WTpdrkWGThkTindIGSHHTK87Vr7+t2Cx+BvYk7Qrosrcopcdv6CWxRY+TSyi4dXCojiRine7j0= nielsjorgennielsen@snakemacpro.local
+      
     path:  /home/manager/.ssh/authorized_keys
 
   #
@@ -387,7 +387,7 @@ write_files:
   # and run a container with Debian.
   #
   - content: |
-      
+      manager:$6$nOsgGCKqIEZx1rbO$JA1qDqW2/E7K+xWIY6csrrrlLC38Gmirn0ZnVBy6ASwhKfW63FCJchTAh0RYycjlqvpOZypxpfkCmJdN2ck7Eg==
     path: /opt/containers/mosquitto/config/conf.d/pw
   #
   # NodeName.env ( Should this be a json file?)
@@ -414,13 +414,15 @@ write_files:
   - content: |
       auto wlan0
       iface wlan0 inet static
-      address 192.168.1.240
+      address 192.168.1.230
       network 192.168.1.0
       netmask 255.255.255.0
       gateway 192.168.1.1
       dns-nameservers 8.8.8.8 8.8.4.4
       wpa-conf /etc/wpa_supplicant/wpa_supplicant.conf
     path: /etc/network/interfaces.d/wlan0
+    # theo er sød
+
  
   #
   # WiFi properties setup
@@ -430,8 +432,8 @@ write_files:
       ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
       update_config=1
       network={
-        ssid="Toften8_2.4G"
-        psk="Jaguarxk120"
+        ssid="Your WiFi ssid"
+        psk=""
       }
     path: /etc/wpa_supplicant/wpa_supplicant.conf
   
@@ -450,7 +452,7 @@ write_files:
   #
   - content: |
       interface wlan0
-      static ip_address=192.168.1.240/24
+      static ip_address=192.168.1.230/24
       static routers=192.168.1.1
       static domain_name_servers=8.8.8.8 8.8.4.4
     path: /etc/dhcpcd.conf
@@ -459,11 +461,11 @@ write_files:
   # Hosts
   #
   - content: |
-      127.0.1.1 sn01 sn01.wavesnake.local
+      127.0.1.1 sn01 sn01.
       127.0.0.1 localhost
-      172.16.1.2 sn02 sn02.wavesnake.local
-      172.16.1.3 sn03 sn03.wavesnake.local
-      172.16.1.4 sn04 sn04.wavesnake.local
+      
+      
+      
     path: /etc/hosts
   
   #
@@ -671,7 +673,7 @@ write_files:
       certificatesResolvers:
         http:
           acme:
-            email: jagdriver@hotmail.dk
+            email: yourmail@mailserver.com
             storage: acme.json
             httpChallenge:
               entryPoint: web
@@ -932,7 +934,7 @@ write_files:
         # MQTT base topic for zigbee2mqtt MQTT messages
         base_topic: zigbee2mqtt
         # MQTT server and port
-        server: 'mqtt://192.168.1.240:8213'
+        server: 'mqtt://192.168.1.230:8213'
         # MQTT server authentication, uncomment if required:
         user: manager
         password: wavesnake
@@ -1015,11 +1017,12 @@ runcmd:
   - 'logger !!! wavesnake !!!'
   - 'logger !!! wavesnake !!! Start ETH0 Interface' 
   - 'logger !!! wavesnake !!!'
-  - 'sudo ip addr flush dev eth0'
-  - 'ip addr add 172.16.1.1 dev eth0'
-  - 'sudo ip link set eth0 up'
-  - 'sudo sleep 15'
+  #- 'sudo ip addr flush dev eth0'
+  #- 'ip addr add 172.16.1.1 dev eth0'
+  #- 'sudo ip link set eth0 up'
+  #- 'sudo sleep 15'
 
+  # This not actual anymore
   # Workaround for Hypriot initial date/time setting
   # File fake-hwclock.data is set by Flash Utility
   - 'logger !!! wavesnake !!!'
@@ -1032,7 +1035,7 @@ runcmd:
   - 'logger !!! wavesnake !!! Create bidirectional Route between WLAN0 network and ETH0 network'
   - 'logger !!! wavesnake !!!'
   - 'sudo ip route del 0/0'
-  - 'sudo ip route add default via 192.168.1.1 dev wlan0 src 192.168.1.240 metric 100'
+  - 'sudo ip route add default via 192.168.1.1 dev wlan0 src 192.168.1.230 metric 100'
   
   # Directories for NFS
   - 'sudo mkdir -p /mnt/nfs'
@@ -1045,6 +1048,10 @@ runcmd:
   - 'sudo chmod 755 /mnt/config'
   - 'sudo chmod 755 /mnt/logs'
   - 'sudo chmod +x /home/manager/nfs.sh'
+
+  # Directories for Mysql
+  - 'sudo mkdir -p /media/data/mysql'
+  - 'sudo chown -R manager:manager /media/data'
 
   # Update package index and allow for release info change
   - 'logger !!! wavesnake !!!'
@@ -1059,7 +1066,7 @@ runcmd:
   - 'logger !!! wavesnake !!!'
   #- 'sudo apt-get -y install acl'
   #- 'sudo apt-get -y install sshfs'
-  #- 'sudo apt-get -y install nfs-kernel-server'
+  - 'sudo apt-get -y install nfs-kernel-server'
   #- 'sudo apt-get -y install dnsmasq'
 
   #  Docker Swarm Initialization
