@@ -1,0 +1,56 @@
+#
+# Docker Compose file for SQLEdge
+# This solution are deployed from Portainer
+# as a Swarm Stack Service.
+#
+services:
+  mssql:
+    image: mcr.microsoft.com/azure-sql-edge
+    user: root
+    environment:
+        ACCEPT_EULA: Y
+        MSSQL_SA_PASSWORD: wavesnake
+
+    volumes:
+      - /media/data/sqledge:/var/opt/mssql/data
+      - /media/data/log/:/var/opt/mssql/log
+      - /media/data/secrets:/var/opt/mssql/secrets
+
+    ports:
+      - target: 1433
+        protocol: tcp
+        mode: host
+
+    networks:
+      - traefik-public
+
+    extra_hosts:
+      - "redis.wavesnake.local:172.16.1.1"
+      - "mqt.wavesnake.local:172.16.1.1"
+      - "api.wavesnake.local:192.168.1.240"
+      - "sql.wavesnake.local:192.168.1.240"
+      - "console.wavesnake.local:192.168.1.240"
+      - "config.wavesnake.local:192.168.1.240"
+      - "sketch.wavesnake.local:192.168.1.240"
+
+    deploy:
+      restart_policy:
+        condition: any
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+      placement:
+        constraints:
+          - node.labels.wsnode == sn01
+      labels:
+        - "traefik.enable=true"
+
+        # This section id for local http access
+        - "traefik.tcp.routers.sqlint.entrypoints=sqldb"
+        - "traefik.tcp.routers.sqlint.rule=HostSNI(`*`)"
+        - "traefik.tcp.routers.sqlint.service=sqlinternal"
+        - "traefik.tcp.services.sqlinternal.loadBalancer.server.port=1433"
+
+networks:
+  traefik-public:
+    external: true

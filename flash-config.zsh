@@ -652,10 +652,10 @@ function PromptForInput() {
 
       #(Installed PHP8.0) We have to test this
       MQTT_USER_PASSWORD=$(/usr/local/Cellar/php@8.0/8.0.14/bin/php ./pwdhash.php $MANAGER_NAME $MANAGER_PASSWORD MQTT)
-      echo "1: $MQTT_USER_PASSWORD"
+      # echo "1: $MQTT_USER_PASSWORD"
 
       MANAGER_ENCRYPTED_PASSWORD=$(/usr/local/Cellar/php@8.0/8.0.14/bin/php ./pwdhash.php $MANAGER_NAME $MANAGER_PASSWORD USER)
-      echo "2: $MANAGER_ENCRYPTED_PASSWORD"
+      # echo "2: $MANAGER_ENCRYPTED_PASSWORD"
    done
 
    # # Configure Time Zone (Manager & Worker)
