@@ -9,8 +9,8 @@ services:
     image: mcr.microsoft.com/azure-sql-edge
     user: root
     environment:
-        ACCEPT_EULA: Y
-        MSSQL_SA_PASSWORD: wavesnake
+        ACCEPT_EULA: "Y"
+        MSSQL_SA_PASSWORD: "wavesnake"
 
     volumes:
       - /media/data/sqledge:/var/opt/mssql/data
