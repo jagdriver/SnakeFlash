@@ -10,7 +10,7 @@ services:
     user: root
     environment:
         ACCEPT_EULA: "Y"
-        MSSQL_SA_PASSWORD: "wavesnake"
+        MSSQL_SA_PASSWORD: "Wavesnake!2022"
 
     volumes:
       - /media/data/sqledge:/var/opt/mssql/data
