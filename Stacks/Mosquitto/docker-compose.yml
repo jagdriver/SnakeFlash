@@ -33,6 +33,7 @@ services:
         - "/mnt/config/mosquitto/config/mosquitto.conf:/mosquitto/config/mosquitto.conf"
         - "/mnt/config/mosquitto/config/conf.d/acl:/mosquitto/config/conf.d/acl"
         - "/mnt/config/mosquitto/config/conf.d/pw:/mosquitto/config/conf.d/pw"
+        - "/mnt/config/mosquitto/config/mosquitto.pid:/mosquitto/config/mosquitto.pid"
 
     deploy:
       restart_policy:
