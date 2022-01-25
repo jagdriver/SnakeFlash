@@ -20,11 +20,14 @@ $type=$argv[3];
 #$salt_base64="mOsgGCKqIEZx1rbO";
 $salt_base64=getSalt(); 
 $salt=base64_decode($salt_base64);
+# sha512-pbkdf2
 $hash=hash("sha512",$password.$salt, true);
 $hash_base64=base64_encode($hash);
 if($type=="MQTT")
 {
     echo($username.":$6$".$salt_base64."$".$hash_base64."\n");
+    #$xx=getSalt();
+    #echo($xx);
 } else
 {
     echo("$6$".$salt_base64."$".$hash_base64."\n");

@@ -265,18 +265,6 @@ write_files:
           }
       }
     path:  /opt/containers/configuration/globalconfig.json
-  
-  #
-  # SwarmSecret
-  #
-  - content: |
-      {
-        "ManagerPassword":"MANAGER-PASSWORD",
-        "RootPassword":"ROOT-PASSWORD",
-        "GlobalConfigPath":"GLOBAL-CONFIG-PATH"
-      }
-    path:  /opt/containers/configuration/swarmsecret.json
-
   #
   # Authorized SSH Keys
   #
@@ -909,13 +897,14 @@ write_files:
   #
   - content: |
       {
-        "SwarmManager":"manager",
-        "SwarmManagerPassword":"wavesnake",
-        "SqlManager":"root",
-        "SqlManagerPassword":"wavesnake",
-        "GlobalConfigPath":"/opt/containers/configuration/globalconfig.json",
+        "SwarmManager":"MANAGER-NAME",
+        "SwarmManagerPassword":"MANAGER-PASSWORD",
+        "SqlManager":"SQL-DB-ADMIN",
+        "SqlManagerPassword":"SQL-DB-ADMIN-PASSWORD",
+        "GlobalConfigPath":"GLOBAL-CONFIG-PATH",
         "RedisMasterServerAddress":"REDIS-MASTER-SERVER-ADDRESS",
-        "RedisMasterServerPort":"REDIS-MASTER-SERVER-PORT"
+        "RedisMasterServerPort":"REDIS-MASTER-SERVER-PORT",
+        "SwarmSecretPath":"SWARM-SECRET-PATH"
       }
     path: /opt/containers/configuration/swarmsecret.json
   
@@ -1178,12 +1167,22 @@ runcmd:
   - 'sudo chmod 600 /opt/containers/traefik/data/acme.json'
   
   # Create log directories
-  # TODO: Change so all log files are in /var/log/snakelogs
+  # 
   # and possibly NFS mounted to /mnt/logs
   - 'logger !!! wavesnake !!!'
-  - 'logger !!! wavesnake !!! Create log files'
+  - 'logger !!! wavesnake !!! Create log file directories'
   - 'logger !!! wavesnake !!!'
   - 'sudo mkdir -p /var/log/snakelogs'
+ 
+ # Set Owner and rights on log files
+  - 'logger !!! wavesnake !!!'
+  - 'logger !!! wavesnake !!! Set rights on log files'
+  - 'logger !!! wavesnake !!!'
+  
+  - 'sudo chown :manager /var/log/snakelogs -R'
+  - 'sudo chmod 775 /var/log/snakelogs'
+  - 'chmod g+s /var/log/snakelogs'
+
   - 'sudo mkdir -p /var/log/snakelogs/traefik'
   - 'sudo mkdir -p /var/log/snakelogs/redis'
   - 'sudo mkdir -p /var/log/snakelogs/mosquitto'
@@ -1195,16 +1194,8 @@ runcmd:
   - 'sudo mkdir -p /var/log/snakelogs/snaketimer'
   - 'sudo mkdir -p /var/log/snakelogs/snakerule'
   - 'sudo mkdir -p /var/log/snakelogs/zigbeetomqtt'
+  - 'sudo mkdir -p /var/log/snakelogs/snakemonitor'
  
-  # Set Owner and rights on log files
-  - 'logger !!! wavesnake !!!'
-  - 'logger !!! wavesnake !!! Set rights on log files'
-  - 'logger !!! wavesnake !!!'
-  #- 'sudo chmod ugo+rw /var/log/snakelogs -R'
-  # Changed 2021-06-11 NJN 
-  - 'sudo chmod 744 /var/log/snakelogs -R'
-  - 'sudo chown manager:root /var/log/snakelogs -R'
-
   # Create Docker network
   - 'logger !!! wavesnake !!!'
   - 'logger !!! wavesnake !!! Create Traefik network'

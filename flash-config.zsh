@@ -109,6 +109,7 @@ function ReadProperties() {
    # MANAGER Properties
    MANAGER_NAME=$MANAGER_NAME
    MANAGER_PASSWORD=$MANAGER_PASSWORD
+   SQL_DB_ADMIN_PASSWORD=$SQL_DB_ADMIN_PASSWORD
    MANAGER_EMAIL=$MANAGER_EMAIL
    AUTHORIZED_SSH_KEY=$AUTHORIZED_SSH_KEY
    SWARM_SECRET=$SWARM_SECRET
@@ -194,6 +195,7 @@ function ReadProperties() {
    # Global application properties
    APPLICATION_LOG_PATH=$APPLICATION_LOG_PATH
    GLOBAL_CONFIG_PATH=$GLOBAL_CONFIG_PATH
+   SWARM_SECRET_PATH=$SWARM_SECRET_PATH
 
    # Traefik properties
    TRAEFIK_ENTRYPOINT_ADDRESS=$TRAEFIK_ENTRYPOINT_ADDRESS
@@ -371,7 +373,8 @@ function EditProperties() {
       #
       # Global application properties, only manager node
       #
-      sed -i -n "s#GLOBAL_CONFIG_PATH#$GLOBAL-CONFIG-PATH#" new-user-data
+      sed -i -n "s#GLOBAL-CONFIG-PATH#$GLOBAL_CONFIG_PATH#" new-user-data
+      sed -i -n "s#SWARM-SECRET-PATH#$SWARM_SECRET_PATH#" new-user-data
 
       # Redis Master and Replica Server
       sed -i -n "s#REDIS-MASTER-SERVER-ADDRESS#$REDIS_MASTER_SERVER_ADDRESS#" new-user-data
@@ -408,6 +411,7 @@ function EditProperties() {
 
       # SQL Admin
       sed -i -n "s#SQL-DB-ADMIN#$SQL_DB_ADMIN#" new-user-data
+      sed -i -n "s#SQL-DB-ADMIN-PASSWORD#$SQL_DB_ADMIN_PASSWORD#" new-user-data
 
       # SQL Database names
       sed -i -n "s#SQL-USERS-DB-NAME#$SQL_USERS_DB_NAME#" new-user-data
@@ -645,6 +649,7 @@ function PromptForInput() {
          # Manager & Root password are the same
          MANAGER_PASSWORD=$REPLY
          ROOT_PASSWORD=$REPLY
+         SQL_DB_ADMIN_PASSWORD=$REPLY
          GETPW=false
       fi
 
@@ -1270,6 +1275,7 @@ function GenerateSSHKey() {
 
 function CreateStackList()
 {
+   # What do we do here ?
    IFS=','
    read -ra APPS <<<"$APPLICATION_LIST"
    local APPCOUNT=${#APPS[@]}
@@ -1307,11 +1313,15 @@ function EditStacks()
    #echo "File name: $f"
    if test -f "$f/docker-compose.yml"; then
       cp "$f/docker-compose.yml" new-compose
+
       # Edit DNS IP Addresses
       sed -i -n "s/SN01-ETH0-IP/$ETH0_IP_ADDRESS/g" new-compose
       sed -i -n "s/SN01-WLAN0-IP/$WLAN0_IP_ADDRESS/g" new-compose
-      # EDIT Application Placement
+      
+      # EDIT DNS ENTRIES
+      # TODO
 
+      # EDIT Application Placement
       sed -i -n "s/REDIS-APP-PLACEMENT/$REDIS_APP_PLACEMENT/g" new-compose
       sed -i -n "s/PORTAINER-APP-PLACEMENT/$PORTAINER_APP_PLACEMENT/g" new-compose
       sed -i -n "s/TRAEFIK-APP-PLACEMENT/$TRAEFIK_APP_PLACEMENT/g" new-compose
