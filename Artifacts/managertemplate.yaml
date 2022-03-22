@@ -141,6 +141,7 @@ write_files:
             "SnakeConfigLogFile":"SNAKECONFIG-LOG-FILE",
             "SnakeTimerLogFile":"SNAKETIMER-LOG-FILE",
             "SnakeConsoleLogFile":"SNAKECONSOLE-LOG-FILE"
+            "SnakeMonitorLogFile":"SNAKEMONITOR-LOG-FILE"
 
         },
         "Production": {
@@ -151,6 +152,7 @@ write_files:
             "SnakeConfigLogFile":"SNAKECONFIG-LOG-FILE",
             "SnakeTimerLogFile":"SNAKETIMER-LOG-FILE",
             "SnakeConsoleLogFile":"SNAKECONSOLE-LOG-FILE"
+            "SnakeMonitorLogFile":"SNAKEMONITOR-LOG-FILE"
         }
       },
       "SnakeApi": {
@@ -262,7 +264,15 @@ write_files:
               "Version":"SNAKECONSOLE-VERSION",
               "SnakeConsoleServer":"SNAKE-CONSOLE-SERVER"
             }
+          },
+        "SnakeMonitor": {
+          "Development": {
+            "Version":"SNAKEMONITOR-VERSION"
+          },
+          "Production": {
+            "Version":"SNAKEMONITOR-VERSION"
           }
+        },
       }
     path:  /opt/containers/configuration/globalconfig.json
   #

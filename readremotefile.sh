@@ -8,7 +8,8 @@
 
 FILE_PATH="sn02/swarmid.mvf"
 scp manager@192.168.1.240:/opt/containers/configuration/jointokens.txt ${FILE_PATH}
-input="sn02/swarmid.txt"
+input="sn02/swarmid.mvf"
+
 while IFS= read -r line
 do
   echo "$line"
@@ -23,7 +24,7 @@ function ReadProperties()
     WORKER_JOIN_TOKEN=$WORKER_JOIN_TOKEN
 }
 
-ReadProperties
+#ReadProperties
 
-echo "SWARM $SWARM_JOIN_TOKEN"
-echo "WORKER $WORKER_JOIN_TOKEN"
+#echo "SWARM $SWARM_JOIN_TOKEN"
+#echo "WORKER $WORKER_JOIN_TOKEN"

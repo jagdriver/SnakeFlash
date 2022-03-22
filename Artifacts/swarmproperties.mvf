@@ -166,6 +166,9 @@ SNAKETIMER_VERSION="1.2.0"
 # SnakeUtil properties
 SNAKEUTIL_VERSION="1.2.0"
 
+# SnakeMonitor properties
+SNAKEMONITOR_VERSION="1.2.0"
+
 # SnakeConsole Server
 SNAKE_CONSOLE_SERVER="consoleapi.wavesnake.local"
 
