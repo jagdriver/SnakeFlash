@@ -589,6 +589,7 @@ write_files:
             - 2202:2202
             - 2203:2203
             - 2204:2204
+            - 8123:8123
 
           volumes:
             - /opt/containers/traefik/data/traefik.yml:/traefik.yml:ro
@@ -658,7 +659,8 @@ write_files:
           address: ":8213"
         redis:
           address: ":8214"
-
+        homeassistant:
+          address: ":8123"
       providers:
         docker:
           endpoint: "unix:///var/run/docker.sock"
@@ -1161,7 +1163,8 @@ runcmd:
   - 'sudo mkdir -p /opt/containers/environment'
   # Synchronization
   - 'sudo mkdir -p /opt/containers/synchronization'
-  
+  # HomeAssistant
+  - 'sudo mkdir -p /opt/containers/homeassistant'
   # Set rights on container files
   - 'logger !!! wavesnake !!!'
   - 'logger !!! wavesnake !!! Set rights on Container files'
@@ -1219,7 +1222,7 @@ runcmd:
   - [
        docker, stack, deploy,
        "--compose-file", "/opt/containers/traefik/docker-compose.yml",
-       "Traefik"
+       "traefik"
     ]
   # Create Portainer Docker stack
   - 'logger !!! wavesnake !!!'
@@ -1228,7 +1231,7 @@ runcmd:
   - [
        docker, stack, deploy,
        "--compose-file", "/opt/containers/portainer/docker-compose.yml",
-       "Portainer"
+       "portainer"
     ]
 
   # Create Redis Docker stack
@@ -1238,7 +1241,7 @@ runcmd:
   - [
       docker, stack, deploy,
       "--compose-file", "/opt/containers/redis/docker-compose.yml",
-      "Redis"
+      "redis"
     ]
 
 
