@@ -63,7 +63,7 @@ ETH0_STATIC_ROUTERS="172.16.1.1"
 ETH0_DNS_SERVERS="8.8.8.8 8.8.4.4"
 
 # Swarm Application placement, allowed values [ NodeName | all ]
-# Here you decide on which node applications will be deployed
+# Here you decide on which node applications will be deployed to
 #
 REDIS_APP_PLACEMENT="sn01"
 PORTAINER_APP_PLACEMENT="sn01"
