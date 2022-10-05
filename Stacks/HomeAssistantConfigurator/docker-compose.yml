@@ -1,0 +1,19 @@
+version: '3'
+#
+# Docker Compose file for HomeAssistant Configurator
+# This solution are deployed from Portainer
+# as a Swarm Stack Service.
+#
+services:
+ hass-configurator:
+    image: "causticlab/hass-configurator-docker:arm"
+    container_name: hass-configurator
+    restart: unless-stopped
+    ports:
+      - "3218:3218/tcp"
+    depends_on:
+      - homeassistant
+    volumes:
+      - "./configurator-config:/config"
+      - "./hass-config:/hass-config"
+    user: "${PUID}:${PGID}"

@@ -1,0 +1,19 @@
+version: '3'
+#
+# Docker Compose file for HomeAssistant
+# This solution are deployed from Portainer
+# as a Swarm Stack Service.
+#
+services:
+  homeassistant:
+    container_name: hass
+    image: homeassistant/home-assistant
+    volumes:
+      - ./hass-config:/config
+      - /etc/localtime:/etc/localtime:ro
+    restart: unless-stopped
+    network_mode: host
+    depends_on:
+      - mariadb
+      - mosquitto
+      
