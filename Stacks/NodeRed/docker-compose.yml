@@ -4,6 +4,8 @@ version: '3'
 # This solution are deployed from Portainer
 # as a Swarm Stack Service.
 #
+# OBS! We have to consider Depends on
+#
 services:
   nodered:
     container_name: nodered
