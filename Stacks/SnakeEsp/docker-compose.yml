@@ -16,8 +16,8 @@ services:
     networks:
       - traefik-public
 
-    secrets:
-        - SwarmSecret
+    # secrets:
+    #     - SwarmSecret
 
     deploy:
       restart_policy:
@@ -56,9 +56,9 @@ services:
 
 
 
-secrets:
-  SwarmSecret:
-    external: true
+# secrets:
+#   SwarmSecret:
+#     external: true
 
 networks:
   traefik-public:
