@@ -1,0 +1,54 @@
+version: '3.7'
+#
+# Docker Compose file for Apache
+# This solution are deployed from Portainer
+# as a Swarm Stack Service.
+#
+services:
+  apache:
+    image: jagdriver/snakeapps:apache
+    
+    volumes:
+      - /mnt/config/apache/data:/usr/local/apache2/htdocs
+
+    networks:
+      - traefik-public
+
+    deploy:
+      restart_policy:
+        condition: any
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+      placement:
+        constraints:
+          - node.labels.wsnode == sn01
+
+      labels:
+        - "traefik.enable=true"
+
+        # This section id for local http access
+        - "traefik.http.routers.apache-local.entrypoints=web"
+        - "traefik.http.routers.apache-local.rule=Host(`sketch.wavesnake.local`)"
+        - "traefik.http.routers.apache-local.service=apache-local"
+        - "traefik.http.services.apache-local.loadbalancer.server.port=80"
+
+        # This section is for external http access
+        - "traefik.http.routers.apache-external.entrypoints=web"
+        - "traefik.http.routers.apache-external.rule=Host(`sketch.wavesnake.dk`)"
+        - "traefik.http.routers.apache-external.service=apache-external"
+        - "traefik.http.services.apache-external.loadbalancer.server.port=80"
+        - "traefik.http.middlewares.apache-https-redirect.redirectscheme.scheme=https"
+        - "traefik.http.routers.apache-external.middlewares=apache-https-redirect"
+
+        # This section is for external https access
+        - "traefik.http.routers.apache-secure.entrypoints=secure"
+        - "traefik.http.routers.apache-secure.rule=Host(`sketch.wavesnake.dk`)"
+        - "traefik.http.routers.apache-secure.tls=true"
+        - "traefik.http.routers.apache-secure.tls.certresolver=http"
+        - "traefik.http.routers.apache-secure.service=apache-secure"
+        - "traefik.http.services.apache-secure.loadbalancer.server.port=80"
+
+networks:
+  traefik-public:
+    external: true

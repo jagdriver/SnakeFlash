@@ -1710,4 +1710,7 @@ echo -e "${BLA}${BO}WaveSnake Flash Configuration Utility v1.0.7\n"
 echo -e "${RD}${BO}This utility will prepare a Flash configuration file for a"
 echo -e "single swarm node, by prompting for configuration parameters.${BLA}\n"
 
+# Start by asking for swarm name, and then create a subdirectory /swarm/{swarmname}
+# Copy all relevant files, templates, Properties, Stacks to the newly created directory
+# 
 MainMenu

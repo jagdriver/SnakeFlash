@@ -1,0 +1,237 @@
+<p><img src="/Artifacts/wavesnake.png" alt="HomeGuide Dashboard" /></p>
+<h1>Table of contents</h1>
+<ol>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#prerequisites">Prerequisites</a>
+<ol>
+<li><a href="#esphardware">ESP Hardware</a></li>
+<li><a href="#espsoftware">ESP Software</a></li>
+<li><a href="#rpihardware">RPI Hardware</a>
+<ol>
+<li><a href="#hardwarelist">Hardware list</a></li>
+</ol></li>
+<li><a href="#software">RPI Software</a>
+<ol>
+<li><a href="#redis">Redis</a></li>
+<li><a href="#snakeapi">SnakeApi</a></li>
+<li><a href="#snaketimer">SnakeTimer</a></li>
+<li><a href="#snakerule">SnakeRule</a></li>
+<li><a href="#snakeconfig">SnakeConfig</a></li>
+<li><a href="#snakeconsole">SnakeConsole</a></li>
+<li><a href="#snakehistory">SnakeHistory</a></li>
+<li><a href="#snakeutil">SnakeUtil</a></li>
+</ol></li>
+<li><a href="#gitrepository">GIT Repository</a><br />
+</li>
+</ol></li>
+<li><a href="#configuration">Configuration</a>
+<ol>
+<li><a href="#setupguide">Setup guide</a></li>
+<li><a href="#flash">Flashing SD Cards</a></li>
+<li><a href="#boot">Booting the RPI's</a></li>
+</ol></li>
+<li><a href="#dockerimages">Install Docker Images</a></li>
+<li><a href="#swarmillustration">Swarm Illustration</a></li>
+<li><a href="#features">Features</a>
+<ol>
+<li><a href="#dockerized">Complete Dockerized Swarm setup</a></li>
+<li><a href="#prompted">Prompted setup &amp; flashing og Manager and Worker nodes</a></li>
+<li><a href="#sshlogin">SSH login with pregenerated keys</a></li>
+<li><a href="#passwdhash">Password Hash login</a></li>
+<li><a href="#autoip">Automatic IP address &amp; network detection</a></li>
+<li><a href="#isolated">Isolated Swarm network</a></li>
+<li><a href="#certgen">Automated Certificate handling</a></li>
+<li><a href="#configdocumentation">Configuration documentation</a></li>
+</ol></li>
+</ol>
+<h2>SnakeHome <a name="introduction"></a></h2>
+<p>SnakeHome is the platform for hobbyist, who want the possibility to create their own IoT devices, but lack the background infrastructure, to integrate these devices into a manageable platform. I've put together some of the best tools available, written som apps, services, sketches and scripts, tested a lot, out came the SnakeHome management system, and it's free.</p>
+<p>I would like to thank: Matt Williams for creating Flash utility. All people at Raspberry.org for creating the Raspbian light OS Image for Raspberry Pi.</p>
+<p>The system consists of: - Sketches for initializing/configuring ESP8266/ESP32. - Sketches for Temperature, Humidity, Gate ontroller, Gas Burner ontroller and Water Pump controller. - Bash script for configuring and flashing MicroSD cards for a RaspBerry PI Docker Swarm Cluster.<br />
+- Docker images for Swarm applications. - Web application for managing/monitoring Swarm applications. - Web application for User setup/management of WaveSnake Home Management System. - IoS application for User setup/management of WaveSnake Home Management System.</p>
+<h2>Features <a name="features"></a></h2>
+<ul>
+<li><h3>Complete Containerized Swarm setup <a name="dockerized"></a></h3></li>
+<li><h3>Prompted setup &amp; flashing of Manager and Worker nodes <a name="prompted"></a></h3></li>
+<li><h3>Dynamic DNS <a name="dynamicdns"></a></h3></li>
+<li><h3>SSH login with pregenerated keys <a name="sshlogin"></a></h3></li>
+<li><h3>Password Hash login <a name="passwdhash"></a></h3></li>
+<li><h3>Automatic IP address &amp; network detection <a name="autoip"></a></h3></li>
+<li><h3>Isolated Swarm network <a name="isolated"></a></h3></li>
+<li><h3>Automated Certificate handling <a name="certgen"></a></h3></li>
+</ul>
+<h2>Prerequisites <a name="prerequisites"></a></h2>
+<p>prerequisites: 1. Mac or Linux pc 2. Visual Studio Code with some extensions (free). 3. Arduino development environment</p>
+<h3>ESP hardware <a name="esphardware"></a></h3>
+<p>| Hardware | Count | Prise DKr | | ----------------------- | ------------- | ------------------- |<br />
+| ESP8266 E12 Module | 1 | 30 | | ESP8266 Dev Module | 1 | 30 | | ESP32 Module | 1 | 20 | | ESP32 Dev Module | 1 | 50 |</p>
+<p>ESP8266 &amp; ESP32 are manufactored by Espressif. For detailed documentation se here https://www.espressif.com.</p>
+<h3>ESP software <a name="espsoftware"></a></h3>
+<p>ESP development environment consists of: 1. Arduino development environment 2. Visial Studio Code 3. Extension</p>
+<h3>RPI hardware <a name="rpihardware"></a></h3>
+<p>RaspberryPI hardware are rapildy developing and as of now, the hardware of choice is RPI 4 with 4 GB memory. Resonoly priced at 480 DKr.</p>
+<h4>List of hardware <a name="hardwarelist"></a></h4>
+<p>| Hardware | Count | Prise DKr | | ----------------------- | ------------- | ------------------- |<br />
+| RPI 3B or 4B | 4 | 1200-2000 | | Micro SD Card 32 GB | 4 | 200 | | Cluster case 4 Node | 1 | 170 | | Mean Well power supply | 1 | 180 | | Tenda network switch | 1 | 90 | | Ethernet cables 25cm | 4 | 100 | | USB-A to Micro USB 25cm | 4 | 200 | | USB to DC cable 25cm | 1 | 25 | | APC Nobreak 500 | 1 | 450 | | Arcryllic Enclosure | 1 | 900 | | Amount DKr | | 3,700 - 4,500 |</p>
+<h3>Toolchain<a name="tools"></a></h3>
+<p>The nescessary tools for building/installing the SnakeSwarm project and developing Sketches for ESP8266/ESP32<br />
+1. Visual Studio Code for Mac, latest version with some extensions: 2. Python3 3. Arduino for Visual Studio Code 4. C/C++ 5. ms-vscode.cpptools 6. lukasz-wronski.ftp-sync 7. ms-azuretools.vscode-docker 8. sprdp.remote-browser 9. jchannon.csharpextensions 10. .gitignore generator 11. ronaldosena.arduino-snippets 12. vsciot-vscode.vscode-arduino 13. Bash debug</p>
+<p>You can paste above extension id's into VSCode extension search box, and from there install the extensions.</p>
+<h3>RPI software <a name="software"></a></h3>
+<p>The software running on the RPI's are all Docker Containers, installed onto the RPI from within Portainer console. Traefik and Portainer are installed at boot time, and will be available after swarm initialization.</p>
+<h4>Redis <a name="redis"></a></h4>
+<p>Redis are the in memory cache, where all application configuration are stored. All applications read their configuration from Redis at startup, except form passwords which are read from Docker Secret file. When an application configuration are changed via SnakeConfig, and saved to Redis, the application container must be restarted to reflect the new configuration.</p>
+<h4>SnakeConfig <a name="snakeconfig"></a></h4>
+<p>SnakeConfig are the Manager UI that configures the Swarm and Applications. There are also a UI for visualizing the Swarm Containers, and log files.</p>
+<h4>SnakeApi <a name="snakeapi"></a></h4>
+<p>SnakeApi are the general API for manipulating Homes, Rooms and Accessories.</p>
+<h4>SnakeTimer <a name="snaketimer"></a></h4>
+<p>SnakeTimer is the backend service that executes timed actions, setup via SnakeApi and SnakeRule.</p>
+<h4>SnakeRule <a name="snakerule"></a></h4>
+<p>SnakeRule are the background service that creates and updates the rule DB and also updates the rule DB ingredients.</p>
+<h4>SnakeConsole <a name="snakeconsole"></a></h4>
+<p>SnakeConsole are the User UI, for creating Homes, Rooms and Accessories.</p>
+<h4>SnakeHistory <a name="snakehistory"></a></h4>
+<p>SnakeHistory are the background service that updates the history DB.</p>
+<h4>SnakeUtil <a name="snakeutil"></a></h4>
+<p>SnakeUtil are the background service that executes nescessary Swarm file synchronizations, and dynamic DNS updates. This is to say that you don't need at static IP address, if your hosting provider allows dynamic DNS update. If that's not the case, you can update the DNS records your self.</p>
+<h4>Git Repository <a name="gitrepository"></a></h4>
+<p>Repository URL: https://github.com/jagdriver/Stacks.git</p>
+<p>Compose path: /SnakeConfig/docker-compose.yml</p>
+<h3>Flashing Setup guide <a name="setupguide"></a></h3>
+<p>The initial setup and flashing of the SnakeHome Swarm includes below steps.</p>
+<ul>
+<li><p>Download <a href="https://github.com/jagdriver/SnakeFlash" title="this link">this</a> project from GitHub. Copy the project content into a folder called Flashing.</p></li>
+<li><p>Next, read the documentation on Swarm Configuration before going into actual setup steps.</p></li>
+<li><p>Download the latest HypriotOS from this url https://blog.hypriot.com/downloads/</p></li>
+<li><p>Format an MicroSD card, preferrably 16GB, and give it the name HypriotOS. Se the format description here.</p></li>
+<li><p>Edit swarmproperties.mvf but be carefull not to jeopardise the file.</p></li>
+<li><p>CD into Flashing directory</p></li>
+<li><p>Execute ./flash-config.zsh. Read the flash config instruction here.</p></li>
+</ul>
+<h3>Flashing to SD cards <a name="flash"></a></h3>
+<p>Run flash-swarm.zsh to flash the node images to micro SD cards, please have the cards ready an properly marked, 1 to 4. You can flash all at once, or one at a time.</p>
+<h3>Booting the RPI's <a name="boot"></a></h3>
+<p>Put the SD cards in Your Raspberry Pi's and turn them on. I suggest that You turn them on one at a time, while connecting a monitor to the HDMI port to watch the boot process.</p>
+<p>Voila, Your ShakeHome Swarm is up and running.</p>
+<h2>Install Docker Images <a name="dockerimages"></a></h2>
+<p>The next step is to install Docker Images and instantiating Containers from within Portainer console.</p>
+<h2>Configuration documentation <a name="configdocumentation"></a></h2>
+<p>The configuration starts with preparing the information going into the configuration process. You can find the properties in the file Artifacts/swarmconfig.mvf. test test</p>
+<h2>Swarm Illustration <a name="swarmillustration"></a></h2>
+<p><img src="/Artifacts/Swarm.png" alt="Swarm Illustration" /></p>
+<h1>WaveSnake Swarm Properties</h1>
+<h3>You can change the Noded name prefix here eg. sn</h3>
+<ul>
+<li>NODENAME_PREFIX="ws0"</li>
+</ul>
+<h3>Number of nodes in the Swarm</h3>
+<ul>
+<li>NODENAME_COUNT="4"</li>
+</ul>
+<h3>Change the WLAN0 address here. The script auto detects the current lan address, so you just set the last byte of the IP address.</h3>
+<ul>
+<li>WLAN0<em>IP</em>ADDRESS<em>LAST</em>BYTE="230"</li>
+</ul>
+<h3>Set the internal Swarm IP net.</h3>
+<ul>
+<li>INTERNAL<em>SWARM</em>IP_NET="192.168.230.0"</li>
+</ul>
+<h3>--- New Properties section</h3>
+<h3>MANAGER Properties</h3>
+<ul>
+<li>MANAGER_NAME="manager"</li>
+<li>MANAGER_PASSWORD="your manager password"</li>
+<li>MANAGER<em>ENCRYPTED</em>PASSWORD="$6$$lkFOYhhCGZiVmaOiZxSrpcvun.YOgyWuin0l0/aHRkep9sHrMTVp4uzHsAkTIJ.q3c8RuTA.NUNE8yqrh72O5/"</li>
+</ul>
+<h3>Node properties</h3>
+<ul>
+<li>NODE_NAME="ws01"</li>
+<li>SWARM<em>LOCALE="en</em>US.UTF-8"</li>
+<li>IME_ZONE="Europe/Copenhagen"</li>
+</ul>
+<h3>Docker Swarm properties</h3>
+<ul>
+<li>SWARM<em>MANAGER</em>NODE="ws01"</li>
+<li>SWARM_PORT="2377"</li>
+<li>SWARM_INTERFACE="eth0"</li>
+<li>SWARM<em>WORKER</em>TOKEN="SWMTKN-1-6cyk7y11vbx3e8sc5b8iqiao7sb9iyr8b2lheybtyjqhb8mfho-5bracqtjvzt2zcn7m0qp5w27w"</li>
+<li>SWARM<em>MANAGER</em>TOKEN="SWMTKN-1-6cyk7y11vbx3e8sc5b8iqiao7sb9iyr8b2lheybtyjqhb8mfho-cgxcsuzfarwy7m3eypj542pi1"</li>
+</ul>
+<h3>Swarm Application DNS Prefix's</h3>
+<ul>
+<li>API_PREFIX="api"</li>
+<li>DB_PREFIX="sql"</li>
+<li>MQTT_PREFIX="mqt"</li>
+<li>SKETCH_PREFIX="sketch"</li>
+</ul>
+<h3>Swarm External Application URL's</h3>
+<ul>
+<li>API<em>SERVER</em>URL="api.wavesnake.dk"</li>
+<li>DB<em>SERVER</em>URL="sql.wavesnake.dk"</li>
+<li>MQTT<em>SERVER</em>URL="mqt.wavesnake.dk"</li>
+<li>SKETCH<em>SERVER</em>URL="sketch.wavesnake.dk"</li>
+</ul>
+<h3>Swarm Internal Application URL's</h3>
+<ul>
+<li>INTERNAL<em>API</em>SERVER_URL="api.wavesnake.local"</li>
+<li>INTERNAL<em>DB</em>SERVER_URL="sql.wavesnake.local"</li>
+<li>INTERNAL<em>MQTT</em>SERVER_URL="mqt.wavesnake.local"</li>
+<li>INTERNAL<em>SKETCH</em>SERVER_URL="sketch.wavesnake.local"</li>
+</ul>
+<h3>WiFi properties</h3>
+<ul>
+<li>COUNTRY_CODE="DK"</li>
+<li>WIFI_SSID="Your WiFi ssid"</li>
+<li>WIFI_PASSWD="Your WiFi password"</li>
+</ul>
+<h3>Swarm Node ETH0 properties</h3>
+<ul>
+<li>ETH0_LAN="192.168.230.0/24"</li>
+<li>ETH0<em>IP</em>ADDRESS="192.168.230.1"</li>
+<li>ETH0<em>STATIC</em>ROUTERS="192.168.230.1"</li>
+<li>ETH0<em>DNS</em>SERVERS="8.8.8.8 8.8.4.4"</li>
+</ul>
+<h3>Node names</h3>
+<ul>
+<li><h1>WS01<em>NODE</em>NAME="ws01"</h1></li>
+<li><h1>WS02<em>NODE</em>NAME="ws02"</h1></li>
+<li><h1>WS03<em>NODE</em>NAME="ws03"</h1></li>
+<li><h1>WS04<em>NODE</em>NAME="ws04"</h1></li>
+</ul>
+<h3>Swarm Node IP Address</h3>
+<ul>
+<li>WS01<em>IP</em>ADDRESS="192.168.230.1"</li>
+<li>WS02<em>IP</em>ADDRESS="192.168.230.2"</li>
+<li>WS03<em>IP</em>ADDRESS="192.168.230.3"</li>
+<li>WS04<em>IP</em>ADDRESS="192.168.230.4"</li>
+</ul>
+<h3>Manager Node WLAN0 properties</h3>
+<ul>
+<li>WLAN0_LAN="192.168.1.0/24"</li>
+<li>WLAN0<em>IP</em>ADDRESS="192.168.1.220"</li>
+<li>WLAN0<em>STATIC</em>ROUTERS="192.168.1.1"</li>
+<li>WLAN0<em>DNS</em>SERVERS="8.8.8.8 8.8.4.4"</li>
+</ul>
+<h3>Domain properties</h3>
+<p>INTERNAL<em>DOMAIN</em>NAME="wavesnake.local" EXTERNAL<em>DOMAIN</em>NAME="Your external domain name"</p>
+<h3>Dynamic DNS properties</h3>
+<p>DYNAMIC<em>DNS</em>PROVIDER="1" DYNAMIC<em>DNS</em>USER="Your GratisDNS user" DYNAMIC<em>DNS</em>PASSWD="Your GratisDNS password"</p>
+<h3>ACME properties</h3>
+<p>ACME<em>EMAIL</em>ADDRESS="yourmail@mailserver.com"</p>
+<h3>Traefik properties</h3>
+<p>TRAEFIK<em>ENTRYPOINT</em>ADDRESS="192.168.1.220"</p>
+<h3>SnakeApi properties</h3>
+<p>API<em>SERVER</em>ADDRESS="192.168.1.220" API<em>SERVER</em>PORT="80"</p>
+<h3>SnakeConfig properties</h3>
+<p>APPLICATION<em>LIST="SnakeApi,SnakeHistory,SnakeUtil,SnakeConfig,SnakeTimer,SnakeConsole" ENVIRONMENT</em>LIST="Development,Test,Production"</p>
+<h3>Redis properties</h3>
+<p>REDIS<em>MASTER</em>SERVER<em>ADDRESS="192.168.230.1" REDIS</em>MASTER<em>SERVER</em>PORT="8376" REDIS<em>REPLICA</em>SERVER<em>ADDRESS="192.168.230.4" REDIS</em>REPLICA<em>SERVER</em>PORT="8376"</p>
+<h3>Sketch properties</h3>
+<p>SKETCH<em>SERVER</em>ADDRESS="192.168.1.220" SKETCH<em>SERVER</em>PORT="80"</p>
+<h3>MQTT properties</h3>
+<p>MQTT<em>SERVER</em>ADDRESS="192.168.1.220" MQTT<em>SERVER</em>PORT="6379"</p>
+<h3>USB Drive mount Command (/dev/sda1: UUID="3FFB-6CC8")</h3>
+<p>USB<em>MOUNT</em>COMMAND="echo "/dev/sda1/by-uuid/USB_UUID /media/data/mariadb vfat auto,nofail,noatime,users,rw,uid=manager,gid=manager 0 0" &gt;&gt; /etc/fstab"</p>
+<h3>Redis Default SnakeConfig</h3>
+<p>REDIS<em>DEFAULT</em>CONFIG="{'REDIS<em>MASTER</em>SERVER<em>ADDRESS':'192.168.1.220','REDIS</em>MASTER<em>SERVER</em>PORT':'8376'}"</p>

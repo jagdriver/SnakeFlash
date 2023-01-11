@@ -1,0 +1,41 @@
+version: '3.7'
+services:
+  homeassistant:
+    container_name: homeassistant
+    image: "ghcr.io/home-assistant/home-assistant:stable"
+    volumes:
+      - /mnt/config/homeassistant:/config
+      - /etc/localtime:/etc/localtime:ro
+    
+    ports:
+      - target: 8123
+        protocol: tcp
+        mode: host
+
+    networks:
+      - traefik-public
+
+    privileged: true
+
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+      placement:
+        constraints:
+          - node.role == manager
+
+      labels:
+        - "traefik.enable=true"
+
+        # This section is for HomeAssistant http access
+        - "traefik.tcp.routers.ass.entrypoints=homeass"
+        - "traefik.tcp.routers.ass.rule=HostSNI(`*`)"
+        - "traefik.tcp.routers.ass.service=homeass"
+        - "traefik.tcp.services.homeass.loadBalancer.server.port=8123"
+
+networks:
+   traefik-public:
+     external: true

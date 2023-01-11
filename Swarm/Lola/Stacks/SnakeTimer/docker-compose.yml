@@ -1,0 +1,51 @@
+version: '3.7'
+#
+# WaveSnake 2020-03-20
+# Docker Compose file for SnakeTimer
+# This solution are deployed as a Stack Service
+# from Portainer
+#
+services:
+
+  snaketimer: 
+    image: jagdriver/wavesnake:snaketimer-v1.0.0
+
+    networks:
+      - traefik-public
+    
+    extra_hosts:
+      - "redis.wavesnake.local:SN01-ETH0-IP"
+      - "mqt.wavesnake.local:SN01-ETH0-IP"
+      - "api.wavesnake.local:SN01-WLAN0-IP"
+      - "sql.wavesnake.local:SN01-WLAN0-IP"
+      - "console.wavesnake.local:SN01-WLAN0-IP"
+      - "config.wavesnake.local:SN01-WLAN0-IP"
+      - "sketch.wavesnake.local:SN01-WLAN0-IP"
+
+    secrets:
+      - SwarmSecret
+
+    volumes:
+      - "/var/log/snakelogs/snaketimer:/var/log/snakelogs"
+      - "/mnt/config:/opt/containers"
+
+    extra_hosts:
+      - "redis.wavesnake.local:192.168.230.1"
+
+    deploy:
+      restart_policy:
+        condition: any
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+      placement:
+        constraints:
+          - node.labels.wsnode == sn01
+
+secrets:
+  SwarmSecret:
+    external: true
+
+networks:
+  traefik-public:
+    external: true

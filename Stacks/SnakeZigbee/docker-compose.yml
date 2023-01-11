@@ -8,8 +8,8 @@ version: '3.7'
 services:
 
   zigbee2mqtt: 
-    image: jagdriver/wavesnake:snakezig
-
+#    image: jagdriver/wavesnake:snakezig
+    image: koenkk/zigbee2mqtt:latest
     networks:
       - traefik-public
 
@@ -25,6 +25,9 @@ services:
     volumes:
       - "/mnt/config/snakezig/data:/app/data"
       - "/dev/cc2531:/dev/cc2531"
+    ports:
+      # Frontend port
+      - 8090:8090
 
     deploy:
       restart_policy:
@@ -35,7 +38,9 @@ services:
       placement:
         constraints:
           - node.labels.wsnode == sn01
-
+      #
+      # we could expose the frontend via Traefik 
+      #
 networks:
   traefik-public:
     external: true

@@ -1,0 +1,47 @@
+version: '3.7'
+#
+# Docker Compose file for Visualizer
+# This solution are deployed as a Stack Service
+# from Portainer
+# 
+
+services:
+    Visualizer:
+      image: jagdriver/wavesnake:visualizer-v1.0.3
+
+      networks:
+        - traefik-public
+
+      volumes:
+        - "/var/run/docker.sock:/var/run/docker.sock"
+
+      deploy:
+        restart_policy:
+          condition: on-failure
+          delay: 5s
+          max_attempts: 3
+          window: 120s
+        placement:
+          constraints:
+            - node.role == manager
+
+      labels:
+        # This section is for external http access
+        - "traefik.http.routers.viz-external.entrypoints=web"
+        - "traefik.http.routers.viz-external.rule=Host(`viz.wavesnake.dk`)"
+        - "traefik.http.routers.viz-external.service=viz-external"
+        - "traefik.http.services.viz-external.loadbalancer.server.port=80"
+        - "traefik.http.middlewares.viz-https-redirect.redirectscheme.scheme=https"
+        - "traefik.http.routers.viz-external.middlewares=viz-https-redirect"
+
+        # This section is for external https access
+        - "traefik.http.routers.viz-secure.entrypoints=secure"
+        - "traefik.http.routers.viz-secure.rule=Host(`viz.wavesnake.dk`)"
+        - "traefik.http.routers.viz-secure.tls=true"
+        - "traefik.http.routers.viz-secure.tls.certresolver=http"
+        - "traefik.http.routers.viz-secure.service=viz-secure"
+        - "traefik.http.services.viz-secure.loadbalancer.server.port=80"
+          
+networks:
+  traefik-public:
+    external: true

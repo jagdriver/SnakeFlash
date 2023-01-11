@@ -1,0 +1,98 @@
+version: '3.7'
+#
+# Docker Compose file for SnakeConsole
+# This solution are deployed from Portainer
+# as a Swarm Stack Service.
+#
+services:
+  SnakeConsole:
+    image: jagdriver/wavesnake:snakeconsole
+
+    depends_on:
+      - mysql
+      - redis
+      
+    extra_hosts:
+      - "redis.wavesnake.local:192.168.1.240"
+      - "mqt.wavesnake.local:192.168.1.240"
+      - "api.wavesnake.local:192.168.1.240"
+      - "sql.wavesnake.local:192.168.1.240"
+      - "console.wavesnake.local:192.168.1.240"
+      - "config.wavesnake.local:192.168.1.240"
+      - "sketch.wavesnake.local:192.168.1.240"
+
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "/var/log/snakelogs/snakeconsole:/var/log/snakelogs"
+      - "/mnt/config:/opt/containers"
+
+    networks:
+      - traefik-public
+
+    secrets:
+        - SwarmSecret
+
+    deploy:
+      restart_policy:
+        condition: any
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+      placement:
+        constraints:
+          - node.labels.wsnode == sn01
+          
+      labels:
+        - "traefik.enable=true"
+
+        # This section is for console.wavesnake.local http access
+        - "traefik.http.routers.console-local.entrypoints=web"
+        - "traefik.http.routers.console-local.rule=Host(`console.wavesnake.local`)"
+        - "traefik.http.routers.console-local.service=console-local"
+        - "traefik.http.services.console-local.loadbalancer.server.port=80"
+
+        # This section is for consoleapi.wavesnake.local http access to backend server
+        - "traefik.http.routers.console-server-local.entrypoints=web"
+        - "traefik.http.routers.console-server-local.rule=Host(`consoleapi.wavesnake.local`)"
+        - "traefik.http.routers.console-server-local.service=console-server-local"
+        - "traefik.http.services.console-server-local.loadbalancer.server.port=4000"
+
+        # This section is for console.wavesnake.dk external http redirect
+        - "traefik.http.routers.console-external.entrypoints=web"
+        - "traefik.http.routers.console-external.rule=Host(`console.wavesnake.dk`)"
+        - "traefik.http.routers.console-external.service=console-external"
+        - "traefik.http.services.console-external.loadbalancer.server.port=80"
+        - "traefik.http.middlewares.console-https-redirect.redirectscheme.scheme=https"
+        - "traefik.http.routers.console-external.middlewares=console-https-redirect"
+
+        # This section is for consoleapi.wavesnake.dk external http redirect
+        - "traefik.http.routers.console-server-external.entrypoints=web"
+        - "traefik.http.routers.console-server-external.rule=Host(`consoleapi.wavesnake.dk`)"
+        - "traefik.http.routers.console-server-external.service=console-server-external"
+        - "traefik.http.services.console-server-external.loadbalancer.server.port=80"
+        - "traefik.http.middlewares.console-server-https-redirect.redirectscheme.scheme=https"
+        - "traefik.http.routers.console-server-external.middlewares=console-server-https-redirect"
+
+        # This section is for console.wavesnake.dk external https access
+        - "traefik.http.routers.console-secure.entrypoints=secure"
+        - "traefik.http.routers.console-secure.rule=Host(`console.wavesnake.dk`)"
+        - "traefik.http.routers.console-secure.tls=true"
+        - "traefik.http.routers.console-secure.tls.certresolver=http"
+        - "traefik.http.routers.console-secure.service=console-secure"
+        - "traefik.http.services.console-secure.loadbalancer.server.port=80"
+
+        # This section is for consoleapi.wavesnake.dk external https access
+        - "traefik.http.routers.console-server-secure.entrypoints=secure"
+        - "traefik.http.routers.console-server-secure.rule=Host(`consoleapi.wavesnake.dk`)"
+        - "traefik.http.routers.console-server-secure.tls=true"
+        - "traefik.http.routers.console-server-secure.tls.certresolver=http"
+        - "traefik.http.routers.console-server-secure.service=console-server-secure"
+        - "traefik.http.services.console-server-secure.loadbalancer.server.port=4000"
+
+secrets:
+  SwarmSecret:
+    external: true
+
+networks:
+  traefik-public:
+    external: true

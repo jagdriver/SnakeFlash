@@ -1,0 +1,42 @@
+version: '3.7'
+#
+# WaveSnake 2020-03-20
+# Docker Compose file for SnakeZig
+# This solution are deployed as a Stack Service
+# from Portainer
+#
+services:
+
+  zigbee2mqtt: 
+    image: jagdriver/wavesnake:snakezig
+    #image: koenkk/zigbee2mqtt:latest-dev ( did not work )
+    networks:
+      - traefik-public      
+    volumes:
+      - "/mnt/config/snakezig/data:/app/data"
+      - "/var/log/snakelogs/zigbee2mqtt:/var/log"
+      - "/dev/cc2531:/dev/cc2531"
+
+    deploy:
+      restart_policy:
+        condition: any
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+      placement:
+        constraints:
+          - node.labels.wsnode == sn01
+      labels:
+        - "traefik.enable=true"
+
+        # This section is for zigbee.wavesnake.local http access
+        # Tested and working
+        - "traefik.http.routers.zigbee-local.entrypoints=web"
+        - "traefik.http.routers.zigbee-local.rule=Host(`zigbee.wavesnake.local`)"
+        - "traefik.http.routers.zigbee-local.service=zigbee-local"
+        - "traefik.http.services.zigbee-local.loadbalancer.server.port=8080"
+
+
+networks:
+  traefik-public:
+    external: true

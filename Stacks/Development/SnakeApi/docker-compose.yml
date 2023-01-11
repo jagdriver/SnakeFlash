@@ -1,0 +1,33 @@
+version: '3.7'
+#
+# Docker Compose file for SnakeApi
+# This solution are deployed as a Stack Service
+# from Portainer
+# 
+
+services:
+  SnakeApi:
+    image: jagdriver/snakeapps:snakeapi
+    
+    ports:
+      - "80:5000"
+
+    secrets:
+      - SwarmSecret
+
+    volumes:
+      - "/var/snakelogs/snakeapi:/var/log/snakelogs"
+      - "/opt/containers:/opt/containers"
+
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+
+secrets:
+  SwarmSecret:
+    external: true
+
+

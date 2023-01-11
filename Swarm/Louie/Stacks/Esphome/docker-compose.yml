@@ -1,0 +1,43 @@
+version: '3.7'
+services:
+  esphome:
+    image: "esphome/esphome"
+    
+    volumes:
+      - /mnt/config/esphome:/config
+      - /etc/localtime:/etc/localtime:ro
+
+    ports:
+      - target: 6052
+        protocol: tcp
+        mode: host
+
+    networks:
+      - traefik-public
+
+    privileged: true
+
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+
+      placement:
+        constraints:
+          - node.role == manager
+
+      labels:
+        - "traefik.enable=true"
+
+        # This section is for ESPHome http access
+        - "traefik.tcp.routers.esphome.entrypoints=esphome"
+        - "traefik.tcp.routers.esphome.rule=HostSNI(`*`)"
+        - "traefik.tcp.routers.esphome.service=esphome"
+        - "traefik.tcp.services.esphome.loadBalancer.server.port=6052"
+
+
+networks:
+   traefik-public:
+     external: true
