@@ -10,8 +10,8 @@ services:
 
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
-      - "/var/log/snakelogs/snakeesp:/var/log/snakelogs"
-      - "/mnt/config:/opt/containers"
+      # - "/var/log/snakelogs/snakeesp:/var/log/snakelogs"
+      # - "/mnt/config:/opt/containers"
 
     networks:
       - traefik-public
