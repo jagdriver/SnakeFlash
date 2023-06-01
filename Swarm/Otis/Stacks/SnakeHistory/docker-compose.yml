@@ -1,0 +1,55 @@
+version: '3.7'
+#
+# WaveSnake 2020-06-22
+# Docker Compose file for SnakeHistory.
+# This solution are deployed from Portainer as a 
+# Stack Service.
+#
+# OBS! 
+# In Portainer Stack Deploy:
+# Remember to add Environment variable MANAGER_PASSWORD
+#
+services:
+
+  snakehistory1: 
+    image: jagdriver/snakeapps:snakehistory
+    
+    depends_on:
+      - mysql
+      - redis
+      
+    networks:
+      - traefik-public
+      
+    secrets:
+        - SwarmSecret
+
+    volumes:
+      - "/var/log/snakelogs/snakehistory:/var/log/snakelogs"
+      - "/mnt/config:/opt/containers"
+
+    extra_hosts:
+      - "redis.wavesnake.local:SN01-ETH0-IP"
+      - "mqt.wavesnake.local:SN01-ETH0-IP"
+      - "api.wavesnake.local:SN01-WLAN0-IP"
+      - "sql.wavesnake.local:SN01-WLAN0-IP"
+      - "console.wavesnake.local:SN01-WLAN0-IP"
+      - "config.wavesnake.local:SN01-WLAN0-IP"
+      - "sketch.wavesnake.local:SN01-WLAN0-IP"
+
+    deploy:
+      restart_policy:
+        condition: any
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+      placement:
+        constraints:
+          - node.labels.wsnode == sn01
+secrets:
+  SwarmSecret:
+    external: true
+
+networks:
+  traefik-public:
+    external: true

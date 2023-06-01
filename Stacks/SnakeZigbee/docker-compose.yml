@@ -24,7 +24,7 @@ services:
       
     volumes:
       - "/mnt/config/snakezig/data:/app/data"
-      - "/dev/cc2531:/dev/cc2531"
+      - "/dev/slzb:/dev/slzb"
     ports:
       # Frontend port
       - 8090:8090

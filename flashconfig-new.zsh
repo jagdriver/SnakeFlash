@@ -24,6 +24,8 @@
 # 13 Make it possible to change Manager WiFi IP address OK
 # 14 Obfuscate passwords in files OK
 # 15 Test boot without setting date/time and let FakeTime manage
+# 16 Check that we copy resulting files to correct directory
+# 17 walk thru all editor tags and check correct substitution
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -1418,7 +1420,8 @@ function CreateNewSwarm()
 {
    # OBS! The Stacks directory must be edited and copied to Raspberry, so that the
    # user can upload the compose files to Portainer for deployment to Docker. 
-   # But only on the manager node.
+   # But only on the manager node. OBS! No when the user is deploying via Portainer
+   # The file upload is from the local pc.
     
     # Ask for swarm name
     echo -e "\n"
@@ -1743,7 +1746,7 @@ function DetailMenu() {
 function ConfigCheckMenu() {
    echo -e "\n"
    echo -e "_____________________________________________ Visited Menu's ______________________________________________________________________\n"
-   echo -e " | Eth0 [$ETH0_DONE] | WLan0[$WLAN0_DONE] | WiFi[$WIFI_DONE] | DNS[$DNS_DONE] DynDns[$DYNDNS_DONE] | Manager[$MANAGER_DONE] | USB[$USB_DONE] | EDIT[$EDIT_DONE] | DATE[$DATE_DONE]\
+   echo -e " | Eth0 [$ETH0_DONE] | WLan0[$WLAN0_DONE] | WiFi[$WIFI_DONE] | DNS[$DNS_DONE] | DynDns[$DYNDNS_DONE] | Manager[$MANAGER_DONE] | USB[$USB_DONE] | EDIT[$EDIT_DONE] | DATE[$DATE_DONE]\
  | ManagerNode[$MANAGER_DONE] | WorkerNode[$WORKER_DONE] \n | DNS Strings[$DNS_DONE] | NodeNames[$NODENAME_DONE] | SSH[$SSH_DONE]"
    echo -e "___________________________________________________________________________________________________________________________________\n"
 }
@@ -1800,6 +1803,11 @@ function CopyConfigToSD()
    # Use Raspberry PI Imager to copy SnakeOS Disk image to the SD Card
    # Run flash-config.zsh to generate configuration files, and copy the files to SDCard /boot partition
    # 
+   # OBS! We must take the new directory structure into account
+   # ./Swarm/[Swarm Name]/Config
+   # ./Swarm/[Swarm Name]/Stacks
+   # ./Swarm/[Swarm Name]/Templates
+   # ./Swarm/[Swarm Name]/sn01 - sn04
  
    df -Hl
    echo -e "\n"

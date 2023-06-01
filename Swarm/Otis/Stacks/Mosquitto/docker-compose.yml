@@ -1,0 +1,68 @@
+version: '3.7'
+#
+# Docker Compose file for Mosquitto
+# This solution are deployed from Portainer
+# as a Swarm Stack Service.
+#
+services:
+  mosquitto:
+    image: jagdriver/wavesnake:mosquitto-v1.0.6
+
+    ports:
+      - target: 1883
+        protocol: tcp
+        mode: host
+
+    networks:
+      - traefik-public
+
+    extra_hosts:
+      - "redis.wavesnake.local:SN01-ETH0-IP"
+      - "mqt.wavesnake.local:SN01-ETH0-IP"
+      - "api.wavesnake.local:SN01-WLAN0-IP"
+      - "sql.wavesnake.local:SN01-WLAN0-IP"
+      - "console.wavesnake.local:SN01-WLAN0-IP"
+      - "config.wavesnake.local:SN01-WLAN0-IP"
+      - "sketch.wavesnake.local:SN01-WLAN0-IP"
+
+    volumes:
+        # - "/opt/containers/mosquitto/data:/mosquitto/data"
+        - "/mnt/config/mosquitto/data:/mosquitto/data"
+        - "/var/log/snakelogs:/mosquitto/log"
+        - "/mnt/config/mosquitto/config/mosquitto.conf:/mosquitto/config/mosquitto.conf"
+        - "/mnt/config/mosquitto/config/conf.d/acl:/mosquitto/config/conf.d/acl"
+        - "/mnt/config/mosquitto/config/conf.d/pw:/mosquitto/config/conf.d/pw"
+
+    deploy:
+      restart_policy:
+        condition: any
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+      placement:
+        constraints:
+          - node.labels.wsnode == sn01
+      labels:
+        - "traefik.enable=true"
+
+        # This if for internal access to Mosquitto
+        - "traefik.tcp.routers.mqtint.entrypoints=mqtinternal"
+        - "traefik.tcp.routers.mqtint.rule=HostSNI(`*`)"
+        - "traefik.tcp.routers.mqtint.service=mqtinternal"
+        - "traefik.tcp.services.mqtinternal.loadBalancer.server.port=1883"
+        
+        # This is for external access to Mosquitto, using certificat mqt.wavesnake.dk
+        - "traefik.tcp.routers.mosquitto.entrypoints=mosquitto"
+        - "traefik.tcp.routers.mosquitto.rule=HostSNI(`*`)"
+        - "traefik.tcp.routers.mosquitto.service=mqt"
+        #- "traefik.tcp.routers.mosquitto.tls=true"
+        #- "traefik.tcp.routers.mosquitto.tls.certresolver=http"
+        #- "traefik.tcp.routers.mosquitto.tls.domains[0].main=mqt.wavesnake.dk"
+        - "traefik.tcp.services.mqt.loadBalancer.server.port=1883"
+
+networks:
+   traefik-public:
+     external: true
+ 
+
+

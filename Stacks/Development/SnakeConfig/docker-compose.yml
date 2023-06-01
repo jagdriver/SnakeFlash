@@ -1,0 +1,35 @@
+version: '3.7'
+#
+# Docker Compose file for SnakeConfig Development
+# This solution are deployed to Docker Desktop from Portainer
+# as a Swarm Stack Service.
+#
+services:
+  SnakeConfig:
+    image: jagdriver/snakeapps:snakeconfig
+
+    volumes:
+      #- "/opt/containers/synchronization:/opt/containers/synchronization"
+      #- "/opt/containers/environment:/opt/containers/environment"
+      #- "/opt/containers/configuration:/opt/containers/configuration"
+      - "/var/snakelogs/snakeconfig:/var/log/snakelogs"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "/opt/containers/configuration:/opt/containers/configuration"
+
+    ports:
+      - "80:5050"
+
+    secrets:
+      - SwarmSecret
+
+    deploy:
+      restart_policy:
+        condition: any
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+
+secrets:
+  SwarmSecret:
+    external: true
+

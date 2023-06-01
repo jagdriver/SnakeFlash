@@ -1,0 +1,62 @@
+version: '3.7'
+#
+# Docker Compose file for MySql
+# This solution are deployed from Portainer
+# as a Swarm Stack Service.
+#
+services:
+  mysql:
+    image: mysql/mysql-server:8.0
+    command: --default-authentication-plugin=mysql_native_password
+
+    environment:
+       MYSQL_ROOT_PASSWORD: "${ROOT_PASSWORD}"
+       MYSQL_USER: manager
+       MYSQL_PASSWORD: "${MANAGER_PASSWORD}"
+       MYSQL_ROOT_HOST: "${ROOT_HOST}"
+       #
+       # Portainer environment variables that must be configured before deployment:
+       # ROOT_PASSWORD, MANAGER_PASSWORD and ROOT_HOST
+
+    volumes:
+      - /media/data/mysql:/var/lib/mysql
+      # USB Disk must be mounted to /media/data/mysql
+
+    ports:
+      - target: 3306
+        protocol: tcp
+        mode: host
+
+    networks:
+      - traefik-public
+
+    extra_hosts:
+      - "redis.wavesnake.local:172.16.1.1"
+      - "mqt.wavesnake.local:172.16.1.1"
+      - "api.wavesnake.local:192.168.1.240"
+      - "sql.wavesnake.local:192.168.1.240"
+      - "console.wavesnake.local:192.168.1.240"
+      - "config.wavesnake.local:192.168.1.240"
+      - "sketch.wavesnake.local:192.168.1.240"
+
+    deploy:
+      restart_policy:
+        condition: any
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+      placement:
+        constraints:
+          - node.labels.wsnode == sn01
+      labels:
+        - "traefik.enable=true"
+
+        # This section id for local http access
+        - "traefik.tcp.routers.mariaint.entrypoints=mariadb"
+        - "traefik.tcp.routers.mariaint.rule=HostSNI(`*`)"
+        - "traefik.tcp.routers.mariaint.service=mariainternal"
+        - "traefik.tcp.services.mariainternal.loadBalancer.server.port=3306"
+
+networks:
+  traefik-public:
+    external: true

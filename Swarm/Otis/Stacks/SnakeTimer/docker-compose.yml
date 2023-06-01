@@ -14,13 +14,13 @@ services:
       - traefik-public
     
     extra_hosts:
-      - "redis.wavesnake.local:172.16.1.1"
-      - "mqt.wavesnake.local:172.16.1.1"
-      - "api.wavesnake.local:192.168.1.230"
-      - "sql.wavesnake.local:192.168.1.230"
-      - "console.wavesnake.local:192.168.1.230"
-      - "config.wavesnake.local:192.168.1.230"
-      - "sketch.wavesnake.local:192.168.1.230"
+      - "redis.wavesnake.local:SN01-ETH0-IP"
+      - "mqt.wavesnake.local:SN01-ETH0-IP"
+      - "api.wavesnake.local:SN01-WLAN0-IP"
+      - "sql.wavesnake.local:SN01-WLAN0-IP"
+      - "console.wavesnake.local:SN01-WLAN0-IP"
+      - "config.wavesnake.local:SN01-WLAN0-IP"
+      - "sketch.wavesnake.local:SN01-WLAN0-IP"
 
     secrets:
       - SwarmSecret
@@ -28,6 +28,9 @@ services:
     volumes:
       - "/var/log/snakelogs/snaketimer:/var/log/snakelogs"
       - "/mnt/config:/opt/containers"
+
+    extra_hosts:
+      - "redis.wavesnake.local:192.168.230.1"
 
     deploy:
       restart_policy:

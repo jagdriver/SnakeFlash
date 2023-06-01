@@ -94,6 +94,7 @@ write_files:
               "SwarmManager":"MANAGER-NAME",
               "ManagerEmail":"MANAGER-EMAIL",
               "DBAdmin":"SQL-DB-ADMIN",
+              "SwarmSecret":"SWARM-SECRET"
           },
           "Production": {
               "PortainerServer":"PORTAINER-SERVER-ADDRESS",
@@ -112,6 +113,7 @@ write_files:
               "SwarmManager":"MANAGER-NAME",
               "ManagerEmail":"MANAGER-EMAIL",
               "DBAdmin":"SQL-DB-ADMIN",
+              "SwarmSecret":"SWARM-SECRET"
           }
         },
       "Redis": {
@@ -417,7 +419,9 @@ write_files:
       dns-nameservers WLAN0-DNS-SERVERS
       wpa-conf /etc/wpa_supplicant/wpa_supplicant.conf
     path: /etc/network/interfaces.d/wlan0
+    # theo er sød
 
+ 
   #
   # WiFi properties setup
   #
@@ -490,7 +494,7 @@ write_files:
 
       services:
         agent:
-          image: portainer/agent:latest
+          image: portainer/agent
           volumes:
             - /var/run/docker.sock:/var/run/docker.sock
             - /var/lib/docker/volumes:/var/lib/docker/volumes
@@ -507,7 +511,7 @@ write_files:
               constraints: [node.platform.os == linux]
 
         portainer:
-          image: portainer/portainer-ce:latest
+          image: portainer/portainer-ce
           command: -H tcp://tasks.agent:9001 --tlsskipverify --admin-password "$$2y$$05$$/.uo0TOISIA0iObDNskHkuGHlb/74AhYeDSccTs1V.mzRC8iAYUbm"
           ports:
             - "9000:9000"
@@ -747,6 +751,8 @@ write_files:
             service: "ssh-ws04"
     path: /opt/containers/traefik/data/ssh.yml
   
+   #
+
   #
   # Redis docker-compose.yml
   #
@@ -903,37 +909,19 @@ write_files:
   #
   - content: |
       {
-        "GlobalSecret": {
-          "Development": {
-          "SwarmManager":"MANAGER-NAME",
-          "SwarmManagerPassword":"MANAGER-PASSWORD",
-          "ManagerEmail":"MANAGER-EMAIL",
-          "SqlManager":"SQL-DB-ADMIN",
-          "SqlManagerPassword":"SQL-DB-ADMIN-PASSWORD",
-          "SwarmSecret":"SWARM-SECRET"
-          },
-          "Staging": {
-          "SwarmManager":"MANAGER-NAME",
-          "SwarmManagerPassword":"MANAGER-PASSWORD",
-          "ManagerEmail":"MANAGER-EMAIL",
-          "SqlManager":"SQL-DB-ADMIN",
-          "SqlManagerPassword":"SQL-DB-ADMIN-PASSWORD",
-          "SwarmSecret":"SWARM-SECRET"
-          },
-          "Production": {
-          "SwarmManager":"MANAGER-NAME",
-          "SwarmManagerPassword":"MANAGER-PASSWORD",
-          "ManagerEmail":"MANAGER-EMAIL",
-          "SqlManager":"SQL-DB-ADMIN",
-          "SqlManagerPassword":"SQL-DB-ADMIN-PASSWORD",
-          "SwarmSecret":"SWARM-SECRET"
-          }
-        }
+        "SwarmManager":"MANAGER-NAME",
+        "SwarmManagerPassword":"MANAGER-PASSWORD",
+        "SqlManager":"SQL-DB-ADMIN",
+        "SqlManagerPassword":"SQL-DB-ADMIN-PASSWORD",
+        "GlobalConfigPath":"GLOBAL-CONFIG-PATH",
+        "RedisMasterServerAddress":"REDIS-MASTER-SERVER-ADDRESS",
+        "RedisMasterServerPort":"REDIS-MASTER-SERVER-PORT",
+        "SwarmSecretPath":"SWARM-SECRET-PATH"
       }
     path: /opt/containers/configuration/swarmsecret.json
   
   #
-  # Zigbee Configuration file (Add configuration for SmartLight SLZB-06)
+  # Zigbee Configuration file
   #
   - content: |
       # Home Assistant integration (MQTT discovery)
@@ -964,7 +952,7 @@ write_files:
     path: /opt/containers/snakezig/data/configuration.yaml
  
   #
-  # Zigbee Docker Setup script (Add configuration for SmartLight SLZB-06)
+  # Zigbee Docker Setup script
   #
   - content: |
       #!/bin/bash
@@ -986,7 +974,7 @@ write_files:
     path: /home/manager/docker-setup-cc2531.sh
   
   #
-  # Zigbee Docker Event Listener script (Add configuration for SmartLight SLZB-06)
+  # Zigbee Docker Event Listener script
   #
   - content: |
       #!/bin/bash
@@ -997,7 +985,7 @@ write_files:
     path: /home/manager/docker-event-listener.sh
  
   #
-  # Zigbee Docker Event Listener Service (Add configuration for SmartLight SLZB-06)
+  # Zigbee Docker Event Listener Service
   #
   - content: |
       [Unit]
@@ -1299,7 +1287,7 @@ runcmd:
   - 'logger !!! wavesnake !!!'
   - 'USB-MOUNT-COMMAND'
   #
-  # Create Zigbee2Mqtt configuration (Add configuration for SmartLight SLZB-06)
+  # Create Zigbee2Mqtt configuration
   #
   - 'echo "SUBSYSTEM==\"tty\", ATTRS{idVendor}==\"ZIGBEE-VENDOR\", ATTRS{idProduct}==\"ZIGBEE-PRODUCT\", SYMLINK+=\"cc2531\",  RUN+=\"/home/manager/docker-setup-cc2531.sh\"" | sudo tee /etc/udev/rules.d/99-cc2531.rules'
   - 'sudo udevadm control --reload-rules'
