@@ -1,0 +1,30 @@
+#
+# Deploy this service by executing:
+# docker-compose -f docker-compose-service.yml up -d 
+#
+services:
+  snakeapi:
+    container_name: snakeapi
+    image: jagdriver/snakeapps:snakeapi
+
+    ports:
+      - "2000:5000"
+
+    volumes:
+      - /var/snakelogs/snakeapi:/var/log/snakelogs
+      - /var/containers/configuration:/var/containers/configuration
+
+    networks:
+      traefik-public:
+        ipv4_address: 10.0.1.25
+
+    secrets:
+      - SwarmSecret
+
+networks:
+  traefik-public:
+    external: true
+
+secrets:
+  SwarmSecret:
+    file: ./swarmsecret.json

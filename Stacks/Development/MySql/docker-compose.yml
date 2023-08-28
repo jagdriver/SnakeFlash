@@ -1,0 +1,36 @@
+version: '3.7'
+#
+# Docker Compose file for MySql
+# This solution are deployed to Docker Desktop from Portainer
+# as a Swarm Stack Service.
+#
+services:
+  mysql:
+    image: mysql/mysql-server:8.0
+    command: --default-authentication-plugin=mysql_native_password
+
+    # When deploying MySql to Docker Desktop, it's a must to add the two
+    # environment variables below.
+    environment:
+       MYSQL_ROOT_PASSWORD: "${ROOT_PASSWORD}"
+       MYSQL_ROOT_HOST: "${ROOT_HOST}"
+       #
+       # Portainer environment variables that must be configured before deployment:
+       # ROOT_PASSWORD, ROOT_HOST must be "%"
+
+    ports:
+      - "3306:3306"
+
+    networks:
+      - traefik-public
+
+    deploy:
+      restart_policy:
+        condition: any
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+
+networks:
+  traefik-public:
+    external: true

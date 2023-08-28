@@ -1,0 +1,18 @@
+#
+# Deploy this service by: docker-compose -f docker-compose-service.yml up -d 
+#
+services:
+  redis:
+    container_name: redis
+    image: redis/redis-stack:latest
+
+    ports:
+      - "6379:6379"
+
+    networks:
+      traefik-public:
+        ipv4_address: 10.0.1.15
+
+networks:
+  traefik-public:
+    external: true

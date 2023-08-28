@@ -14,10 +14,14 @@ services:
       #- "/opt/containers/configuration:/opt/containers/configuration"
       - "/var/snakelogs/snakeconfig:/var/log/snakelogs"
       - "/var/run/docker.sock:/var/run/docker.sock"
-      - "/opt/containers/configuration:/opt/containers/configuration"
+      - "/var/containers/configuration:/opt/containers/configuration"
 
     ports:
       - "80:5050"
+    
+    networks:
+      - traefik-public
+
 
     secrets:
       - SwarmSecret
@@ -28,6 +32,10 @@ services:
         delay: 5s
         max_attempts: 3
         window: 120s
+
+networks:
+  traefik-public:
+    external: true
 
 secrets:
   SwarmSecret:
