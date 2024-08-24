@@ -3,6 +3,7 @@ version: '3.7'
 # Docker Compose file for SnakeConsole
 # This solution are deployed from Portainer
 # as a Swarm Stack Service.
+# Path: /Volumes/T7/Projects/VSCode/SnakeFlash/Stacks/SnakeConsole/docker-compose.yml
 #
 services:
   snakeconsole:

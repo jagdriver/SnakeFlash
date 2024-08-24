@@ -71,6 +71,14 @@ package_upgrade: false
 # and bash scripts to be run on first boot
 #
 write_files:
+ #
+ # Set Environment Variables
+ #
+  - content: |
+      DEVICEID="84ae9092-7c26-4ea3-bb67-4da7647b80bb"
+    append: true
+    path: /etc/dhcpcd.conf
+
   #
   # Global Application Config
   #

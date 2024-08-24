@@ -3,6 +3,7 @@ version: '3.7'
 # Docker Compose file for SnakeEsp
 # This solution are deployed from Portainer
 # as a Swarm Stack Service.
+# Path: /Volumes/T7/Projects/VSCode/SnakeFlash/Stacks/SnakeEsp/docker-compose.yml
 #
 services:
   snakeesp:
@@ -38,7 +39,7 @@ services:
         - "traefik.http.routers.esp-local.service=esp-local"
         - "traefik.http.services.esp-local.loadbalancer.server.port=80"
 
-        # This section is for console.wavesnake.dk external http redirect
+        # This section is for snakeesp.wavesnake.dk external http redirect
         - "traefik.http.routers.esp-external.entrypoints=web"
         - "traefik.http.routers.esp-external.rule=Host(`snakeesp.wavesnake.dk`)"
         - "traefik.http.routers.esp-external.service=esp-external"
@@ -46,7 +47,7 @@ services:
         - "traefik.http.middlewares.esp-https-redirect.redirectscheme.scheme=https"
         - "traefik.http.routers.esp-external.middlewares=esp-https-redirect"
 
-        # This section is for console.wavesnake.dk external https access
+        # This section is for snakeesp.wavesnake.dk external https access
         - "traefik.http.routers.esp-secure.entrypoints=secure"
         - "traefik.http.routers.esp-secure.rule=Host(`snakeesp.wavesnake.dk`)"
         - "traefik.http.routers.esp-secure.tls=true"

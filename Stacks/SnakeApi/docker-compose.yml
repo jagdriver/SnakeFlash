@@ -3,7 +3,9 @@ version: '3.7'
 # Docker Compose file for SnakeApi
 # This solution are deployed as a Stack Service
 # from Portainer
-# 
+# Path: /Volumes/T7/Projects/VSCode/SnakeFlash/Stacks/SnakeApi/docker-compose.yml
+# GIT: Stacks/SnakeApi/docker-compose.yml
+#
 
 services:
   SnakeApi:

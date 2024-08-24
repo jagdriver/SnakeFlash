@@ -3,7 +3,9 @@ version: '3.7'
 # Docker Compose file for Redis
 # This solution are deployed from Portainer
 # as a Swarm Stack Service.
-#
+# Path: /Volumes/T7/Projects/VSCode/SnakeFlash/Stacks/Redis/docker-compose.yml
+# GIT: Stacks/Redis/docker-compose.yml
+# 
 services:
   redis:
     image: jagdriver/wavesnake:redis

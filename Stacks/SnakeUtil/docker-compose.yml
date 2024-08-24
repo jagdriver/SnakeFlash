@@ -4,7 +4,7 @@ version: '3.7'
 # This solution are deployed as a Stack Service
 # from Portainer, and run on every node in the 
 # swarm.
-# 
+# Path: /Volumes/T7/Projects/VSCode/SnakeFlash/Stacks/SnakeUtil/docker-compose.yml
 #
 services:
 

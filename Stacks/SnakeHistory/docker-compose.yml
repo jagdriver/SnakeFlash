@@ -8,6 +8,7 @@ version: '3.7'
 # OBS! 
 # In Portainer Stack Deploy:
 # Remember to add Environment variable MANAGER_PASSWORD
+# Path: /Volumes/T7/Projects/VSCode/SnakeFlash/Stacks/SnakeHistory/docker-compose.yml
 #
 services:
 

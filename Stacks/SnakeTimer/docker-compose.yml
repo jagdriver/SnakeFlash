@@ -4,6 +4,7 @@ version: '3.7'
 # Docker Compose file for SnakeTimer
 # This solution are deployed as a Stack Service
 # from Portainer
+# Path: /Volumes/T7/Projects/VSCode/SnakeFlash/Stacks/SnakeTimer/docker-compose.yml
 #
 services:
 
